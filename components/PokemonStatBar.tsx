@@ -57,11 +57,11 @@ const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ stat }) => {
     <CombatStageCell>
       {!editMode && (
         <>
-          <IconButton icon={faMinus} onClick={() => handleBumpCombatStage(-1)} />
+          <CombatStageButton icon={faMinus} onClick={() => handleBumpCombatStage(-1)} />
           <CombatStageValue>
             {combatStages[stat]}
           </CombatStageValue>
-          <IconButton icon={faPlus} onClick={() => handleBumpCombatStage(1)} />
+          <CombatStageButton icon={faPlus} onClick={() => handleBumpCombatStage(1)} />
         </>
       )}
       {editMode && <StatEditor stat={stat} />}
@@ -127,13 +127,13 @@ export const PokemonStatBar = () => {
         {!editMode && (
           <>
             <AddSubtractHealthButtons>
-              <IconButton icon={faMinus} onClick={() => updateHealth(currentHealth - modifyHealthValue)}/>
+              <CombatStageButton icon={faMinus} onClick={() => updateHealth(currentHealth - modifyHealthValue)}/>
               <HealthModifyInput
                 type="number"
                 onChange={event => setModifyHealthValue(Number(event.target.value))}
                 defaultValue={modifyHealthValue}
               /> 
-              <IconButton icon={faPlus} onClick={() => updateHealth(currentHealth + modifyHealthValue)}/>
+              <CombatStageButton icon={faPlus} onClick={() => updateHealth(currentHealth + modifyHealthValue)}/>
             </AddSubtractHealthButtons>
             <HealthCellDropdown>
               <HealthModifyButton onClick={() => updateHealth(modifyHealthValue)}>
@@ -170,7 +170,7 @@ const Container = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 0.25rem 1rem;
+    padding: 0.25rem 0.5rem;
   }
 `;
 
@@ -196,8 +196,21 @@ const StatCalculation = styled.div`
   font-style: italic;
 `;
 
+const CombatStageButton = styled(IconButton)`
+  & > div {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  & svg {
+    font-size: 0.5rem;
+    width: 0.75rem;
+  }
+`;
+
 const CombatStageCell = styled.div`
   background-color: #fff;
+
 `;
 
 const CombatStageValue = styled.span`

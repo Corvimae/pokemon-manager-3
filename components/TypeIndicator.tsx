@@ -17,7 +17,7 @@ interface TypeIndicatorProps {
   disabled?: boolean;
 }
 
-export const TypeIndicator: React.FC<TypeIndicatorProps> = ({ name, multiplier, icon, onClick, disabled }) => name && (
+export const TypeIndicator: React.FC<TypeIndicatorProps> = ({ name, multiplier, icon, onClick, disabled }) => name ? (
   <Container
     role={onClick && !disabled ? 'button' : undefined} 
     tabIndex={onClick && !disabled ? 0 : -1}
@@ -29,7 +29,7 @@ export const TypeIndicator: React.FC<TypeIndicatorProps> = ({ name, multiplier, 
       {icon && <FontAwesomeIcon icon={TYPE_ICONS[name.toLowerCase()]} />}
     </TypeIndicatorThreshold>
   </Container>
-);
+) : null;
 
 const Container = styled.div<{ onClick: unknown }>`
   position: relative;

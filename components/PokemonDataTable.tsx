@@ -77,7 +77,7 @@ export const PokemonDataTable = () => {
         </StatValue>
       </StatRow>
       <StatRow>
-        <StatKey>Experience to next level</StatKey>
+        <StatKey>Exp. to next level</StatKey>
         <PointsToLevelContainer>
           <PointsToLevel>{calculateExperienceToNextLevel(pokemon.experience)}</PointsToLevel>
           <PointsToLevelBar percentage={calculatePercentageToNextLevel(pokemon.experience)} />
@@ -124,13 +124,8 @@ export const PokemonDataTable = () => {
       <StatRow>
         <StatKey>STAB Modifier</StatKey>
         <StatValue>
-          {Math.floor(calculateLevel(pokemon.experience) / 10)}
+          {Math.floor(calculateLevel(pokemon.experience) / 5)}
         </StatValue>
-      </StatRow>
-      <StatRowDivider />
-      <StatRow>
-        <StatKey>Capabilities</StatKey>
-        <CapabilityList />
       </StatRow>
       <StatRowDivider />
       <StatRow>
@@ -188,8 +183,12 @@ const PointsToLevelBar = styled.div<{ percentage: number }>`
 
 const TypeList = styled(StatValue)`
   display: grid;
-  grid-template-columns: max-content max-content max-content;
+  grid-template-columns: repeat(2, max-content);
   grid-gap: 0.25rem;
+
+  @media screen and (min-width: 1440px) {
+    grid-template-columns: repeat(3, max-content);
+  }
 `;
 
 const TypeIcons = styled(StatValue)`

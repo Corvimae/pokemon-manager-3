@@ -14,6 +14,7 @@ import { DropdownTooltip } from './DropdownTooltip';
 import { useDispatch } from 'react-redux';
 import { getMoveFrequency } from '../utils/formula';
 import { TypeSelector } from './TypeSelector';
+import { CapabilityList } from './CapabilityList';
 
 const Move: React.FC<{ move: MoveData }> = ({ move }) => {
   const dispatch = useDispatch();
@@ -103,6 +104,8 @@ export const PokemonMoveList = () => {
           )}
         </AddMoveContainer>
       )}
+
+      <CapabilityList />
     </Container>
   );
 }

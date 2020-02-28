@@ -1,5 +1,5 @@
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
-import { faFeatherAlt, faSkull, faGhost, faBrain, faWater, faSnowflake, faDragon, faMoon, faGem, faMountain, faFistRaised, faBug, faCog, faFire, faLeaf, faBahai, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faFeatherAlt, faSkull, faGhost, faBrain, faWater, faSnowflake, faDragon, faMoon, faGem, faMountain, faFistRaised, faBug, faCog, faFire, faLeaf, faBahai, faQuestion, faBolt } from '@fortawesome/free-solid-svg-icons';
 
 export const TYPE_COLORS = {
   none: '#ccc',
@@ -35,6 +35,7 @@ export const TYPE_ICONS = {
   dragon: faDragon,
   dark: faMoon,
   rock: faGem,
+  electric: faBolt,
   ground: faMountain,
   fighting: faFistRaised,
   bug: faBug,

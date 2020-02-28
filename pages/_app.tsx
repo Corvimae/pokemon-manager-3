@@ -1,9 +1,10 @@
 import { createStore, applyMiddleware } from "redux";
 import { createGlobalStyle } from 'styled-components';
-import { reducer } from "../store/store";
 import { Provider } from "react-redux";
+import Head from "next/head";
 import Axios from "axios";
 import axiosMiddleware from 'redux-axios-middleware';
+import { reducer, useTypedSelector } from "../store/store";
 
 import 'tippy.js/dist/tippy.css';
 
@@ -18,6 +19,9 @@ const store = createStore(reducer, applyMiddleware(axiosMiddleware(client)));
 function App({ Component, pageProps }) {
   return (
     <Provider store={store}>
+        <Head>
+          <title>Pokemon Viewer</title>
+        </Head>
       <GlobalStyles />
       <Component {...pageProps} />
     </Provider>
@@ -30,6 +34,7 @@ export default App
 const GlobalStyles = createGlobalStyle`
   html {
     font-size: 16px;
+    -webkit-font-smoothing: subpixel-antialiased;
   }
 
   body {

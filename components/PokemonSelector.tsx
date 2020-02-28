@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import styled from 'styled-components';
 import { useTypedSelector } from '../store/store';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 export const PokemonSelector: React.FC = () => {
   const allies = useTypedSelector(state => state.allies);
@@ -11,8 +13,16 @@ export const PokemonSelector: React.FC = () => {
     router.push('/pokemon/:id', `/pokemon/${id}`, { shallow: true });
   }, [router]);
 
+  const handleNavigateHome = useCallback(() => {
+    window.location.href = '/';
+  }, []);
+
   return (
     <Container>
+      <AllySelector onClick={handleNavigateHome}>
+        <FontAwesomeIcon icon={faHome} size="2x" />
+      </AllySelector>
+
       {allies.map(ally => (
         <AllySelector key={ally.id} backgroundImage={ally.icon} onClick={() => handleAllySelection(ally.id)} />
       ))}
@@ -31,7 +41,7 @@ const Container = styled.div`
   border-radius: 0 0 0.25rem 0.25rem;
 `;
 
-const AllySelector = styled.button<{ backgroundImage: string }>`
+const AllySelector = styled.button<{ backgroundImage?: string }>`
   width: 3rem;
   height: 3rem;
   background-color: transparent;
@@ -41,6 +51,10 @@ const AllySelector = styled.button<{ backgroundImage: string }>`
   appearance: none;
   -webkit-appearance: none;
   border-radius: 0.25rem;
+  
+  &:not(:last-child) {
+    margin-right: 0.5rem;
+  }
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.15);

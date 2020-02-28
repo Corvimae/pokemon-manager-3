@@ -73,10 +73,12 @@ export const CapabilityList: React.FC = () => {
   );
 };
 
-const Container = styled(StatValue)`
+const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, 1fr);
   grid-gap: 0.25rem;
+  margin-top: 0.5rem;
 `;
 
 const AddCapabilityContainer = styled.div`
