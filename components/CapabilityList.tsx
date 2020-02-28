@@ -1,15 +1,16 @@
 import { useState, useCallback } from "react";
 import styled from 'styled-components';
 import { useDispatch } from "react-redux";
+import { SortableContainer } from 'react-sortable-hoc';
 import { useTypedSelector, addCapability } from "../store/store";
-import { StatValue, Button, NumericInput, AddItemButton, DropdownHeader } from "./Layout";
+import {  Button, NumericInput, AddItemButton, DropdownHeader } from "./Layout";
 import { CapabilityIndicator } from "./CapabilityIndicator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { DefinitionLookahead } from "./DefinitionLookahead";
 import { DropdownTooltip } from "./DropdownTooltip";
 
-export const CapabilityList: React.FC = () => {
+export const UnsortableCapabilityList: React.FC = () => {
   const dispatch = useDispatch();
   const pokemonId = useTypedSelector(store => store.pokemon.id);
   const capabilities = useTypedSelector(store => store.pokemon.capabilities);
@@ -38,8 +39,8 @@ export const CapabilityList: React.FC = () => {
 
   return (
     <Container>
-      {capabilities.map(capability => (
-        <CapabilityIndicator key={capability.id} capability={capability} />
+      {capabilities.map((capability, index) => (
+        <CapabilityIndicator key={capability.id} index={index} capability={capability} disabled={!editMode} />
       ))}
       {editMode && (
         <AddCapabilityContainer>
@@ -73,12 +74,16 @@ export const CapabilityList: React.FC = () => {
   );
 };
 
+export const CapabilityList = SortableContainer(UnsortableCapabilityList);
+
 const Container = styled.div`
+  position: relative;
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 0.25rem;
   margin-top: 0.5rem;
+  
 `;
 
 const AddCapabilityContainer = styled.div`

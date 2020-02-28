@@ -44,7 +44,7 @@ const GlobalStyles = createGlobalStyle`
     min-height: 100vh;
   }
 
-  body > div {
+  body > div:first-child {
     min-height: 100vh;
   }
 

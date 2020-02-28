@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, MOVE, addMove, removeMove, setMovePPUp, setMoveType } from '../store/store';
+import { useTypedSelector, MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder } from '../store/store';
 import { MoveData } from '../utils/types';
 import { Theme } from '../utils/theme';
 import { TypeIndicator } from './TypeIndicator';
@@ -15,8 +15,9 @@ import { useDispatch } from 'react-redux';
 import { getMoveFrequency } from '../utils/formula';
 import { TypeSelector } from './TypeSelector';
 import { CapabilityList } from './CapabilityList';
+import { SortableElement, SortableContainer } from 'react-sortable-hoc';
 
-const Move: React.FC<{ move: MoveData }> = ({ move }) => {
+const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
@@ -56,12 +57,18 @@ const Move: React.FC<{ move: MoveData }> = ({ move }) => {
       </div>
     </MoveContainer>
   );
-}
+};
+
+const Move = SortableElement(UnsortableMove);
+
+const MoveList = SortableContainer(({ children }) => <MoveListContainer>{children}</MoveListContainer>);
+
 export const PokemonMoveList = () => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
   const moves = useTypedSelector(state => state.pokemon.moves);
+  const capabilities = useTypedSelector(state => state.pokemon.capabilities);
 
   const [showMoveSelector, setShowMoveSelector] = useState(false);
   const [editorSelection, setEditorSelection] = useState(null);
@@ -76,9 +83,19 @@ export const PokemonMoveList = () => {
     setShowMoveSelector(false);
   }, [dispatch, pokemonId, editorSelection]);
 
+  const handleMoveDrag = useCallback(({ oldIndex, newIndex }) => {
+    dispatch(setMoveOrder(pokemonId, moves[oldIndex].id, newIndex));
+  }, [dispatch, pokemonId, moves]);
+
+  const handleCapabilityDrag = useCallback(({ oldIndex, newIndex }) => {
+    dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
+  }, [dispatch, pokemonId, capabilities]);
+
   return (
     <Container>
-      {moves.map(move => <Move key={move.id} move={move} />)}
+      <MoveList axis="y" onSortEnd={handleMoveDrag}>
+        {moves.map((move, index) => <Move key={move.id} move={move} index={index} disabled={!editMode} />)}
+      </MoveList>
 
       {editMode && (
         <AddMoveContainer>
@@ -105,23 +122,31 @@ export const PokemonMoveList = () => {
         </AddMoveContainer>
       )}
 
-      <CapabilityList />
+      <CapabilityList axis="xy" onSortEnd={handleCapabilityDrag}/>
     </Container>
   );
 }
 
 const Container = styled.div`
-  display: grid;
-  grid-template-columns: max-content repeat(4, max-content) 5.25rem;
   margin-top: 1rem;
 `;
 
+const MoveListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  align-items: flex-start;
+`;
 
 const MoveContainer = styled.div`
   position: relative;
-  display: contents;
-  min-width: max-content;
+  display: grid;
+  grid-template-columns: 10rem 4rem 5rem 5rem 9rem 5.25rem;
   height: 2.5rem;
+  margin-bottom: 0.5rem;
+  box-shadow: ${Theme.dropShadow};
+  border-radius: 1.25rem;
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -137,19 +162,6 @@ const MoveContainer = styled.div`
     background-color: #fff;
     padding: 0 0.5rem;
     overflow: visible;
-    margin-bottom: 0.5rem;
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      box-shadow: ${Theme.dropShadow};
-      background: #fff;
-    }
   }
 
   & > div:first-child {
@@ -212,7 +224,7 @@ const AddMoveContainer = styled.div`
 `;
 
 const AddMoveButton = styled(AddItemButton)`
-  width: 100%;
+  width: 38.25rem;
   height: 100%;
   border-radius: 1.25rem;
 `;

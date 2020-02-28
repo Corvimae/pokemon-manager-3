@@ -104,23 +104,23 @@ export const PokemonStatBar = () => {
         <StatCalculation>({stats.base.hp} + {stats.added.hp})</StatCalculation>
       </StatTotal>
       <StatTotal>
-        <div>{attack}</div>
+        <TotalValue>{attack}</TotalValue>
         <StatCalculation>({stats.base.attack} + {stats.added.attack})</StatCalculation>
       </StatTotal>
       <StatTotal>
-        <div>{defense}</div>
+        <TotalValue>{defense}</TotalValue>
         <StatCalculation>({stats.base.defense} + {stats.added.defense})</StatCalculation>
       </StatTotal>
       <StatTotal>
-        <div>{specialAttack}</div>
+        <TotalValue>{specialAttack}</TotalValue>
         <StatCalculation>({stats.base.spattack} + {stats.added.spattack})</StatCalculation>
       </StatTotal>
       <StatTotal>
-        <div>{specialDefense}</div>
+        <TotalValue>{specialDefense}</TotalValue>
         <StatCalculation>({stats.base.spdefense} + {stats.added.spdefense})</StatCalculation>
       </StatTotal>
       <StatTotal>
-        <div>{speed}</div>
+        <TotalValue>{speed}</TotalValue>
         <StatCalculation>({stats.base.speed} + {stats.added.speed})</StatCalculation>
       </StatTotal>
       <HealthCell>
@@ -294,4 +294,8 @@ const StatEditPlus = styled.div`
   & svg {
     color: #999;
   }
+`;
+
+const TotalValue = styled.div`
+  font-weight: 700;
 `;

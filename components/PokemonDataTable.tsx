@@ -8,7 +8,6 @@ import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../ut
 import { SelectablePokemonValue } from './SelectablePokemonValue';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { CapabilityList } from './CapabilityList';
 import { AbilityList } from './AbilityList';
 import { TypeSelector } from './TypeSelector';
 

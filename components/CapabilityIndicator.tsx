@@ -7,12 +7,13 @@ import { Theme } from "../utils/theme";
 import { useDispatch } from "react-redux";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { IconButton } from "./Layout";
+import { SortableElement } from "react-sortable-hoc";
 
 interface CapabilityIndicatorProps {
   capability: CapabilityData;
 }
 
-export const CapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capability }) => {
+export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capability }) => {
   const dispatch = useDispatch();
   const pokemonId = useTypedSelector(store => store.pokemon.id);
   const editMode = useTypedSelector(state => state.editMode);
@@ -41,11 +42,13 @@ export const CapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capabi
   );
 }
 
+export const CapabilityIndicator = SortableElement(UnsortableCapabilityIndicator);
 
 const Container = styled.div<{ hasValue: boolean }>`
   position: relative;
   display: flex;
   height: 1.75rem;
+  max-height: 1.75rem;
   font-family: inherit;
   font-size: inherit;
   border: none;

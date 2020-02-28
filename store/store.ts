@@ -48,6 +48,8 @@ const SET_POKEMON_EXPERIENCE = 'SET_POKEMON_EXPERIENCE';
 const SET_POKEMON_GENDER = 'SET_POKEMON_GENDER';
 const SET_BASE_STAT = 'SET_BASE_STAT';
 const SET_ADDED_STAT = 'SET_ADDED_STAT';
+const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
+const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
 
 interface ActiveMove {
   type: typeof MOVE;
@@ -338,6 +340,22 @@ type SetAddedStatAction = {
   } & AxiosRequest;
 };
 
+type SetMoveOrderAction = {
+  type: typeof SET_MOVE_ORDER;
+  payload: {
+    moveId: number;
+    position: number;
+  } & AxiosRequest;
+};
+
+type SetCapabilityOrderAction = {
+  type: typeof SET_CAPABILITY_ORDER;
+  payload: {
+    capabilityId: number;
+    position: number;
+  } & AxiosRequest;
+};
+
 type PokemonReducerAction =
   LoadTypeIdsAction |
   LoadTypeIdsSuccessAction |
@@ -373,7 +391,9 @@ type PokemonReducerAction =
   SetPokemonExperienceAction |
   SetPokemonGenderAction |
   SetBaseStatAction |
-  SetAddedStatAction;
+  SetAddedStatAction |
+  SetMoveOrderAction |
+  SetCapabilityOrderAction;
 
 const initialCombatStagesState: CombatStages = {
   attack: 0,
@@ -715,6 +735,38 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         },
       };
 
+    case SET_MOVE_ORDER: {
+      const matchingMove = state.pokemon.moves.find(move => move.id === action.payload.moveId);
+      const moveSet = [...state.pokemon.moves];
+      
+      moveSet.splice(moveSet.indexOf(matchingMove), 1);
+      moveSet.splice(action.payload.position, 0, matchingMove);
+
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          moves: moveSet
+        },
+      };
+    }
+
+    case SET_CAPABILITY_ORDER: {
+      const matchingCapability = state.pokemon.capabilities.find(cap => cap.id === action.payload.capabilityId);
+      const capabilitySet = [...state.pokemon.capabilities];
+      
+      capabilitySet.splice(capabilitySet.indexOf(matchingCapability), 1);
+      capabilitySet.splice(action.payload.position, 0, matchingCapability);
+
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          capabilities: capabilitySet
+        },
+      };
+    }
+
     default:
       return state;
   }
@@ -1034,6 +1086,32 @@ export function setAddedStat(pokemonId: number, stat: keyof StatBlock, value: nu
       value: Number(value),
       request: {
         url: `/v2/pokemon/${pokemonId}/stats/${stat}/added/${value || 0}`,
+      },
+    },
+  };
+}
+
+export function setMoveOrder(pokemonId: number, moveId: number, position: number): PokemonReducerAction {
+  return {
+    type: SET_MOVE_ORDER,
+    payload: {
+      moveId,
+      position,
+      request: {
+        url: `/v2/pokemon/${pokemonId}/moves/${moveId}/order/${position + 1}`,
+      },
+    },
+  };
+}
+
+export function setCapabilityOrder(pokemonId: number, capabilityId: number, position: number): PokemonReducerAction {
+  return {
+    type: SET_CAPABILITY_ORDER,
+    payload: {
+      capabilityId,
+      position,
+      request: {
+        url: `/v2/pokemon/${pokemonId}/capabilities/${capabilityId}/order/${position + 1}`,
       },
     },
   };

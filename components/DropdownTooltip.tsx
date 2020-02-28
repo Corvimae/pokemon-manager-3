@@ -16,10 +16,13 @@ export const DropdownTooltip: React.FC<DropdownTooltipProps> = ({ visible, onVis
 
   useEffect(() => {
     const hideTooltip = (event: Event) => {
-      if(!ref.current?.contains(event.target as Node)) onVisibilityChange(false);
+      
+      if(!ref.current?.contains(event.target as Node)) {
+        onVisibilityChange(false);
+      }
     }
 
-    window.addEventListener('click', hideTooltip, false);
+    window.addEventListener('click', hideTooltip, true);
 
     return (): void => {
       window.removeEventListener('click', hideTooltip);
