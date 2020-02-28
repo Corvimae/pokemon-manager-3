@@ -140,5 +140,5 @@ const Description = styled(StatValue)`
   grid-column: 1 / -1;
   text-align: left;
   line-height: 1.52;
-  font-size: 0.875rem;
+  font-size: 1rem;
 `;

@@ -44,7 +44,7 @@ const BallTop = styled.div`
   background: linear-gradient(0deg, #ccc 0%, #ccc 50%, #e7040f 50.1%, #e7040f 100%);
   background-size: 200% 200%;
 
-  animation: 5s infinite linear ${TopAnimation};
+  animation: 2.5s infinite linear ${TopAnimation};
 `;
 
 const BallCenter = styled.div`
@@ -74,5 +74,5 @@ const BallBottom = styled.div`
   background: linear-gradient(0deg, #ccc 0%, #ccc 50%, #fff 50.1%, #fff 100%);
   background-size: 200% 200%;
 
-  animation: 5s infinite linear ${BottomAnimation};
+  animation: 2.5s infinite linear ${BottomAnimation};
 `;

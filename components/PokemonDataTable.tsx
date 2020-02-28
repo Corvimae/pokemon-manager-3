@@ -151,7 +151,11 @@ export const PokemonDataTable = () => {
             <TypeIndicator key={resistance} name={resistance} multiplier={multiplier} />
           ))}
         </TypeList>
-      </StatRow>		
+      </StatRow>
+      <StatRowDivider />
+      <PokemonImage>
+        <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase()}.gif`} />
+      </PokemonImage>
     </StatList>
   );
 };
@@ -206,5 +210,21 @@ const ExperienceInput = styled(TextInput)`
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+`;
+
+const PokemonImage = styled.div`
+  display: flex;
+  height: 10rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  grid-column: 1 / -1;
+  background-image: url(https://em-uploads.s3.amazonaws.com/profilebg/312687.png);
+  background-size: cover;
+  border: 0.25rem solid rgba(0, 0, 0, 0.75);
+
+  & > img {
+    margin-bottom: 1.5rem;
   }
 `;

@@ -112,7 +112,7 @@ export const PokemonMoveList = () => {
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr repeat(4, max-content) 5.25rem;
+  grid-template-columns: max-content repeat(4, max-content) 5.25rem;
   margin-top: 1rem;
 `;
 

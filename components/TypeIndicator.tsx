@@ -56,7 +56,7 @@ const TypeIndicatorThreshold = styled.div<{ color: string }>`
   position: absolute;
   display: flex;
   top: 0;
-  left: 0;
+  left: -1px;
   width: 2.25rem;
   padding-right: 0.5rem;
   height: 100%;
@@ -64,5 +64,5 @@ const TypeIndicatorThreshold = styled.div<{ color: string }>`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  clip-path: polygon(0 0, calc(100% + 1px) 0%, 70% 100%, 0% 100%);
+  clip-path: polygon(0 -5px, calc(100% + 1px) -5px, 70% calc(100% + 1px), 0% calc(100% + 1px));
 `;

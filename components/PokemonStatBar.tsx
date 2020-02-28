@@ -202,7 +202,7 @@ const CombatStageButton = styled(IconButton)`
     height: 1rem;
   }
 
-  & svg {
+  &&& svg {
     font-size: 0.5rem;
     width: 0.75rem;
   }
