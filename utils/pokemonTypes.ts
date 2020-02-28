@@ -1,0 +1,45 @@
+import { faCircle } from '@fortawesome/free-regular-svg-icons';
+import { faFeatherAlt, faSkull, faGhost, faBrain, faWater, faSnowflake, faDragon, faMoon, faGem, faMountain, faFistRaised, faBug, faCog, faFire, faLeaf, faBahai, faQuestion } from '@fortawesome/free-solid-svg-icons';
+
+export const TYPE_COLORS = {
+  none: '#ccc',
+  normal: '#A8A878',
+  flying: '#A890F0',
+  poison: '#A040A0',
+  ghost: '#705898',
+  psychic: '#F85888',
+  water: '#6890F0',
+  ice: '#98D8D8',
+  dragon: '#7038F8',
+  dark: '#7d7874',
+  rock: '#B8A038',
+  electric: '#dcbb38',
+  ground: '#E0C068',
+  fighting: '#C03028',
+  bug: '#A8B820',
+  steel: '#B8B8D0',
+  fire: '#F08030',
+  grass: '#78C850',
+  fairy: '#EE99AC',
+};
+
+export const TYPE_ICONS = {
+  none: faQuestion,
+  normal: faCircle,
+  flying: faFeatherAlt,
+  poison: faSkull,
+  ghost: faGhost,
+  psychic: faBrain,
+  water: faWater,
+  ice: faSnowflake,
+  dragon: faDragon,
+  dark: faMoon,
+  rock: faGem,
+  ground: faMountain,
+  fighting: faFistRaised,
+  bug: faBug,
+  steel: faCog,
+  fire: faFire,
+  grass: faLeaf,
+  fairy: faBahai,
+};
