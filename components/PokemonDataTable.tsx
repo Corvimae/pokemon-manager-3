@@ -1,4 +1,4 @@
-import { useState,useCallback } from 'react';
+import { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
@@ -11,9 +11,11 @@ import { SelectablePokemonValue } from './SelectablePokemonValue';
 import { AbilityList } from './AbilityList';
 import { TypeSelector } from './TypeSelector';
 import { RichTextEditor } from './RichTextEditor';
+import { Theme } from '../utils/theme';
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
+  const mobileMode = useTypedSelector(store => store.mobileMode);
   const editMode = useTypedSelector(store => store.editMode);
   const pokemon = useTypedSelector(store => store.pokemon);
 
@@ -58,7 +60,7 @@ export const PokemonDataTable = () => {
   }, [dispatch, pokemon.id]);
 
   return (
-    <StatList>
+    <StatTable isActiveMobileMode={mobileMode === 'data'}>
       <StatRow>
         <StatKey>Trainer</StatKey>
         <SelectablePokemonValue
@@ -192,16 +194,24 @@ export const PokemonDataTable = () => {
       {showGMEditor && (
         <>
           <StatRow>
-            <StatKey>Notes</StatKey>
+            <StatKey>GM Notes</StatKey>
             <GMNotesEditorContainer>
               <RichTextEditor defaultValue={pokemon.gmNotes} onSave={handleSaveGMNotes} />
             </GMNotesEditorContainer>
           </StatRow>
         </>
       )}
-    </StatList>
+    </StatTable>
   );
 };
+
+const StatTable = styled(StatList)<{ isActiveMobileMode: boolean }>`
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    display: ${({ isActiveMobileMode }) => !isActiveMobileMode && 'none'};
+    min-width: 100vw;
+    grid-template-columns: max-content 1fr;
+  }
+`;
 
 const PointsToLevelContainer = styled(StatValue)`
   flex-direction: column;
@@ -280,5 +290,9 @@ const GMNotesEditorContainer = styled(StatValue)`
 
   & > div {
     width: 100%;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: auto;
   }
 `;

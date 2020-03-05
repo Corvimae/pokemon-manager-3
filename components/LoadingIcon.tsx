@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { Theme } from '../utils/theme';
 
 export const LoadingIcon: React.FC = () => (
   <Container>
@@ -53,6 +54,10 @@ const BallCenter = styled.div`
   height: 1rem;
   border-radius: 50%;
   background-color: #f0f0f0;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    background-color: #841383;
+  }
 `;
 
 const BallButton = styled.div`
@@ -64,6 +69,10 @@ const BallButton = styled.div`
   border-radius: 50%;
   background-color: #f0f0f0;
   transform: translate(-50%, -50%);
+  
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    background-color: #841383;
+  }
 `;
 
 const BallBottom = styled.div`

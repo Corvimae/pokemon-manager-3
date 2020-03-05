@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { DefinitionLookahead } from "./DefinitionLookahead";
 import { DropdownTooltip } from "./DropdownTooltip";
+import { Theme } from "../utils/theme";
 
 export const UnsortableCapabilityList: React.FC = () => {
   const dispatch = useDispatch();
@@ -83,7 +84,10 @@ const Container = styled.div`
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 0.25rem;
   margin-top: 0.5rem;
-  
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 const AddCapabilityContainer = styled.div`

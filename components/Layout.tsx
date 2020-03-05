@@ -52,6 +52,7 @@ const IconButtonContainer = styled.button<{ inverse: boolean }>`
   & svg {
     color: ${props => props.inverse ? '#333' : '#fff'};
     font-size: 0.75rem;
+    width: 0.75rem;
   }
 
   &:hover {
@@ -211,28 +212,3 @@ export const Tooltip = styled(Tippy)`
   }
 `;
 
-
-export const RightBackgroundStripe = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: ${Theme.backgroundStripe};
-  clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-  z-index: -1;
-  pointer-events: none;
-  overflow: visible;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 4rem;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.25);
-    clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-    z-index: -2;
-  }
-`;

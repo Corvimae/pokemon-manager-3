@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useTypedSelector, MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/store';
 import { Theme } from '../utils/theme';
-import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, RightBackgroundStripe } from './Layout';
+import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton } from './Layout';
 import { getAttackType } from './moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
@@ -21,9 +21,10 @@ export const DetailsSidebar = () => {
     dispatch(saveNotes(pokemon.id, notes));
   }, [dispatch, pokemon.id]);
 
+
   return(
     <Container className={activeDetails.mode == 'none' ? '' : 'active'}>
-      <RightBackgroundStripe />
+      <BackgroundStripe />
       <Title>
         {activeDetails.mode === 'description' && (activeDetails.details?.value.name ?? <span>&nbsp;</span>)}
         {activeDetails.mode === 'notes' && 'Notes'}
@@ -99,13 +100,21 @@ const Container = styled.div`
   padding: 1rem 0;
   transition: right 100ms ease-in;
   z-index: 10;
+
   & ${StatList} {
     width: 24rem;
     grid-template-columns: max-content 1fr;
   }
+  
 
   &.active {
     right: 0;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    &:not(.active) {
+      right: calc(-100vw - 2rem);
+    }
   }
 `;
 
@@ -140,5 +149,39 @@ const NotesEditorContainer = styled(StatValue)`
 
   & > div {
     width: 100%;
+  }
+`;
+
+export const BackgroundStripe = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: ${Theme.backgroundStripe};
+  clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
+  z-index: -1;
+  pointer-events: none;
+  overflow: visible;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4rem;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.25);
+    clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
+    z-index: -2;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    clip-path: unset;
+    width: 100vw;
+    
+    &::before {
+      display: none;
+    }
   }
 `;

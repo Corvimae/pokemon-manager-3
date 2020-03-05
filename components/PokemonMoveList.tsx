@@ -44,17 +44,17 @@ const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
         {editMode && <RemoveMoveButton icon={faTimes} onClick={handleRemoveMove} />}
         {move.definition.name}
       </MoveName>
-      <div>AC {move.definition.accuracy}</div>
-      <div>{move.definition.damage}</div>
-      <div>{getAttackType(move.definition.attackType)}</div>
-      <div>
+      <MoveAccuracy>AC {move.definition.accuracy}</MoveAccuracy>
+      <MoveDamage>{move.definition.damage}</MoveDamage>
+      <MoveAttackType>{getAttackType(move.definition.attackType)}</MoveAttackType>
+      <MoveType>
         <TypeSelector value={move.type.name} onSelect={handleSetType} />
-      </div>
-      <div>
+      </MoveType>
+      <MoveFrequencyContainer>
         <MoveFrequency onClick={handleTogglePPUp} editMode={editMode}>
           {getMoveFrequency(move)}
         </MoveFrequency>
-      </div>
+      </MoveFrequencyContainer>
     </MoveContainer>
   );
 };
@@ -66,6 +66,7 @@ const MoveList = SortableContainer(({ children }) => <MoveListContainer>{childre
 export const PokemonMoveList = () => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
+  const mobileMode = useTypedSelector(store => store.mobileMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
   const moves = useTypedSelector(state => state.pokemon.moves);
   const capabilities = useTypedSelector(state => state.pokemon.capabilities);
@@ -92,7 +93,7 @@ export const PokemonMoveList = () => {
   }, [dispatch, pokemonId, capabilities]);
 
   return (
-    <Container>
+    <Container isActiveMobileMode={mobileMode === 'moves'}>
       <MoveList axis="y" onSortEnd={handleMoveDrag} pressDelay={100}>
         {moves.map((move, index) => <Move key={move.id} move={move} index={index} disabled={!editMode} />)}
       </MoveList>
@@ -127,15 +128,10 @@ export const PokemonMoveList = () => {
   );
 }
 
-const Container = styled.div`
-  margin-top: 1rem;
-`;
-
 const MoveListContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-
   align-items: flex-start;
 `;
 
@@ -143,6 +139,7 @@ const MoveContainer = styled.div`
   position: relative;
   display: grid;
   grid-template-columns: 10rem 4rem 5rem 5rem 9rem 5.25rem;
+  grid-template-areas: "name accuracy damage attack-type type frequency";
   height: 2.5rem;
   margin-bottom: 0.5rem;
   box-shadow: ${Theme.dropShadow};
@@ -186,10 +183,35 @@ const MoveName = styled.div`
   display: flex;
   font-size: 0.875rem;
   font-weight: 700;
+  grid-area: name;
 
   && {
     padding: 0 1rem;
     justify-content: flex-start;
+  }
+`;
+
+const MoveType = styled.div`
+  grid-area: type;
+`;
+
+const MoveAttackType = styled.div`
+  grid-area: attack-type;
+`;
+
+const MoveDamage = styled.div`
+  grid-area: damage;
+`;
+
+const MoveAccuracy = styled.div`
+  grid-area: accuracy;
+`;
+
+const MoveFrequencyContainer = styled.div`
+  &&& {
+    grid-area: frequency;
+    padding: 0;
+    height: 100%;
   }
 `;
 
@@ -245,4 +267,48 @@ const AddMoveSubmitButton = styled(Button)`
 
 const RemoveMoveButton = styled(IconButton)`
   margin-right: 0.5rem;
+`;
+
+const Container = styled.div`
+  margin-top: 1rem;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    display: ${({ isActiveMobileMode }) => !isActiveMobileMode && 'none'};
+    width: 100vw;
+    min-width: 100vw;
+    padding: 0 0.5rem;
+    margin: 0 0 1rem;
+
+    & ${MoveContainer} {
+      grid-template-columns: 3.5rem 4rem 4.5rem 1fr 5.25rem;
+      grid-template-areas: "name name name type frequency"
+                           "accuracy damage attack-type type frequency";
+
+      font-size: 0.875rem;
+      width: 100%;
+      height: 3rem;
+      border-radius: 1.5rem;
+
+      & > div {
+        padding: 0 0.25rem;
+        border-radius: 0;
+        height: 100%;
+        margin: 0;
+      }
+
+      & ${MoveName},
+      & ${MoveAccuracy} {
+        padding-left: 1rem;
+      }
+
+      & ${MoveFrequencyContainer} {
+        height: calc(100% + 2px);
+        width: calc(100% + 2px);
+      }
+    }
+
+    & ${AddMoveButton} {
+      width: 100%;
+    }
+  }
 `;

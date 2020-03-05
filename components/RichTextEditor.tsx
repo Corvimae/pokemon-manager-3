@@ -7,6 +7,7 @@ import { withHistory } from 'slate-history';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBold, faItalic, faUnderline, faCode, faHeading, faQuoteLeft, faListOl, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Button as LayoutButton } from './Layout';
+import { Theme } from '../utils/theme';
 
 
 const BLANK_SLATE_VALUE = [{ type: 'paragraph', children: [{ text: '' }] }];
@@ -171,7 +172,7 @@ const BlockButton = ({ format, icon }) => {
   }, []);
 
   return (
-    <Button active={isBlockActive(editor, format)} onMouseDown={handleMouseDown}>
+    <Button active={isBlockActive(editor, format)} onMouseDown={handleMouseDown} hideForMobile>
       <FontAwesomeIcon icon={icon} fixedWidth />
     </Button>
   )
@@ -202,6 +203,10 @@ const Button = styled.span`
 
   & + & {
     margin-left: 1rem;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    display: ${({ hideForMobile }) => hideForMobile && 'none'};
   }
 `;
 

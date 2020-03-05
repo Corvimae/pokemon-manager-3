@@ -1,5 +1,5 @@
 import { useSelector, TypedUseSelectorHook } from "react-redux";
-import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon } from "../utils/types";
+import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon, MobileMode, Gender } from "../utils/types";
 
 export const MOVE = 'MOVE';
 export const ABILITY = 'ABILITY';
@@ -13,6 +13,7 @@ const DETAIL_REQUEST_PATHS = {
   HELD_ITEM: 'helditems',
 };
 
+const SET_MOBILE_MODE = 'SET_MOBILE_MODE';
 const LOAD_TYPE_IDS = 'LOAD_TYPE_IDS';
 const LOAD_TYPE_IDS_SUCCESS = 'LOAD_TYPE_IDS_SUCCESS';
 const LOAD_DATA = 'LOAD_DATA';
@@ -90,6 +91,13 @@ interface AxiosRequest {
 interface AxiosResponse<T> {
   data: T;
 }
+
+type SetMobileModeAction = {
+  type: typeof SET_MOBILE_MODE;
+  payload: {
+    mode: MobileMode;
+  };
+};
 
 type LoadTypeIdsAction = {
   type: typeof LOAD_TYPE_IDS;
@@ -397,6 +405,7 @@ type SaveGMNotesAction = {
 };
 
 type PokemonReducerAction =
+  SetMobileModeAction |
   LoadTypeIdsAction |
   LoadTypeIdsSuccessAction |
   LoadDataAction |
@@ -449,6 +458,7 @@ const initialCombatStagesState: CombatStages = {
 };
 
 interface State {
+  mobileMode: MobileMode;
   pokemon: PokemonData | undefined;
   allies: AlliedPokemon[];
   typeIds: Record<string, number>;
@@ -462,6 +472,7 @@ interface State {
 }
 
 const initialState: State = {
+  mobileMode: 'data',
   pokemon: undefined,
   allies: [],
   typeIds: {},
@@ -474,8 +485,14 @@ const initialState: State = {
   editMode: false,
 };
 
-export function reducer(state: State = initialState, action: PokemonReducerAction) {
+export function reducer(state: State = initialState, action: PokemonReducerAction): State {
   switch (action.type) {
+    case SET_MOBILE_MODE:
+      return {
+        ...state,
+        mobileMode: action.payload.mode,
+      };
+
     case LOAD_TYPE_IDS_SUCCESS:
       return {
         ...state,
@@ -513,7 +530,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         activeDetails: {
           ...state.activeDetails,
-          mode: 'details',
+          mode: 'description',
         },
       };
 
@@ -524,7 +541,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
           ...state.activeDetails,
           details: {
             type: action.meta.previousAction.payload.type,
-            value: 'base' in action.payload.data ? action.payload.data.base : action.payload.data,
+            value: ('base' in action.payload.data ? action.payload.data.base : action.payload.data) as any,
           }
         },
       };
@@ -756,7 +773,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         pokemon: {
           ...state.pokemon,
-          gender: action.payload.value,
+          gender: action.payload.value as Gender,
         },
       };
 
@@ -864,6 +881,15 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     default:
       return state;
   }
+}
+
+export function setMobileMode(mode: MobileMode): PokemonReducerAction {
+  return {
+    type: SET_MOBILE_MODE,
+    payload: {
+      mode,
+    }
+  };
 }
 
 export function loadTypeIds(): PokemonReducerAction {

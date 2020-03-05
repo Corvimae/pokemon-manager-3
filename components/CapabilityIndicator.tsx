@@ -87,6 +87,10 @@ const CapabilityIndicatorValue = styled.div<{ editMode: boolean }>`
   align-items: center;
   justify-content: center;
   clip-path: polygon(30% 0, calc(100% + 1px) 0%, calc(100% + 1px) 100%, 0% 100%);
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    background-color: ${({ editMode }) => editMode ? '#666' : '#dcbb38'};
+  }
 `;
 
 const CapabilityValueInput = styled.input`

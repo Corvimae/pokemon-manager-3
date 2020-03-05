@@ -7,6 +7,7 @@ import axiosMiddleware from 'redux-axios-middleware';
 import { reducer } from "../store/store";
 
 import 'tippy.js/dist/tippy.css';
+import { Theme } from "../utils/theme";
 
 const client = Axios.create({ //all axios can be used, shown in axios documentation
   baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:80/api' : 'https://pokemon.maybreak.com/api',
@@ -42,6 +43,10 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     background-color: #f0f0f0;
     min-height: 100vh;
+
+    @media screen and (max-width: ${Theme.mobileThreshold}) {
+      background-color: #841383;
+    }
   }
 
   body > div:first-child {

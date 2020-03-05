@@ -9,6 +9,7 @@ import { calculateLevel } from '../utils/level';
 import { Gender } from '../utils/types';
 import { IconButton, Tooltip, TextInput } from './Layout';
 import { DropdownTooltip } from './DropdownTooltip';
+import { Theme } from '../utils/theme';
 
 const GENDER_OPTIONS: Gender[] = ['Male', 'Female', 'None'];
 
@@ -80,21 +81,23 @@ export const PokemonNameBar = () => {
   return (
     <NameBar>
       <BallIcon />
-      <PokemonName>
-        <span>
-          {!editMode && name}
-          {editMode && <NameInput defaultValue={name} onChange={handleNameChange} />}
-        </span>
-        <Tooltip content="This Pokémon is on its trainer's active roster." enabled={!editMode && active}>
-          <ActiveIconContainer role={editMode ? 'button' : undefined} tabIndex={editMode ? 0 : -1} onClick={handleSetActive}>
-            {active && <ActiveIcon icon={faStar} size="xs" />}
-            {!active && editMode && <ActiveIcon icon={faHollowStar} size="xs" />}
-          </ActiveIconContainer>
-        </Tooltip>
-      </PokemonName>
-      <PokemonLevel>
-        Lv. {calculateLevel(experience)} {speciesName}
-      </PokemonLevel>
+      <NameAndLevel>
+        <PokemonName>
+          <span>
+            {!editMode && name}
+            {editMode && <NameInput defaultValue={name} onChange={handleNameChange} />}
+          </span>
+          <Tooltip content="This Pokémon is on its trainer's active roster." enabled={!editMode && active}>
+            <ActiveIconContainer role={editMode ? 'button' : undefined} tabIndex={editMode ? 0 : -1} onClick={handleSetActive}>
+              {active && <ActiveIcon icon={faStar} size="xs" />}
+              {!active && editMode && <ActiveIcon icon={faHollowStar} size="xs" />}
+            </ActiveIconContainer>
+          </Tooltip>
+        </PokemonName>
+        <PokemonLevel>
+          Lv. {calculateLevel(experience)} {speciesName}
+        </PokemonLevel>
+      </NameAndLevel>
       <GenderSelector role={editMode ? "button" : undefined} tabIndex={editMode ? 0 : -1} onClick={handleToggleGenderSelector}>
         <GenderIcon color={getGenderColor(gender)}>
           <FontAwesomeIcon icon={getGenderIcon(gender)} size="sm"/>
@@ -112,25 +115,12 @@ export const PokemonNameBar = () => {
         </DropdownTooltip>
       </GenderSelector>
       <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>
-      <IconButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
+      <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
         {editMode ? 'Lock' : 'Edit'}
-      </IconButton>
+      </EditButton>
     </NameBar>
   );
 };
-
-const NameBar = styled.div`
-  position: relative;
-  display: flex;
-  min-width: calc(100% + 8rem);
-  flex-direction: row;
-  align-items: center;
-  background-color: #333;
-  color: #fff;
-  padding: 0.25rem 1rem 0.25rem 1rem;
-  line-height: normal;
-`;
-
 
 const PokemonName = styled.span`
   display: inline-flex;
@@ -144,6 +134,14 @@ const PokemonLevel = styled.span`
   margin-left: auto;
   padding: 0 1rem 0 4rem;
 `;
+
+
+const NameAndLevel = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
 
 const BallIcon = styled.div`
   width: 1.25rem;
@@ -237,6 +235,56 @@ const NameInput = styled(TextInput)`
   line-height: normal;
 `;
 
+const EditButton = styled(IconButton)``;
 const NotesButton = styled(IconButton)`
-  margin-right: 0.75rem;
+  margin: 0 0.75rem 0 auto;
+`;
+
+const NameBar = styled.div`
+  position: relative;
+  display: flex;
+  min-width: calc(100% + 8rem);
+  flex-direction: row;
+  align-items: center;
+  background-color: #333;
+  color: #fff;
+  padding: 0.25rem 1rem 0.25rem 1rem;
+  line-height: normal;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: 100vw;
+    min-width: 100vw;
+
+    & ${BallIcon} {
+      align-self: flex-start;
+      margin-top: 0.325rem;
+    }
+
+    & ${NameAndLevel} {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    & ${PokemonName} {
+      line-height: 1.25;
+    }
+
+    & ${PokemonLevel} {
+      padding: 0;
+      font-size: 0.875rem;
+      margin-left: 0;
+    }
+
+    & ${GenderSelector} {
+      margin-left: 0.5rem;
+    }
+
+    & ${NotesButton} {
+      margin-right: 1rem;
+    }
+    
+    & ${NameInput} {
+      width: 7rem;
+    }
+  }
 `;

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { CombatStages } from '../utils/types';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
+import { IconButton, Button, NumericInput, DropdownHeader, StatValue } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calculateLevel } from '../utils/level';
@@ -42,10 +42,11 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
 };
  
 interface CombatStageModifierProps { 
+  area: string;
   stat: keyof CombatStages;
 }
 
-const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ stat }) => {
+const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat }) => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
   const combatStages = useTypedSelector(state => state.combatStages);
@@ -55,7 +56,7 @@ const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ stat }) => {
   }, [dispatch, stat]);
 
   return (
-    <CombatStageCell>
+    <CombatStageCell area={area}>
       {!editMode && (
         <>
           <CombatStageButton icon={faMinus} onClick={() => handleBumpCombatStage(-1)} />
@@ -71,6 +72,7 @@ const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ stat }) => {
 }
 export const PokemonStatBar = () => {
   const dispatch = useDispatch();
+  const mobileMode = useTypedSelector(store => store.mobileMode);
   const editMode = useTypedSelector(state => state.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
   const experience = useTypedSelector(store => store.pokemon.experience);
@@ -94,37 +96,37 @@ export const PokemonStatBar = () => {
   }, [dispatch, pokemonId]);
 
   return (
-    <Container>
-      <Title>HP</Title>
-      <Title>Attack</Title>
-      <Title>Defense</Title>
-      <Title>Sp. Attack</Title>
-      <Title>Sp. Defense</Title>
-      <Title>Speed</Title>
-      <StatTotal>
+    <Container isActiveMobileMode={mobileMode === 'stats'}>
+      <Title area="hp">HP</Title>
+      <Title area="atk">Attack</Title>
+      <Title area="def">Defense</Title>
+      <Title area="spatk">Sp. Attack</Title>
+      <Title area="spdef">Sp. Defense</Title>
+      <Title area="spd">Speed</Title>
+      <StatTotal area="hp">
         <div>
           <CurrentHealth>{currentHealth}&nbsp;</CurrentHealth>
           <TotalHealth>/&nbsp;{totalHealth}</TotalHealth>
         </div>
         <StatCalculation>({stats.base.hp} + {stats.added.hp})</StatCalculation>
       </StatTotal>
-      <StatTotal>
+      <StatTotal area="atk">
         <TotalValue>{attack}</TotalValue>
         <StatCalculation>({stats.base.attack} + {stats.added.attack})</StatCalculation>
       </StatTotal>
-      <StatTotal>
+      <StatTotal area="def">
         <TotalValue>{defense}</TotalValue>
         <StatCalculation>({stats.base.defense} + {stats.added.defense})</StatCalculation>
       </StatTotal>
-      <StatTotal>
+      <StatTotal area="spatk">
         <TotalValue>{specialAttack}</TotalValue>
         <StatCalculation>({stats.base.spattack} + {stats.added.spattack})</StatCalculation>
       </StatTotal>
-      <StatTotal>
+      <StatTotal area="spdef">
         <TotalValue>{specialDefense}</TotalValue>
         <StatCalculation>({stats.base.spdefense} + {stats.added.spdefense})</StatCalculation>
       </StatTotal>
-      <StatTotal>
+      <StatTotal area="spd">
         <TotalValue>{speed}</TotalValue>
         <StatCalculation>({stats.base.speed} + {stats.added.speed})</StatCalculation>
       </StatTotal>
@@ -152,11 +154,11 @@ export const PokemonStatBar = () => {
         )}
         {editMode && <StatEditor stat="hp" />}
       </HealthCell>
-      <CombatStageModifier stat="attack" />
-      <CombatStageModifier stat="defense" />
-      <CombatStageModifier stat="spattack" />
-      <CombatStageModifier stat="spdefense" />
-      <CombatStageModifier stat="speed" />
+      <CombatStageModifier area="atk" stat="attack" />
+      <CombatStageModifier area="def" stat="defense" />
+      <CombatStageModifier area="spatk" stat="spattack" />
+      <CombatStageModifier area="spdef" stat="spdefense" />
+      <CombatStageModifier area="spd" stat="speed" />
       {pointsOverCap > 0 && (
         <StatAllocationWarning over>
           Your Pokémon has {pointsOverCap} too many allocated stat points.
@@ -171,26 +173,9 @@ export const PokemonStatBar = () => {
   );
 };
 
-const Container = styled.div`
-  position: relative;
-  display: grid;
-  width: max-content;
-  grid-template-columns: repeat(6, max-content);
-  height: max-content;
-  box-shadow: ${Theme.dropShadow};
-  z-index: 1;
-
-  & > div {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-  }
-`;
-
 const Title = styled.div`
   && {
+    grid-area: ${props => props.area}-header;
     background-color: #dadada;
     font-weight: 700;
   }
@@ -200,6 +185,7 @@ const StatTotal = styled.div`
   && {
     display: flex;
     flex-direction: column;
+    grid-area: ${props => props.area}-value;
     background-color: #fff;
   }
 `;
@@ -224,8 +210,8 @@ const CombatStageButton = styled(IconButton)`
 `;
 
 const CombatStageCell = styled.div`
+  grid-area: ${props => props.area}-stages;
   background-color: #fff;
-
 `;
 
 const CombatStageValue = styled.span`
@@ -324,4 +310,58 @@ const StatAllocationWarning = styled.div<{ over?: boolean }>`
   padding: 0.25rem 1rem;
   background-color: ${props => props.over ? '#c31717' : '#1b7d15'};
   color: #fff;
+`;
+
+const Container = styled.div<{ isActiveMobileMode: boolean }>`
+  position: relative;
+  display: grid;
+  width: max-content;
+  grid-template-columns: repeat(6, max-content);
+  grid-template-areas: "hp-header atk-header def-header spatk-header spdef-header spd-header"
+                       "hp-value atk-value def-value spatk-value spdef-value spd-value"
+                       "hp-stages atk-stages def-stages spatk-stages spdef-stages spd-stages";
+  height: max-content;
+  box-shadow: ${Theme.dropShadow};
+  z-index: 1;
+
+  & > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    display: ${({ isActiveMobileMode }) => !isActiveMobileMode && 'none'};
+    width: 100vw;
+    min-width: 100vw;
+    grid-auto-flow: row;
+    padding-bottom: 2rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "hp-header hp-header"
+                         "hp-value hp-stages"
+                         "atk-header atk-header"
+                         "atk-value atk-stages"
+                         "def-header def-header"
+                         "def-value def-stages"
+                         "spatk-header spatk-header"
+                         "spatk-value spatk-stages"
+                         "spdef-header spdef-header"
+                         "spdef-value spdef-stages"
+                         "spd-header spd-header"
+                         "spd-value spd-stages";
+
+    & ${StatAllocationWarning} {
+      position: fixed;
+      bottom: 0;
+      width: 100vw;
+    }
+
+    & ${StatTotal},
+    & ${CombatStageCell},
+    & ${HealthCell} {
+      margin-bottom: 0.5rem;
+    }
+  }
 `;
