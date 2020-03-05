@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import Head from "next/head";
 import Axios from "axios";
 import axiosMiddleware from 'redux-axios-middleware';
-import { reducer, useTypedSelector } from "../store/store";
+import { reducer } from "../store/store";
 
 import 'tippy.js/dist/tippy.css';
 

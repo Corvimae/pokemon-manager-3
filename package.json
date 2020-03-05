@@ -13,7 +13,9 @@
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@tippy.js/react": "^3.1.1",
+    "@types/draft-js": "^0.10.38",
     "@types/react-redux": "^7.1.7",
+    "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.2",
     "next": "9.2.2",
     "react": "16.12.0",
@@ -23,6 +25,9 @@
     "react-sortable-hoc": "^1.11.0",
     "redux": "^4.0.5",
     "redux-axios-middleware": "^4.0.1",
+    "slate": "^0.57.1",
+    "slate-history": "^0.57.1",
+    "slate-react": "^0.57.1",
     "styled-components": "^5.0.1"
   },
   "devDependencies": {

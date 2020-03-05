@@ -1,5 +1,5 @@
 import { useSelector, TypedUseSelectorHook } from "react-redux";
-import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, CapabilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon } from "../utils/types";
+import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon } from "../utils/types";
 
 export const MOVE = 'MOVE';
 export const ABILITY = 'ABILITY';
@@ -46,10 +46,13 @@ const SET_POKEMON_SPECIES = 'SET_POKEMON_SPECIES';
 const SET_POKEMON_SPECIES_SUCCESS = 'SET_POKEMON_SPECIES_SUCCESS';
 const SET_POKEMON_EXPERIENCE = 'SET_POKEMON_EXPERIENCE';
 const SET_POKEMON_GENDER = 'SET_POKEMON_GENDER';
+const SET_POKEMON_LOYALTY = 'SET_POKEMON_LOYALTY';
+const SET_POKEMON_OWNER = 'SET_POKEMON_OWNER';
 const SET_BASE_STAT = 'SET_BASE_STAT';
 const SET_ADDED_STAT = 'SET_ADDED_STAT';
 const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
 const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
+const SAVE_GM_NOTES = 'SAVE_GM_NOTES';
 
 interface ActiveMove {
   type: typeof MOVE;
@@ -77,6 +80,8 @@ export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY 
 interface AxiosRequest {
   request: {
     url: string;
+    method?: string;
+    data?: Record<string, unknown>;
   };
 }
 
@@ -324,6 +329,21 @@ type SetPokemonGenderAction = {
   } & AxiosRequest;
 };
 
+type SetPokemonLoyaltyAction = {
+  type: typeof SET_POKEMON_LOYALTY;
+  payload: {
+    value: number;
+  } & AxiosRequest;
+};
+
+type SetPokemonOwnerAction = {
+  type: typeof SET_POKEMON_OWNER;
+  payload: {
+    ownerId: number;
+    ownerName: string;
+  } & AxiosRequest;
+};
+
 type SetBaseStatAction = {
   type: typeof SET_BASE_STAT;
   payload: {
@@ -353,6 +373,12 @@ type SetCapabilityOrderAction = {
   payload: {
     capabilityId: number;
     position: number;
+  } & AxiosRequest;
+};
+type SaveGMNotesAction = {
+  type: typeof SAVE_GM_NOTES;
+  payload: {
+    notes: string;
   } & AxiosRequest;
 };
 
@@ -390,10 +416,13 @@ type PokemonReducerAction =
   SetPokemonSpeciesSucessAction |
   SetPokemonExperienceAction |
   SetPokemonGenderAction |
+  SetPokemonLoyaltyAction |
+  SetPokemonOwnerAction |
   SetBaseStatAction |
   SetAddedStatAction |
   SetMoveOrderAction |
-  SetCapabilityOrderAction;
+  SetCapabilityOrderAction |
+  SaveGMNotesAction;
 
 const initialCombatStagesState: CombatStages = {
   attack: 0,
@@ -705,6 +734,27 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         },
       };
 
+    case SET_POKEMON_LOYALTY:
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          loyalty: action.payload.value,
+        },
+      };
+
+    case SET_POKEMON_OWNER:
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          owner: {
+            id: action.payload.ownerId,
+            name: action.payload.ownerName,
+          },
+        },
+      };
+
     case SET_BASE_STAT:
       return {
         ...state,
@@ -766,6 +816,15 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         },
       };
     }
+
+    case SAVE_GM_NOTES:
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          gmNotes: action.payload.notes,
+        },
+      };
 
     default:
       return state;
@@ -1047,7 +1106,7 @@ export function setPokemonExperience(pokemonId: number, experience: number): Pok
     payload: {
       experience,
       request: {
-        url: `/v2/pokemon/${pokemonId}/experience/${experience}`,
+        url: `/v2/pokemon/${pokemonId}/experience/${experience || 0}`,
       },
     },
   };
@@ -1060,6 +1119,31 @@ export function setPokemonGender(pokemonId: number, value: string): PokemonReduc
       value,
       request: {
         url: `/v2/pokemon/${pokemonId}/gender/${value}`,
+      },
+    },
+  };
+}
+
+export function setPokemonLoyalty(pokemonId: number, value: number): PokemonReducerAction {
+  return {
+    type: SET_POKEMON_LOYALTY,
+    payload: {
+      value,
+      request: {
+        url: `/v2/pokemon/${pokemonId}/loyalty/${value || 0}`,
+      },
+    },
+  };
+}
+
+export function setPokemonOwner(pokemonId: number, ownerId: number, ownerName: string): PokemonReducerAction {
+  return {
+    type: SET_POKEMON_OWNER,
+    payload: {
+      ownerId,
+      ownerName,
+      request: {
+        url: `/v2/pokemon/${pokemonId}/owner/${ownerId}`,
       },
     },
   };
@@ -1112,6 +1196,22 @@ export function setCapabilityOrder(pokemonId: number, capabilityId: number, posi
       position,
       request: {
         url: `/v2/pokemon/${pokemonId}/capabilities/${capabilityId}/order/${position + 1}`,
+      },
+    },
+  };
+}
+
+export function saveGMNotes(pokemonId: number, notes: string): PokemonReducerAction {
+  return {
+    type: SAVE_GM_NOTES,
+    payload: {
+      notes,
+      request: {
+        method: 'post',
+        url: `/v2/pokemon/${pokemonId}/gmNotes`,
+        data: {
+          notes,
+        },
       },
     },
   };

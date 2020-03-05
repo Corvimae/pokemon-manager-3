@@ -93,7 +93,7 @@ export const PokemonMoveList = () => {
 
   return (
     <Container>
-      <MoveList axis="y" onSortEnd={handleMoveDrag}>
+      <MoveList axis="y" onSortEnd={handleMoveDrag} pressDelay={100}>
         {moves.map((move, index) => <Move key={move.id} move={move} index={index} disabled={!editMode} />)}
       </MoveList>
 
@@ -122,7 +122,7 @@ export const PokemonMoveList = () => {
         </AddMoveContainer>
       )}
 
-      <CapabilityList axis="xy" onSortEnd={handleCapabilityDrag}/>
+      <CapabilityList axis="xy" onSortEnd={handleCapabilityDrag} pressDelay={100} />
     </Container>
   );
 }

@@ -10,11 +10,13 @@ interface SelectablePokemonValueProps {
   path: string;
   onChange: (selection: { label: string, value: number}) => void;
   onClick?: () => void;
+  requireGMToEdit?: boolean;
   className?: string;
 }
 
-export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, className }) => {
-  const editMode = useTypedSelector(state => state.editMode);
+export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, requireGMToEdit, className }) => {
+  const hasEditPermission = useTypedSelector(state => state.pokemon.isUserGM) || !requireGMToEdit;
+  const editMode = useTypedSelector(state => state.editMode) && hasEditPermission;
 
   const handleOnClick = useCallback(() => {
     if (!editMode) onClick?.();

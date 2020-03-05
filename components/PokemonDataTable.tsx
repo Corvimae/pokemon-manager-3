@@ -1,20 +1,23 @@
+import { useState,useCallback } from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { useTypedSelector, HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience } from '../store/store';
+import { useTypedSelector, HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/store';
 import { TypeIndicator } from './TypeIndicator';
 import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, NumericInput } from './Layout';
 import { useRequestData } from '../utils/requests';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
 import { SelectablePokemonValue } from './SelectablePokemonValue';
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { AbilityList } from './AbilityList';
 import { TypeSelector } from './TypeSelector';
+import { RichTextEditor } from './RichTextEditor';
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(store => store.editMode);
   const pokemon = useTypedSelector(store => store.pokemon);
+
+  const showGMEditor = editMode && pokemon.isUserGM;
 
   const physicalEvasions = usePhysicalEvasions();
   const specialEvasions = useSpecialEvasions();
@@ -42,11 +45,29 @@ export const PokemonDataTable = () => {
     dispatch(setPokemonExperience(pokemon.id, event.target.value));
   }, [dispatch, pokemon.id]);
 
+  const handleChangeLoyalty = useCallback(event => {
+    dispatch(setPokemonLoyalty(pokemon.id, event.target.value));
+  }, [dispatch, pokemon.id]);
+
+  const handleChangeOwner = useCallback(({ value, label }) => {
+    dispatch(setPokemonOwner(pokemon.id, value, label));
+  }, [dispatch, pokemon.id]);
+
+  const handleSaveGMNotes = useCallback(notes => {
+    dispatch(saveGMNotes(pokemon.id, notes));
+  }, [dispatch, pokemon.id]);
+
   return (
     <StatList>
       <StatRow>
         <StatKey>Trainer</StatKey>
-        <StatValue>{pokemon.owner.name}</StatValue>
+        <SelectablePokemonValue
+          id={pokemon.owner.id}
+          value={pokemon.owner.name}
+          path={`trainers/${pokemon.campaign.id}`}
+          onChange={handleChangeOwner}
+          requireGMToEdit
+        />
       </StatRow>
       <StatRow>
         <StatKey>Species</StatKey>
@@ -71,7 +92,7 @@ export const PokemonDataTable = () => {
         <StatValue>
           {!editMode && pokemon.experience}
           {editMode && (
-            <ExperienceInput type="number" onChange={handleChangeExperience} defaultValue={pokemon.experience} />
+            <RowValueNumericInput type="number" onChange={handleChangeExperience} defaultValue={pokemon.experience} />
           )}
         </StatValue>
       </StatRow>
@@ -82,6 +103,17 @@ export const PokemonDataTable = () => {
           <PointsToLevelBar percentage={calculatePercentageToNextLevel(pokemon.experience)} />
         </PointsToLevelContainer>
       </StatRow>
+      {pokemon.loyalty !== null && (
+        <StatRow>
+          <StatKey>Loyalty</StatKey>
+          <StatValue>
+            {!showGMEditor && pokemon.loyalty}
+            {showGMEditor && (
+              <RowValueNumericInput type="number" onChange={handleChangeLoyalty} defaultValue={pokemon.loyalty} />
+            )}
+          </StatValue>
+        </StatRow>
+      )}
       <StatRowDivider />
       <StatRow>
         <StatKey>Nature</StatKey>
@@ -152,9 +184,21 @@ export const PokemonDataTable = () => {
         </TypeList>
       </StatRow>
       <StatRowDivider />
-      <PokemonImage>
-        <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase()}.gif`} />
-      </PokemonImage>
+      {!showGMEditor && (
+        <PokemonImage>
+          <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase()}.gif`} />
+        </PokemonImage>
+      )}
+      {showGMEditor && (
+        <>
+          <StatRow>
+            <StatKey>Notes</StatKey>
+            <GMNotesEditorContainer>
+              <RichTextEditor defaultValue={pokemon.gmNotes} onSave={handleSaveGMNotes} />
+            </GMNotesEditorContainer>
+          </StatRow>
+        </>
+      )}
     </StatList>
   );
 };
@@ -200,7 +244,7 @@ const TypeIcons = styled(StatValue)`
   }
 `;
 
-const ExperienceInput = styled(TextInput)`
+const RowValueNumericInput = styled(TextInput)`
   width: 100%;
   border-bottom: 1px solid #333;
   -moz-appearance: textfield;
@@ -225,5 +269,16 @@ const PokemonImage = styled.div`
 
   & > img {
     margin-bottom: 1.5rem;
+  }
+`;
+
+const GMNotesEditorContainer = styled(StatValue)`
+  position: relative;
+  height: 10rem;
+  width: 30rem;
+  padding: 0;
+
+  & > div {
+    width: 100%;
   }
 `;

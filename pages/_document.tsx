@@ -32,6 +32,7 @@ class PokemonDocument extends Document {
       <Html>
         <Head>
           <link href="https://fonts.googleapis.com/css?family=Overpass:400,400i,700&display=swap" rel="stylesheet" />
+          <meta charSet="utf-8" />
         </Head>
         <body>
           <Main />

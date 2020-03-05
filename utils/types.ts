@@ -64,6 +64,7 @@ export interface CapabilityData {
 export interface PokemonData {
   id: number;
   name: string;
+  isUserGM: boolean;
   experience: number;
   gender: Gender;
   nature: {
@@ -85,6 +86,7 @@ export interface PokemonData {
     name: string;
   };
   loyalty: number | null;
+  notes: string | null;
   gmNotes: string | null;
   moves: MoveData[];
   abilities: AbilityData[];
