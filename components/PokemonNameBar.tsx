@@ -2,9 +2,9 @@ import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faMinus, faVenus, faStar, faLock, faMars } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faMinus, faVenus, faStar, faLock, faMars, faBook } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faHollowStar } from '@fortawesome/free-regular-svg-icons';
-import { useTypedSelector, toggleEditMode, setPokemonActive, setPokemonName, setPokemonGender } from '../store/store';
+import { useTypedSelector, toggleEditMode, setPokemonActive, setPokemonName, setPokemonGender, showNotes } from '../store/store';
 import { calculateLevel } from '../utils/level';
 import { Gender } from '../utils/types';
 import { IconButton, Tooltip, TextInput } from './Layout';
@@ -50,6 +50,10 @@ export const PokemonNameBar = () => {
     dispatch(toggleEditMode());
   }, [dispatch]);
 
+  const handleShowNotes = useCallback(() => {
+    dispatch(showNotes());
+  }, [dispatch]);
+
   const handleSetActive = useCallback(() => {
     if(editMode) {
       dispatch(setPokemonActive(pokemonId, !active));
@@ -71,6 +75,7 @@ export const PokemonNameBar = () => {
       setShowGenderSelector(!showGenderSelector);
     }
   }, [editMode, showGenderSelector]);
+
 
   return (
     <NameBar>
@@ -106,6 +111,7 @@ export const PokemonNameBar = () => {
           </GenderSelectorGrid>
         </DropdownTooltip>
       </GenderSelector>
+      <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>
       <IconButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
         {editMode ? 'Lock' : 'Edit'}
       </IconButton>
@@ -229,4 +235,8 @@ const NameInput = styled(TextInput)`
   font-size: 1.25rem;
   padding: 0 0.25rem;
   line-height: normal;
+`;
+
+const NotesButton = styled(IconButton)`
+  margin-right: 0.75rem;
 `;

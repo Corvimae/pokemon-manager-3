@@ -22,6 +22,7 @@ const LOAD_ALLIES_SUCCESS = 'LOAD_ALLIES_SUCCESS';
 const BUMP_COMBAT_STAGE = 'BUMP_COMBAT_STAGE';
 const REQUEST_DETAILS = 'REQUEST_DETAILS';
 const REQUEST_DETAILS_SUCCESS = 'REQUEST_DETAILS_SUCCESS';
+const SHOW_NOTES = 'SHOW_NOTES';
 const CLOSE_DETAILS_PANEL_ACTION = 'CLOSE_DETAILS_PANEL_ACTION';
 const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 const SET_HEALTH = 'SET_HEALTH';
@@ -52,6 +53,7 @@ const SET_BASE_STAT = 'SET_BASE_STAT';
 const SET_ADDED_STAT = 'SET_ADDED_STAT';
 const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
 const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
+const SAVE_NOTES = 'SAVE_NOTES';
 const SAVE_GM_NOTES = 'SAVE_GM_NOTES';
 
 interface ActiveMove {
@@ -146,6 +148,10 @@ type RequestDetailsSuccessAction = {
       }
     }
   }
+};
+
+type ShowNotesAction = {
+  type: typeof SHOW_NOTES;
 };
 
 type CloseDetailsPanelAction = {
@@ -375,6 +381,14 @@ type SetCapabilityOrderAction = {
     position: number;
   } & AxiosRequest;
 };
+
+type SaveNotesAction = {
+  type: typeof SAVE_NOTES;
+  payload: {
+    notes: string;
+  } & AxiosRequest;
+};
+
 type SaveGMNotesAction = {
   type: typeof SAVE_GM_NOTES;
   payload: {
@@ -392,6 +406,7 @@ type PokemonReducerAction =
   BumpCombatStageAction |
   RequestDetailsAction |
   RequestDetailsSuccessAction |
+  ShowNotesAction |
   CloseDetailsPanelAction |
   ToggleEditModeAction |
   SetHealthAction |
@@ -422,6 +437,7 @@ type PokemonReducerAction =
   SetAddedStatAction |
   SetMoveOrderAction |
   SetCapabilityOrderAction |
+  SaveNotesAction |
   SaveGMNotesAction;
 
 const initialCombatStagesState: CombatStages = {
@@ -439,7 +455,7 @@ interface State {
   combatStages: CombatStages;
   currentHealth: number;
   activeDetails: {
-    isVisible: boolean;
+    mode: 'none' | 'notes' | 'description';
     details: ActiveDetail | undefined;
   };
   editMode: boolean;
@@ -452,7 +468,7 @@ const initialState: State = {
   currentHealth: 0,
   combatStages: { ...initialCombatStagesState },
   activeDetails: {
-    isVisible: false,
+    mode: 'none',
     details: undefined,
   },
   editMode: false,
@@ -497,7 +513,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         activeDetails: {
           ...state.activeDetails,
-          isVisible: true,
+          mode: 'details',
         },
       };
 
@@ -513,12 +529,22 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         },
       };
 
+    case SHOW_NOTES:
+      return {
+        ...state,
+        activeDetails: {
+          ...state.activeDetails,
+          mode: 'notes',
+          details: undefined,
+        },
+      };
+
     case CLOSE_DETAILS_PANEL_ACTION:
       return {
         ...state,
         activeDetails: {
           ...state.activeDetails,
-          isVisible: false,
+          mode: 'none',
         }
       };
 
@@ -817,6 +843,15 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
       };
     }
 
+    case SAVE_NOTES:
+      return {
+        ...state,
+        pokemon: {
+          ...state.pokemon,
+          notes: action.payload.notes,
+        },
+      };
+
     case SAVE_GM_NOTES:
       return {
         ...state,
@@ -876,13 +911,19 @@ export function bumpCombatStage(stat: keyof CombatStages, amount: number): Pokem
 
 export function requestDetails(type: ActiveDetailType, id: number): PokemonReducerAction {
   return {
-    type: 'REQUEST_DETAILS',
+    type: REQUEST_DETAILS,
     payload: {
       type: type,
       request: {
         url: `/v1/${DETAIL_REQUEST_PATHS[type]}/${id}`
       }
     }
+  };
+};
+
+export function showNotes(): PokemonReducerAction {
+  return {
+    type: SHOW_NOTES,
   };
 };
 
@@ -1196,6 +1237,22 @@ export function setCapabilityOrder(pokemonId: number, capabilityId: number, posi
       position,
       request: {
         url: `/v2/pokemon/${pokemonId}/capabilities/${capabilityId}/order/${position + 1}`,
+      },
+    },
+  };
+}
+
+export function saveNotes(pokemonId: number, notes: string): PokemonReducerAction {
+  return {
+    type: SAVE_GM_NOTES,
+    payload: {
+      notes,
+      request: {
+        method: 'post',
+        url: `/v2/pokemon/${pokemonId}/notes`,
+        data: {
+          notes,
+        },
       },
     },
   };

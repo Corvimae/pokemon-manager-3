@@ -1,25 +1,32 @@
 import styled from 'styled-components';
-import { useTypedSelector, MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM } from '../store/store';
+import { useTypedSelector, MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/store';
 import { Theme } from '../utils/theme';
-import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton } from './Layout';
+import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, RightBackgroundStripe } from './Layout';
 import { getAttackType } from './moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { RichTextEditor } from './RichTextEditor';
 
 export const DetailsSidebar = () => {
   const activeDetails = useTypedSelector(state => state.activeDetails);
+  const pokemon = useTypedSelector(state => state.pokemon);
   const dispatch = useDispatch();
 
   const handleClose = useCallback(() => {
     dispatch(closeDetailsPanel());
   }, [dispatch]);
 
+  const handleSaveNotes = useCallback(notes => {
+    dispatch(saveNotes(pokemon.id, notes));
+  }, [dispatch, pokemon.id]);
+
   return(
-    <Container className={activeDetails.isVisible ? 'active' : ''}>
-      <BackgroundStripe />
+    <Container className={activeDetails.mode == 'none' ? '' : 'active'}>
+      <RightBackgroundStripe />
       <Title>
-        {activeDetails.details?.value.name ?? <span>&nbsp;</span>}
+        {activeDetails.mode === 'description' && (activeDetails.details?.value.name ?? <span>&nbsp;</span>)}
+        {activeDetails.mode === 'notes' && 'Notes'}
         <IconButton icon={faTimes} onClick={handleClose} inverse />
       </Title>
 
@@ -70,6 +77,12 @@ export const DetailsSidebar = () => {
           </>
         )}
       </StatList>
+      
+      {activeDetails.mode === 'notes' && (
+        <NotesEditorContainer>
+          <RichTextEditor defaultValue={pokemon.notes} onSave={handleSaveNotes} />
+        </NotesEditorContainer>
+      )}
     </Container>
   );
 };
@@ -96,31 +109,6 @@ const Container = styled.div`
   }
 `;
 
-const BackgroundStripe = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: ${Theme.backgroundStripe};
-  clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-  z-index: -1;
-  pointer-events: none;
-  overflow: visible;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 4rem;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.25);
-    clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-    z-index: -2;
-  }
-`;
-
 const Title = styled.div`
   display: flex;
   width: 26rem;
@@ -141,4 +129,16 @@ const Description = styled(StatValue)`
   text-align: left;
   line-height: 1.52;
   font-size: 1rem;
+`;
+
+const NotesEditorContainer = styled(StatValue)`
+  position: relative;
+  height: calc(100vw - 10rem);
+  width: 26rem;
+  padding: 0;
+  box-shadow: ${Theme.dropShadow};
+
+  & > div {
+    width: 100%;
+  }
 `;

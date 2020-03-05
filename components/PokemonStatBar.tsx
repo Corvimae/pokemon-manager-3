@@ -8,6 +8,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { calculateLevel } from '../utils/level';
 
 interface StatEditorProps { 
   stat: keyof CombatStages | "hp";
@@ -72,17 +73,21 @@ export const PokemonStatBar = () => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
+  const experience = useTypedSelector(store => store.pokemon.experience);
   const stats = useTypedSelector(store => store.pokemon.stats);
   const currentHealth = useTypedSelector(store => store.currentHealth);
 
   const [modifyHealthValue, setModifyHealthValue] = useState(1);
 
+  const level = calculateLevel(experience)
   const totalHealth = useTotalHP();
   const attack = useCalculatedAttackStat();
   const defense = useCalculatedDefenseStat();
   const specialAttack = useCalculatedSpecialAttackStat();
   const specialDefense = useCalculatedSpecialDefenseStat();
   const speed = useCalculatedSpeedStat();
+
+  const pointsOverCap = Object.values(stats.added).reduce((acc, value) => acc + value, 0) - level;
 
   const updateHealth = useCallback((value: number) => {
     dispatch(setHealth(pokemonId, value));
@@ -152,6 +157,16 @@ export const PokemonStatBar = () => {
       <CombatStageModifier stat="spattack" />
       <CombatStageModifier stat="spdefense" />
       <CombatStageModifier stat="speed" />
+      {pointsOverCap > 0 && (
+        <StatAllocationWarning over>
+          Your Pokémon has {pointsOverCap} too many allocated stat points.
+        </StatAllocationWarning>
+      )}
+      {pointsOverCap < 0 && (
+        <StatAllocationWarning>
+          Your Pokémon has {Math.abs(pointsOverCap)} unspent stat point{pointsOverCap < -1 && 's'}.
+        </StatAllocationWarning>
+      )}
     </Container>
   );
 };
@@ -298,4 +313,15 @@ const StatEditPlus = styled.div`
 
 const TotalValue = styled.div`
   font-weight: 700;
+`;
+
+const StatAllocationWarning = styled.div<{ over?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1 / -1;
+  padding: 0.25rem 1rem;
+  background-color: ${props => props.over ? '#c31717' : '#1b7d15'};
+  color: #fff;
 `;
