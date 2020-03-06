@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 import { useTypedSelector, MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/store';
 import { Theme } from '../utils/theme';
-import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton } from './Layout';
+import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
 import { getAttackType } from './moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { RichTextEditor } from './RichTextEditor';
+import { getOffensiveEffectivenesses, TypeName } from '../utils/pokemonTypes';
+import { TypeIndicator } from './TypeIndicator';
 
 export const DetailsSidebar = () => {
   const activeDetails = useTypedSelector(state => state.activeDetails);
@@ -21,6 +23,7 @@ export const DetailsSidebar = () => {
     dispatch(saveNotes(pokemon.id, notes));
   }, [dispatch, pokemon.id]);
 
+  const typeEffectiveness = activeDetails.details?.type === MOVE && getOffensiveEffectivenesses(activeDetails.details?.value.type.name.toLowerCase() as TypeName);
 
   return(
     <Container className={activeDetails.mode == 'none' ? '' : 'active'}>
@@ -56,6 +59,35 @@ export const DetailsSidebar = () => {
             <StatRow>
               <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effects}} />
             </StatRow>
+            {activeDetails.details.value.attack_type !== 2 && (
+              <>
+                <StatRowDivider />
+                <StatRow>
+                  <StatKey>Super effective against</StatKey>
+                  <MoveTypeList>
+                    {typeEffectiveness.x2.map(strength => (
+                      <TypeIndicator key={strength} name={strength} icon/>
+                    ))}
+                  </MoveTypeList>
+                </StatRow>
+                <StatRow>
+                  <StatKey>Not very effective against</StatKey>
+                  <MoveTypeList>
+                    {typeEffectiveness.half.map(weakness => (
+                      <TypeIndicator key={weakness} name={weakness} icon />
+                    ))}
+                  </MoveTypeList>
+                </StatRow>
+                <StatRow>
+                  <StatKey>Fails against</StatKey>
+                  <MoveTypeList>
+                    {typeEffectiveness.x0.map(immunity => (
+                      <TypeIndicator key={immunity} name={immunity} icon />
+                    ))}
+                  </MoveTypeList>
+                </StatRow>
+              </>
+            )}
           </>
         )}
         {activeDetails.details?.type === ABILITY && (
@@ -91,9 +123,9 @@ export const DetailsSidebar = () => {
 const Container = styled.div`
   position: fixed;
   display: flex;
-  right: -26rem;
+  right: -30rem;
   top: 0;
-  width: 24rem;
+  width: 28rem;
   height: 100vh;
   flex-direction: column;
   align-items: flex-end;
@@ -102,7 +134,7 @@ const Container = styled.div`
   z-index: 10;
 
   & ${StatList} {
-    width: 24rem;
+    width: 28rem;
     grid-template-columns: max-content 1fr;
   }
   
@@ -112,15 +144,21 @@ const Container = styled.div`
   }
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: 100vw;
+    
     &:not(.active) {
-      right: calc(-100vw - 2rem);
+      right: -100vw;
+    }
+
+    & ${StatList} {
+      width: calc(100% - 2rem);
     }
   }
 `;
 
 const Title = styled.div`
   display: flex;
-  width: 26rem;
+  width: 30rem;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -130,6 +168,11 @@ const Title = styled.div`
   padding: 0.25rem 1rem;
   background-color: #333;
   margin-bottom: 1rem;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: 100vw;
+  }
+
 `;
 
 const Description = styled(StatValue)`
@@ -149,6 +192,11 @@ const NotesEditorContainer = styled(StatValue)`
 
   & > div {
     width: 100%;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: 100%;
+    height: calc(100% - 2rem);
   }
 `;
 
@@ -183,5 +231,11 @@ export const BackgroundStripe = styled.div`
     &::before {
       display: none;
     }
+  }
+`;
+
+const MoveTypeList = styled(TypeList)`
+  @media screen and (min-width: 1440px) {
+    grid-template-columns: repeat(2, max-content);
   }
 `;

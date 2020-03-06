@@ -1,32 +1,24 @@
 import { useCallback } from 'react';
 import styled from 'styled-components';
-import { useTypedSelector } from '../store/store';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { useTypedSelector } from '../store/store';
 import { Theme } from '../utils/theme';
 
 export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
   const mobileMode = useTypedSelector(store => store.mobileMode);
   const allies = useTypedSelector(state => state.allies);
-  const router = useRouter();
-
-  const handleAllySelection = useCallback((id: number) => {
-    router.push('/pokemon/:id', `/pokemon/${id}`, { shallow: true });
-  }, [router]);
-
-  const handleNavigateHome = useCallback(() => {
-    window.location.href = '/';
-  }, []);
 
   return (
     <Container isActiveMobileMode={mobileMode === 'allies'} mobile={mobile}>
-      <AllySelector onClick={handleNavigateHome}>
-        <FontAwesomeIcon icon={faHome} size="2x" />
+      <AllySelector href="/">
+        <FontAwesomeIcon icon={faHome} size="lg" />
       </AllySelector>
 
       {allies.map(ally => (
-        <AllySelector key={ally.id} onClick={() => handleAllySelection(ally.id)}>
+        <AllySelector key={ally.id} href={`/pokemon/${ally.id}`}>
           <AllyImage backgroundImage={ally.icon} />
           <AllyName>{ally.name}</AllyName>
         </AllySelector>
@@ -35,14 +27,16 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
   );
 };
 
-const AllySelector = styled.button`
+const AllySelector = styled.a`
+  display: flex;
   width: 3rem;
   height: 3rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   background-color: transparent;
   border: none;
-  appearance: none;
   font-family: inherit;
-  -webkit-appearance: none;
   border-radius: 0.25rem;
   padding: 0;
   

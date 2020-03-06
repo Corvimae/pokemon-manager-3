@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder } from '../store/store';
+import { useTypedSelector, MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestMove } from '../store/store';
 import { MoveData } from '../utils/types';
 import { Theme } from '../utils/theme';
 import { TypeIndicator } from './TypeIndicator';
@@ -22,7 +22,9 @@ const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
   const editMode = useTypedSelector(state => state.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.id);
 
-  const requestMove = useRequestData(MOVE);
+  const handleRequestMove = useCallback(() => {
+    if (!editMode) dispatch(requestMove(pokemonId, move.definition.id));
+  }, [dispatch, pokemonId, move.definition.id, editMode]);
 
   const handleRemoveMove = useCallback(() => {
     dispatch(removeMove(pokemonId, move.id));
@@ -39,7 +41,7 @@ const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
   }, [dispatch, pokemonId, move.id]);
 
   return (
-    <MoveContainer onClick={() => !editMode && requestMove(move.definition.id)}>
+    <MoveContainer onClick={handleRequestMove}>
       <MoveName>
         {editMode && <RemoveMoveButton icon={faTimes} onClick={handleRemoveMove} />}
         {move.definition.name}
@@ -138,7 +140,7 @@ const MoveListContainer = styled.div`
 const MoveContainer = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: 10rem 4rem 5rem 5rem 9rem 5.25rem;
+  grid-template-columns: 10rem 4rem 6rem 5rem 9rem 5.25rem;
   grid-template-areas: "name accuracy damage attack-type type frequency";
   height: 2.5rem;
   margin-bottom: 0.5rem;
@@ -147,7 +149,7 @@ const MoveContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 
   & > div {
     position: relative;
@@ -280,7 +282,7 @@ const Container = styled.div`
     margin: 0 0 1rem;
 
     & ${MoveContainer} {
-      grid-template-columns: 3.5rem 4rem 4.5rem 1fr 5.25rem;
+      grid-template-columns: 3.5rem 4rem 4.5rem 1fr 3.75rem;
       grid-template-areas: "name name name type frequency"
                            "accuracy damage attack-type type frequency";
 

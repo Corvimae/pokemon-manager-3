@@ -7,6 +7,7 @@ import { AbilityData } from '../utils/types';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DefinitionLookahead } from './DefinitionLookahead';
 import { StatValue, IconButton, Button } from './Layout';
+import { Theme } from '../utils/theme';
 
 export const AbilityList: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ export const AbilityList: React.FC = () => {
       ))}
       {editMode && (
         <AbilityLookaheadItem>
-          <DefinitionLookahead path='abilities' onChange={setSelectedAbility} value={selectedAbility} placeholder="Enter the name of an ability..."/>
+          <DefinitionLookahead path='abilities' onChange={setSelectedAbility} value={selectedAbility} placeholder="Enter an ability..."/>
           <DefinitionSelectionButton
             onClick={handleAddAbility}
             disabled={selectedAbility === null || selectedAbility === undefined}
@@ -69,6 +70,11 @@ const AbilityListItem = styled.div`
 
   & ${AbilityDeleteButton} {
     margin-left: auto;
+  }
+
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    padding: 0.25rem 0;
   }
 `;
 

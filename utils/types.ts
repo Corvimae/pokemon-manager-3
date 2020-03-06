@@ -94,11 +94,6 @@ export interface PokemonData {
   moves: MoveData[];
   abilities: AbilityData[];
   capabilities: CapabilityData[];
-  defenses: {
-    SE: Record<string, number>;
-    NVE: Record<string, number>;
-    Immune: Record<string, number>;
-  };
   isActive: boolean;
   isHidden: boolean;
   campaign: {
@@ -116,7 +111,7 @@ export type PokemonDataResponse = PokemonData & { currentHealth: number };
 export interface MoveDefinition {
   id: number;
   name: string;
-  type: number;
+  type: TypeData;
   damage: string;
   frequency: string;
   ac: number;

@@ -100,6 +100,7 @@ const CapabilityValueInput = styled.input`
   text-align: center;
   border: none;
   background-color: transparent;
+  border-radius: 0;
   font-family: inherit;
   -moz-appearance: textfield;
   margin: 0 0.25rem;

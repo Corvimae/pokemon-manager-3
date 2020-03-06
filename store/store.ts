@@ -947,6 +947,18 @@ export function requestDetails(type: ActiveDetailType, id: number): PokemonReduc
   };
 };
 
+export function requestMove(pokemonId: number, id: number): PokemonReducerAction {
+  return {
+    type: REQUEST_DETAILS,
+    payload: {
+      type: 'MOVE',
+      request: {
+        url: `/v2/pokemon/${pokemonId}/move/${id}`,
+      }
+    }
+  };
+};
+
 export function showNotes(): PokemonReducerAction {
   return {
     type: SHOW_NOTES,

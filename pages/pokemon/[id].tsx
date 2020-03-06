@@ -86,6 +86,7 @@ const TopContent = styled.div`
   flex-direction: row;
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
+    flex-shrink: 0;
     flex-direction: column;
   }
 `;
@@ -100,6 +101,7 @@ const LeftPanel = styled.div`
   overflow: visible;
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
+    width: 100vw;
     padding: 0;
   }
 `;
@@ -151,9 +153,11 @@ const MiddleContent = styled.div`
 const MobileModeSelector = styled.div`
   display: none;
   width: 100vw;
+  height: max-content;
   flex-direction: row;
   justify-content: center;
   margin: 1rem 0 0;
+  flex-shrink: 0;
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     display: flex;

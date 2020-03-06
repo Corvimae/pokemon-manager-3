@@ -135,6 +135,10 @@ export const StatKey = styled.div`
   background-color: #dadada;
   padding: 0.25rem 1rem;
   font-size: 0.825rem;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    padding: 0.25rem 0.5rem;
+  }
 `;
 
 export const StatValue = styled.div`
@@ -143,6 +147,10 @@ export const StatValue = styled.div`
   flex-direction: row;
   background-color: #fff;
   padding: 0.25rem 1rem;
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    padding: 0.25rem 0.5rem;
+  }
 `;
 
 
@@ -168,6 +176,7 @@ export const TextInput = styled.input`
   padding: 0.25rem;
   background-color: transparent;
   border: none;
+  border-radius: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   font-family: inherit;
 
@@ -184,6 +193,7 @@ export const NumericInput = styled.input`
   text-align: center;
   border: none;
   border-bottom: 1px solid #aaa;
+  border-radius: 0;
   font-family: inherit;
   -moz-appearance: textfield;
 
@@ -212,3 +222,12 @@ export const Tooltip = styled(Tippy)`
   }
 `;
 
+export const TypeList = styled(StatValue)`
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  grid-gap: 0.25rem;
+
+  @media screen and (min-width: 1440px) {
+    grid-template-columns: repeat(3, max-content);
+  }
+`;

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
 import { useTypedSelector, HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/store';
 import { TypeIndicator } from './TypeIndicator';
-import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, NumericInput } from './Layout';
+import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, NumericInput, TypeList } from './Layout';
 import { useRequestData } from '../utils/requests';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
 import { SelectablePokemonValue } from './SelectablePokemonValue';
@@ -12,6 +12,7 @@ import { AbilityList } from './AbilityList';
 import { TypeSelector } from './TypeSelector';
 import { RichTextEditor } from './RichTextEditor';
 import { Theme } from '../utils/theme';
+import { useCombinedDefensiveEffectivenesses } from '../utils/pokemonTypes';
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
@@ -19,11 +20,13 @@ export const PokemonDataTable = () => {
   const editMode = useTypedSelector(store => store.editMode);
   const pokemon = useTypedSelector(store => store.pokemon);
 
+  
   const showGMEditor = editMode && pokemon.isUserGM;
-
+  
   const physicalEvasions = usePhysicalEvasions();
   const specialEvasions = useSpecialEvasions();
   const speedEvasions = useSpeedEvasions();
+  const defenses = useCombinedDefensiveEffectivenesses();
 
   const requestHeldItemData = useRequestData(HELD_ITEM);
 
@@ -84,7 +87,7 @@ export const PokemonDataTable = () => {
         <StatKey>Type</StatKey>
         <TypeIcons>
           {pokemon.types.map((type, index) => (
-            <TypeSelector key={type.id} value={type.name} onSelect={(id, name) => handleChangeType(index, id, name)} />
+            <TypeSelector key={index} value={type.name} onSelect={(id, name) => handleChangeType(index, id, name)} />
           ))}
         </TypeIcons>
       </StatRow>
@@ -164,24 +167,30 @@ export const PokemonDataTable = () => {
       <StatRow>
         <StatKey>Weaknesses</StatKey>
         <TypeList>
-          {Object.entries(pokemon.defenses.SE).map(([weakness, multiplier]) => (
-            <TypeIndicator key={weakness} name={weakness} multiplier={multiplier} />
+          {defenses.x4.map(weakness => (
+            <TypeIndicator key={weakness} name={weakness} multiplier={4} />
+          ))}
+          {defenses.x2.map(weakness => (
+            <TypeIndicator key={weakness} name={weakness} multiplier={2} />
           ))}
         </TypeList>
       </StatRow>				
       <StatRow>
         <StatKey>Resistances</StatKey>
         <TypeList>
-          {Object.entries(pokemon.defenses.NVE).map(([resistance, multiplier]) => (
-            <TypeIndicator key={resistance} name={resistance} multiplier={multiplier} />
+          {defenses.fourth.map(resistance => (
+            <TypeIndicator key={resistance} name={resistance} multiplier={0.25} />
+          ))}
+          {defenses.half.map(resistance => (
+            <TypeIndicator key={resistance} name={resistance} multiplier={0.5} />
           ))}
         </TypeList>
       </StatRow>
       <StatRow>
         <StatKey>Immunities</StatKey>
         <TypeList>
-          {Object.entries(pokemon.defenses.Immune).map(([resistance, multiplier]) => (
-            <TypeIndicator key={resistance} name={resistance} multiplier={multiplier} />
+          {defenses.x0.map(resistance => (
+            <TypeIndicator key={resistance} name={resistance} multiplier={0} />
           ))}
         </TypeList>
       </StatRow>
@@ -235,16 +244,6 @@ const PointsToLevelBar = styled.div<{ percentage: number }>`
     width: ${props => props.percentage}%;
     height: 100%;
     background-color: #13a8b0;
-  }
-`;
-
-const TypeList = styled(StatValue)`
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  grid-gap: 0.25rem;
-
-  @media screen and (min-width: 1440px) {
-    grid-template-columns: repeat(3, max-content);
   }
 `;
 

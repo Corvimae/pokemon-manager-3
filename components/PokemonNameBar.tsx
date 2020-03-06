@@ -114,10 +114,12 @@ export const PokemonNameBar = () => {
           </GenderSelectorGrid>
         </DropdownTooltip>
       </GenderSelector>
-      <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>
-      <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
-        {editMode ? 'Lock' : 'Edit'}
-      </EditButton>
+      <ActionButtons>
+        {!editMode && <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>}
+        <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
+          {editMode ? 'Lock' : 'Edit'}
+        </EditButton>
+      </ActionButtons>
     </NameBar>
   );
 };
@@ -235,9 +237,15 @@ const NameInput = styled(TextInput)`
   line-height: normal;
 `;
 
+const ActionButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+`;
+
 const EditButton = styled(IconButton)``;
 const NotesButton = styled(IconButton)`
-  margin: 0 0.75rem 0 auto;
+  margin: 0 0.75rem 0 0;
 `;
 
 const NameBar = styled.div`
@@ -254,7 +262,8 @@ const NameBar = styled.div`
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     width: 100vw;
     min-width: 100vw;
-
+    flex-shrink: 0;
+    
     & ${BallIcon} {
       align-self: flex-start;
       margin-top: 0.325rem;
