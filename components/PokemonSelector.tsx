@@ -4,8 +4,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import Tippy from '@tippy.js/react';
 import { useTypedSelector } from '../store/store';
 import { Theme } from '../utils/theme';
+import { calculateLevel } from '../utils/level';
 
 export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
   const mobileMode = useTypedSelector(store => store.mobileMode);
@@ -19,8 +21,13 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
 
       {allies.map(ally => (
         <AllySelector key={ally.id} href={`/pokemon/${ally.id}`}>
-          <AllyImage backgroundImage={ally.icon} />
+          <Tippy content={`${ally.name} - Lv. ${calculateLevel(ally.experience)} ${ally.species}`} boundary="viewport">
+            <AllyImage backgroundImage={ally.icon} />
+          </Tippy>
           <AllyName>{ally.name}</AllyName>
+          <AllyDescription>
+            Lv. {calculateLevel(ally.experience)} {ally.species}
+          </AllyDescription>
         </AllySelector>
       ))}
     </Container>
@@ -28,6 +35,7 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
 };
 
 const AllySelector = styled.a`
+  position: relative;
   display: flex;
   width: 3rem;
   min-width: 3rem;
@@ -40,6 +48,8 @@ const AllySelector = styled.a`
   font-family: inherit;
   border-radius: 0.25rem;
   padding: 0;
+  text-decoration: none;
+  color: #333;
   
   &:not(:last-child) {
     margin-right: 0.5rem;
@@ -61,6 +71,20 @@ const AllyName = styled.span`
   display: none;
   font-size: 1.125rem;
   margin-top: -0.25rem;
+  flex-grow: 1;
+  align-self: stretch;
+  align-items: center;
+  line-height: normal;
+`;
+
+const AllyDescription = styled.span`
+  display: none;
+  min-width: max-content;
+  font-size: 0.875rem;
+  overflow: visible;
+  align-items: center;
+  line-height: normal;
+  padding: 0 1rem;
 `;
 
 const Container = styled.div`
@@ -108,8 +132,9 @@ const Container = styled.div`
       margin: -0.25rem 0 0 0.5rem;
     }
 
-    & ${AllyName} {
-      display: block;
+    & ${AllyName},
+    & ${AllyDescription} {
+      display: flex;
     }
   }
 `;

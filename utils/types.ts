@@ -8,6 +8,8 @@ export interface AlliedPokemon {
   id: number;
   name: string;
   icon: string;
+  experience: number;
+  species: string;
 }
 
 export interface TypeData {
