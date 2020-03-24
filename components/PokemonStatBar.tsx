@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { useTypedSelector, bumpCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/store';
-import { useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
+import { useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP, useTrainerHasClass } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { CombatStages } from '../utils/types';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { IconButton, Button, NumericInput, DropdownHeader, StatValue } from './Layout';
+import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calculateLevel } from '../utils/level';
@@ -89,6 +89,8 @@ export const PokemonStatBar = () => {
   const specialDefense = useCalculatedSpecialDefenseStat();
   const speed = useCalculatedSpeedStat();
 
+  const showPressOnThreshold = useTrainerHasClass('Enduring Soul');
+
   const pointsOverCap = Object.values(stats.added).reduce((acc, value) => acc + value, 0) - level;
 
   const updateHealth = useCallback((value: number) => {
@@ -149,6 +151,11 @@ export const PokemonStatBar = () => {
               <HealthModifyButton  onClick={() => updateHealth(totalHealth)}>
                 Heal to full
               </HealthModifyButton>
+              {showPressOnThreshold && (
+                <PressOnThreshold>Press On (-25%):
+                  <PressOnValue>&nbsp;-{Math.ceil(totalHealth / 4)}</PressOnValue>
+                </PressOnThreshold>
+              )}
             </HealthCellDropdown>
           </>
         )}
@@ -364,4 +371,14 @@ const Container = styled.div<{ isActiveMobileMode: boolean }>`
       margin-bottom: 0.5rem;
     }
   }
+`;
+
+const PressOnThreshold = styled.div`
+  font-size: 0.75rem;
+  color: #333;
+  text-align: center;
+`;
+
+const PressOnValue = styled.span`
+  font-weight: 700;
 `;

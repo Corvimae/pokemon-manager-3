@@ -15,6 +15,11 @@ export interface TypeData {
   name: string;
 };
 
+export interface TrainerClassData {
+  id: number;
+  name: string;
+}
+
 export interface StatBlock {
   hp: number;
   attack: number;
@@ -77,6 +82,7 @@ export interface PokemonData {
   owner: {
     id: number;
     name: string;
+    classes: TrainerClassData[];
   };
   types: TypeData[];
   stats: {

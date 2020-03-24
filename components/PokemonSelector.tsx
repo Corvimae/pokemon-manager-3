@@ -30,6 +30,7 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
 const AllySelector = styled.a`
   display: flex;
   width: 3rem;
+  min-width: 3rem;
   height: 3rem;
   flex-direction: row;
   justify-content: center;
@@ -64,13 +65,15 @@ const AllyName = styled.span`
 
 const Container = styled.div`
   display: ${({ mobile }) => mobile ? 'none' : 'flex'};
+  min-width: min-content;
+  max-width: 25rem;
   flex-direction: row;
   margin: -1rem 2rem 0;
   padding: 0.25rem 0.5rem;
   background-color: rgba(255, 255, 255, 0.75);
-
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 0 0 0.25rem 0.25rem;
+  overflow-x: auto;
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     position: relative;

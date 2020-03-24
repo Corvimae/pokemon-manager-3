@@ -118,7 +118,12 @@ export function useCalculatedSpeedStat() {
   return calculateCombatStageModifiedStat(stats.base.speed + stats.added.speed, speedCombatStages);
 }
 
-
 export function getMoveFrequency(move: MoveData) {
   return MOVE_FREQUENCIES[Math.max(0, MOVE_FREQUENCIES.indexOf(move.definition.frequency) - (move.ppUp ? 1 : 0))];
+}
+
+export function useTrainerHasClass(className: string) {
+  const classes = useTypedSelector(state => state.pokemon.owner.classes);
+
+  return classes.some(item => item.name === className);
 }

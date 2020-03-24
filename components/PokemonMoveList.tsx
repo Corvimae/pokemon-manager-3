@@ -298,14 +298,28 @@ const Container = styled.div`
         margin: 0;
       }
 
+      & ${MoveName} {
+        border-top-left-radius: 1.5rem;
+      }
+
+      & ${MoveAccuracy} {
+        border-bottom-left-radius: 1.5rem;
+      }
+
       & ${MoveName},
       & ${MoveAccuracy} {
         padding-left: 1rem;
       }
 
       & ${MoveFrequencyContainer} {
-        height: calc(100% + 2px);
-        width: calc(100% + 2px);
+        width: 100%;
+        height: 100%;
+        border-radius: 0 1.5rem 1.5rem 0;
+        overflow: hidden;
+
+        & ${MoveFrequency} {
+          border-radius: 0 1.5rem 1.5rem 0;
+        }
       }
     }
 

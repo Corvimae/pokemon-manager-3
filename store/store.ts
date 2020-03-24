@@ -794,6 +794,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
           owner: {
             id: action.payload.ownerId,
             name: action.payload.ownerName,
+            classes: [] // todo: maybe implement this?
           },
         },
       };

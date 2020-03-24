@@ -29,7 +29,7 @@ export const DetailsSidebar = () => {
     <Container className={activeDetails.mode == 'none' ? '' : 'active'}>
       <BackgroundStripe />
       <Title>
-        {activeDetails.mode === 'description' && (activeDetails.details?.value.name ?? <span>&nbsp;</span>)}
+        {activeDetails.mode !== 'notes' && (activeDetails.details?.value.name ?? <span>&nbsp;</span>)}
         {activeDetails.mode === 'notes' && 'Notes'}
         <IconButton icon={faTimes} onClick={handleClose} inverse />
       </Title>
@@ -55,10 +55,14 @@ export const DetailsSidebar = () => {
                 <StatValue>{activeDetails.details.value.damage}</StatValue>
               </StatRow>
             )}
-            <StatRowDivider />
-            <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effects}} />
-            </StatRow>
+            {activeDetails.details.value.effects !== '-' && (
+              <>
+                <StatRowDivider />
+                <StatRow>
+                  <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effects}} />
+                </StatRow>
+              </>
+            )}
             {activeDetails.details.value.attack_type !== 2 && (
               <>
                 <StatRowDivider />
@@ -120,6 +124,42 @@ export const DetailsSidebar = () => {
   );
 };
 
+export const BackgroundStripe = styled.div`
+  position: absolute;
+  display: none;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: ${Theme.backgroundStripe};
+  clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
+  z-index: -1;
+  pointer-events: none;
+  overflow: visible;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4rem;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.25);
+    clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
+    z-index: -2;
+  }
+
+  @media screen and (max-width: ${Theme.mobileThreshold}) {
+    position: fixed;
+    clip-path: unset;
+    width: 100vw;
+    
+    &::before {
+      display: none;
+    }
+  }
+`;
+
 const Container = styled.div`
   position: fixed;
   display: flex;
@@ -141,17 +181,27 @@ const Container = styled.div`
 
   &.active {
     right: 0;
+
+    & ${BackgroundStripe} {
+      display: block;
+    }
   }
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     width: 100vw;
+    overflow-y: auto;
     
     &:not(.active) {
       right: -100vw;
     }
 
     & ${StatList} {
-      width: calc(100% - 2rem);
+      width: 100%;
+      grid-template-columns: 1fr min-content;
+    }
+
+    & ${StatKey} {
+      text-align: center;
     }
   }
 `;
@@ -197,40 +247,6 @@ const NotesEditorContainer = styled(StatValue)`
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     width: 100%;
     height: calc(100% - 2rem);
-  }
-`;
-
-export const BackgroundStripe = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: ${Theme.backgroundStripe};
-  clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-  z-index: -1;
-  pointer-events: none;
-  overflow: visible;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 4rem;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.25);
-    clip-path: polygon(8rem 0, 100% 0%, 100% 100%, 0 100%);
-    z-index: -2;
-  }
-
-  @media screen and (max-width: ${Theme.mobileThreshold}) {
-    clip-path: unset;
-    width: 100vw;
-    
-    &::before {
-      display: none;
-    }
   }
 `;
 

@@ -98,7 +98,7 @@ export const PokemonNameBar = () => {
           Lv. {calculateLevel(experience)} {speciesName}
         </PokemonLevel>
       </NameAndLevel>
-      <GenderSelector role={editMode ? "button" : undefined} tabIndex={editMode ? 0 : -1} onClick={handleToggleGenderSelector}>
+      <GenderSelector role={editMode ? "button" : undefined} tabIndex={editMode ? 0 : undefined} onClick={handleToggleGenderSelector}>
         <GenderIcon color={getGenderColor(gender)}>
           <FontAwesomeIcon icon={getGenderIcon(gender)} size="sm"/>
         </GenderIcon>
@@ -169,7 +169,7 @@ const GenderSelector = styled.div`
   &:active,
   &:focus,
   &:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: ${props => props.role === 'button' && 'rgba(255, 255, 255, 0.25)'};
     outline: none;
   }
 `;
@@ -263,7 +263,7 @@ const NameBar = styled.div`
     width: 100vw;
     min-width: 100vw;
     flex-shrink: 0;
-    
+
     & ${BallIcon} {
       align-self: flex-start;
       margin-top: 0.325rem;
