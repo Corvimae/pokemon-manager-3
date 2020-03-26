@@ -197,7 +197,7 @@ export const PokemonDataTable = () => {
       <StatRowDivider />
       {!showGMEditor && (
         <PokemonImage>
-          <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase()}.gif`} />
+          <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase().replace(/-/g, '')}.gif`} />
         </PokemonImage>
       )}
       {showGMEditor && (

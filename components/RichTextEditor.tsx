@@ -30,7 +30,6 @@ function safelyParseJSON(value: string): Node[] {
   try {
     return (JSON.parse(value) || BLANK_SLATE_VALUE) as Node[];
   } catch {
-    console.log('bad json T_T', value);
     return BLANK_SLATE_VALUE;
   }
 }

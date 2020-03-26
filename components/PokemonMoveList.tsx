@@ -223,6 +223,7 @@ const MoveFrequency = styled.button<{ editMode: boolean }>`
   right: 0;
   width: 5.25rem;
   padding: 0 0.5rem 0 1rem;
+  border: none;
   border-radius: 0 1.25rem 1.25rem 0;
   height: 100%;
   background-color: #666;
