@@ -146,6 +146,7 @@ const MoveContainer = styled.div`
   margin-bottom: 0.5rem;
   box-shadow: ${Theme.dropShadow};
   border-radius: 1.25rem;
+  line-height: 1;
   flex-direction: row;
   align-items: center;
   justify-content: center;

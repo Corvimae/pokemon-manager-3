@@ -39,7 +39,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   body {
-    font-family: Overpass, sans-serif;
+    font-family: 'Assistant', sans-serif;
     margin: 0;
     background-color: #f0f0f0;
     min-height: 100vh;

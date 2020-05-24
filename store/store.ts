@@ -13,6 +13,8 @@ const DETAIL_REQUEST_PATHS = {
   HELD_ITEM: 'helditems',
 };
 
+const LOAD_AUTH_STATUS = 'LOAD_AUTH_STATUS';
+const LOAD_AUTH_STATUS_SUCCESS = 'LOAD_AUTH_STATUS_SUCCESS';
 const SET_MOBILE_MODE = 'SET_MOBILE_MODE';
 const LOAD_TYPE_IDS = 'LOAD_TYPE_IDS';
 const LOAD_TYPE_IDS_SUCCESS = 'LOAD_TYPE_IDS_SUCCESS';
@@ -98,6 +100,16 @@ type SetMobileModeAction = {
     mode: MobileMode;
   };
 };
+
+type LoadAuthStatusAction = {
+  type: typeof LOAD_AUTH_STATUS;
+  payload: AxiosRequest;
+};
+
+type LoadAuthStatusSuccessAction = {
+  type: typeof LOAD_AUTH_STATUS_SUCCESS;
+  payload: AxiosResponse<boolean>;
+}
 
 type LoadTypeIdsAction = {
   type: typeof LOAD_TYPE_IDS;
@@ -405,6 +417,8 @@ type SaveGMNotesAction = {
 };
 
 type PokemonReducerAction =
+  LoadAuthStatusAction |
+  LoadAuthStatusSuccessAction |
   SetMobileModeAction |
   LoadTypeIdsAction |
   LoadTypeIdsSuccessAction |
@@ -458,6 +472,7 @@ const initialCombatStagesState: CombatStages = {
 };
 
 interface State {
+  isLoggedIn: boolean;
   mobileMode: MobileMode;
   pokemon: PokemonData | undefined;
   allies: AlliedPokemon[];
@@ -472,6 +487,7 @@ interface State {
 }
 
 const initialState: State = {
+  isLoggedIn: false,
   mobileMode: 'data',
   pokemon: undefined,
   allies: [],
@@ -487,6 +503,13 @@ const initialState: State = {
 
 export function reducer(state: State = initialState, action: PokemonReducerAction): State {
   switch (action.type) {
+    case LOAD_AUTH_STATUS_SUCCESS:
+      console.log(action.payload);  
+      return {
+        ...state,
+        isLoggedIn: action.payload.data,
+      };
+      
     case SET_MOBILE_MODE:
       return {
         ...state,
@@ -882,6 +905,17 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     default:
       return state;
   }
+}
+
+export function loadAuthStatus(): PokemonReducerAction {
+  return {
+    type: LOAD_AUTH_STATUS,
+    payload: {
+      request: {
+        url: '/v2/authStatus',
+      },
+    },
+  };
 }
 
 export function setMobileMode(mode: MobileMode): PokemonReducerAction {

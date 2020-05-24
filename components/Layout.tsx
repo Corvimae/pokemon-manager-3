@@ -43,7 +43,7 @@ const IconButtonContainer = styled.button<{ inverse: boolean }>`
   font-size: inherit;
   margin: 0;
   padding: 0;
-  line-height: normal;
+  line-height: 1;
   color: ${props => props.inverse ? '#fff' : '#333'};
   border: none;
   background-color: transparent;

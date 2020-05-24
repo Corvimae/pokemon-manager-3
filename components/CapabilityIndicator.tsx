@@ -51,6 +51,7 @@ const Container = styled.div<{ hasValue: boolean }>`
   max-height: 1.75rem;
   font-family: inherit;
   font-size: inherit;
+  line-height: 1;
   border: none;
   margin: 0;
   padding: 0;

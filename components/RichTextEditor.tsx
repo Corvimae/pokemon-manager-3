@@ -226,6 +226,7 @@ const Toolbar = styled.div`
 
 const EditableContainer = styled.div`
   min-height: 0;
+  max-height: 80vh;
   padding: 0.25rem 0.5rem;
   overflow-y: scroll;
   align-self: stretch;

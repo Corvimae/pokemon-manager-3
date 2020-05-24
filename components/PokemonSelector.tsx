@@ -90,7 +90,7 @@ const AllyDescription = styled.span`
 const Container = styled.div`
   display: ${({ mobile }) => mobile ? 'none' : 'flex'};
   min-width: min-content;
-  max-width: 25rem;
+  max-width: max-content;
   flex-direction: row;
   margin: -1rem 2rem 0;
   padding: 0.25rem 0.5rem;

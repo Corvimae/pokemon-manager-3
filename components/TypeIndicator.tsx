@@ -39,6 +39,7 @@ const Container = styled.div<{ onClick: unknown }>`
   flex-direction: row;
   align-items: center;
   text-align: left;
+  line-height: 1;
   color: #fff;
   background-color: #333;
   border-radius: 0.125rem;

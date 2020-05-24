@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { useTypedSelector, loadData, loadTypeIds, loadAllies, setMobileMode } from '../../store/store';
+import { useTypedSelector, loadData, loadTypeIds, loadAllies, setMobileMode, loadAuthStatus } from '../../store/store';
 import { useDispatch } from 'react-redux';
 import { PokemonDataTable } from '../../components/PokemonDataTable';
 import { PokemonStatBar } from '../../components/PokemonStatBar';
@@ -13,8 +13,9 @@ import { useOnMount } from '../../utils/hooks';
 import { PokemonSelector } from '../../components/PokemonSelector';
 import { LoadingIcon } from '../../components/LoadingIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDiceD20, faFistRaised, faBook, faScroll, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faDiceD20, faFistRaised, faScroll, faSync } from '@fortawesome/free-solid-svg-icons';
 import { MobileMode } from '../../utils/types';
+import { AuthStatus } from '../../components/AuthStatus';
 
 const PokemonViewer = () => {
   const router = useRouter();
@@ -28,6 +29,7 @@ const PokemonViewer = () => {
 
   useEffect(() => {
     if(router.query.id) {
+      dispatch(loadAuthStatus());
       dispatch(loadData(Number(router.query.id)));
       dispatch(loadAllies(Number(router.query.id)));
     }
@@ -40,6 +42,7 @@ const PokemonViewer = () => {
   return pokemon ? (
     <Container>
       <LeftPanel>
+        <AuthStatus />
         <LeftPanelBackground />
         <TopContent>
           <PokemonNameBar />

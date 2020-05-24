@@ -37,6 +37,7 @@ function getGenderIcon(gender: Gender) {
 
 export const PokemonNameBar = () => {
   const dispatch = useDispatch();
+  const isLoggedIn = useTypedSelector(store => store.isLoggedIn);
   const editMode = useTypedSelector(store => store.editMode);
   const pokemonId = useTypedSelector(store => store.pokemon.id);
   const name = useTypedSelector(store => store.pokemon.name);
@@ -115,10 +116,12 @@ export const PokemonNameBar = () => {
         </DropdownTooltip>
       </GenderSelector>
       <ActionButtons>
-        {!editMode && <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>}
-        <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
-          {editMode ? 'Lock' : 'Edit'}
-        </EditButton>
+        {!editMode && isLoggedIn && <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>}
+        {isLoggedIn && (
+          <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
+            {editMode ? 'Lock' : 'Edit'}
+          </EditButton>
+        )}
       </ActionButtons>
     </NameBar>
   );
@@ -142,6 +145,7 @@ const NameAndLevel = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  line-height: 1;
 `;
 
 
