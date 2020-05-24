@@ -504,7 +504,6 @@ const initialState: State = {
 export function reducer(state: State = initialState, action: PokemonReducerAction): State {
   switch (action.type) {
     case LOAD_AUTH_STATUS_SUCCESS:
-      console.log(action.payload);  
       return {
         ...state,
         isLoggedIn: action.payload.data,
