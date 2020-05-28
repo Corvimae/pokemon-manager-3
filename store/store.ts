@@ -22,7 +22,7 @@ const LOAD_DATA = 'LOAD_DATA';
 const LOAD_DATA_SUCCESS = 'LOAD_DATA_SUCCESS';
 const LOAD_ALLIES = 'LOAD_ALLIES';
 const LOAD_ALLIES_SUCCESS = 'LOAD_ALLIES_SUCCESS';
-const BUMP_COMBAT_STAGE = 'BUMP_COMBAT_STAGE';
+const SET_COMBAT_STAGE = 'SET_COMBAT_STAGE';
 const REQUEST_DETAILS = 'REQUEST_DETAILS';
 const REQUEST_DETAILS_SUCCESS = 'REQUEST_DETAILS_SUCCESS';
 const SHOW_NOTES = 'SHOW_NOTES';
@@ -143,12 +143,12 @@ type LoadAlliesSuccessAction = {
   payload: AxiosResponse<AlliedPokemon[]>;
 };
 
-type BumpCombatStageAction = {
-  type: typeof BUMP_COMBAT_STAGE;
+type SetCombatStageAction = {
+  type: typeof SET_COMBAT_STAGE;
   payload: {
     stat: keyof CombatStages;
-    amount: number;
-  }
+    value: number;
+  } & AxiosRequest;
 }
 
 type RequestDetailsAction = {
@@ -426,7 +426,7 @@ type PokemonReducerAction =
   LoadDataSuccessAction |
   LoadAlliesAction | 
   LoadAlliesSuccessAction |
-  BumpCombatStageAction |
+  SetCombatStageAction |
   RequestDetailsAction |
   RequestDetailsSuccessAction |
   ShowNotesAction |
@@ -463,21 +463,12 @@ type PokemonReducerAction =
   SaveNotesAction |
   SaveGMNotesAction;
 
-const initialCombatStagesState: CombatStages = {
-  attack: 0,
-  defense: 0,
-  spattack: 0,
-  spdefense: 0,
-  speed: 0,
-};
-
 interface State {
   isLoggedIn: boolean;
   mobileMode: MobileMode;
   pokemon: PokemonData | undefined;
   allies: AlliedPokemon[];
   typeIds: Record<string, number>;
-  combatStages: CombatStages;
   currentHealth: number;
   activeDetails: {
     mode: 'none' | 'notes' | 'description';
@@ -493,7 +484,6 @@ const initialState: State = {
   allies: [],
   typeIds: {},
   currentHealth: 0,
-  combatStages: { ...initialCombatStagesState },
   activeDetails: {
     mode: 'none',
     details: undefined,
@@ -529,7 +519,6 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         pokemon: action.payload.data,
         currentHealth: action.payload.data.currentHealth,
-        combatStages: { ...initialCombatStagesState },
       };
     
     case LOAD_ALLIES_SUCCESS:
@@ -538,12 +527,18 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         allies: action.payload.data,
       };
 
-    case BUMP_COMBAT_STAGE:
+    case SET_COMBAT_STAGE:
       return {
         ...state,
-        combatStages: {
-          ...state.combatStages,
-          [action.payload.stat]: Math.max(-6, Math.min(state.combatStages[action.payload.stat] + action.payload.amount, 6)),
+        pokemon: {
+          ...state.pokemon,
+          stats: {
+            ...state.pokemon.stats,
+            combatStages: {
+              ...state.pokemon.stats.combatStages,
+              [action.payload.stat]: action.payload.value,
+            },
+          }
         },
       };
 
@@ -959,12 +954,17 @@ export function loadAllies(id: number): PokemonReducerAction {
   }
 }
 
-export function bumpCombatStage(stat: keyof CombatStages, amount: number): PokemonReducerAction {
+export function setCombatStage(pokemonId: number, stat: keyof CombatStages, value: number): PokemonReducerAction {
+  const clampedValue = Math.max(-6, Math.min(value, 6));
+
   return {
-    type: BUMP_COMBAT_STAGE,
+    type: SET_COMBAT_STAGE,
     payload: {
       stat,
-      amount,
+      value: clampedValue,
+      request: {
+        url: `/v2/pokemon/${pokemonId}/combatStage/${stat}/${clampedValue}`,
+      }
     },
   };
 }

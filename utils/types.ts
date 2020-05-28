@@ -90,6 +90,7 @@ export interface PokemonData {
   stats: {
     base: StatBlock;
     added: StatBlock;
+    combatStages: CombatStages;
   };
   species: SpeciesData;
   heldItem: {

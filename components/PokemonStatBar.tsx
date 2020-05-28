@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, bumpCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/store';
+import { useTypedSelector, setCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/store';
 import { useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP, useTrainerHasClass } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
@@ -49,21 +49,22 @@ interface CombatStageModifierProps {
 const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat }) => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.editMode);
-  const combatStages = useTypedSelector(state => state.combatStages);
+  const pokemonId = useTypedSelector(state => state.pokemon.id);
+  const combatStages = useTypedSelector(state => state.pokemon.stats.combatStages);
 
-  const handleBumpCombatStage = useCallback((amount: number) => {
-    dispatch(bumpCombatStage(stat, amount));
-  }, [dispatch, stat]);
+  const handleSetCombatStage = useCallback((amount: number) => {
+    dispatch(setCombatStage(pokemonId, stat, combatStages[stat] + amount));
+  }, [dispatch, pokemonId, combatStages, stat]);
 
   return (
     <CombatStageCell area={area}>
       {!editMode && (
         <>
-          <CombatStageButton icon={faMinus} onClick={() => handleBumpCombatStage(-1)} />
+          <CombatStageButton icon={faMinus} onClick={() => handleSetCombatStage(-1)} />
           <CombatStageValue>
             {combatStages[stat]}
           </CombatStageValue>
-          <CombatStageButton icon={faPlus} onClick={() => handleBumpCombatStage(1)} />
+          <CombatStageButton icon={faPlus} onClick={() => handleSetCombatStage(1)} />
         </>
       )}
       {editMode && <StatEditor stat={stat} />}
