@@ -1043,7 +1043,7 @@ export function setHeldItem(pokemonId: number, heldItemId: number, heldItemName:
       heldItemId,
       heldItemName,
       request: {
-        url: `/v1/pokemon${pokemonId}/update/helditem/${heldItemName}`,
+        url: `/v1/pokemon/${pokemonId}/update/helditem/${heldItemName}`,
       },
     }
   }
