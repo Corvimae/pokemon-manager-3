@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/store';
+import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
 import { getAttackType } from './moves';
@@ -9,10 +9,11 @@ import { useDispatch } from 'react-redux';
 import { RichTextEditor } from './RichTextEditor';
 import { getOffensiveEffectivenesses, TypeName } from '../utils/pokemonTypes';
 import { TypeIndicator } from './TypeIndicator';
+import { useTypedSelector } from '../store/rootReducer';
 
 export const DetailsSidebar = () => {
-  const activeDetails = useTypedSelector(state => state.activeDetails);
-  const pokemon = useTypedSelector(state => state.pokemon);
+  const activeDetails = useTypedSelector(state => state.pokemon.activeDetails);
+  const pokemon = useTypedSelector(state => state.pokemon.data);
   const dispatch = useDispatch();
 
   const handleClose = useCallback(() => {

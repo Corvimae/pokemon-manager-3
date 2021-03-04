@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, setCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/store';
+import { setCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/pokemon';
 import { useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP, useTrainerHasClass } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
@@ -9,6 +9,7 @@ import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calculateLevel } from '../utils/level';
+import { useTypedSelector } from '../store/rootReducer';
 
 interface StatEditorProps { 
   stat: keyof CombatStages | "hp";
@@ -16,8 +17,8 @@ interface StatEditorProps {
 
 const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
   const dispatch = useDispatch();
-  const pokemonId = useTypedSelector(state => state.pokemon.id);
-  const { base, added } = useTypedSelector(state => state.pokemon.stats);
+  const pokemonId = useTypedSelector(state => state.pokemon.data.id);
+  const { base, added } = useTypedSelector(state => state.pokemon.data.stats);
 
   const handleChangeBaseStat = useCallback(event => {
     dispatch(setBaseStat(pokemonId, stat, event.target.value));
@@ -48,9 +49,9 @@ interface CombatStageModifierProps {
 
 const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat }) => {
   const dispatch = useDispatch();
-  const editMode = useTypedSelector(state => state.editMode);
-  const pokemonId = useTypedSelector(state => state.pokemon.id);
-  const combatStages = useTypedSelector(state => state.pokemon.stats.combatStages);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
+  const pokemonId = useTypedSelector(state => state.pokemon.data.id);
+  const combatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages);
 
   const handleSetCombatStage = useCallback((amount: number) => {
     dispatch(setCombatStage(pokemonId, stat, combatStages[stat] + amount));
@@ -73,12 +74,12 @@ const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat })
 }
 export const PokemonStatBar = () => {
   const dispatch = useDispatch();
-  const mobileMode = useTypedSelector(store => store.mobileMode);
-  const editMode = useTypedSelector(state => state.editMode);
-  const pokemonId = useTypedSelector(state => state.pokemon.id);
-  const experience = useTypedSelector(store => store.pokemon.experience);
-  const stats = useTypedSelector(store => store.pokemon.stats);
-  const currentHealth = useTypedSelector(store => store.currentHealth);
+  const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
+  const pokemonId = useTypedSelector(state => state.pokemon.data.id);
+  const experience = useTypedSelector(store => store.pokemon.data.experience);
+  const stats = useTypedSelector(store => store.pokemon.data.stats);
+  const currentHealth = useTypedSelector(store => store.pokemon.currentHealth);
 
   const [modifyHealthValue, setModifyHealthValue] = useState(1);
 

@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "yarn build:server && node dist/server.js",
+    "build": "yarn build:frontend && yarn build:server",
+    "build:frontend": "next build",
+    "build:server": "tsc --project server.tsconfig.json",
+    "start": "NODE_ENV=production node dist/server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
@@ -17,7 +19,16 @@
     "@types/react-redux": "^7.1.7",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "connect-session-sequelize": "^7.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "next": "9.2.2",
+    "passport": "^0.4.1",
+    "passport-twitch-new": "^0.0.2",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-redux": "^7.2.0",
@@ -25,14 +36,19 @@
     "react-sortable-hoc": "^1.11.0",
     "redux": "^4.0.5",
     "redux-axios-middleware": "^4.0.1",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.5.0",
+    "sequelize-typescript": "^2.1.0",
     "slate": "^0.57.1",
     "slate-history": "^0.57.1",
     "slate-react": "^0.57.1",
     "styled-components": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^13.7.2",
+    "@types/node": "^14.14.31",
     "@types/react": "^16.9.20",
+    "@types/validator": "^13.1.3",
+    "sequelize-cli": "^6.2.0",
     "typescript": "^3.7.5"
   }
 }

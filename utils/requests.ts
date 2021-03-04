@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
-import { requestDetails, ActiveDetailType } from "../store/store";
+import { requestDetails, ActiveDetailType } from "../store/pokemon";
 
 export const API_ENDPOINT = 'https://pokemon.maybreak.com/api/v2/'; // 'http://localhost:80/api/v2/'
 

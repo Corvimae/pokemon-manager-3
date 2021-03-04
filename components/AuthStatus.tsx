@@ -1,9 +1,9 @@
-import { useTypedSelector } from "../store/store";
 import styled from 'styled-components';
 import { useCallback } from "react";
+import { useTypedSelector } from '../store/rootReducer';
 
 export const AuthStatus: React.FC = () => {
-  const isLoggedIn = useTypedSelector(state => state.isLoggedIn);
+  const isLoggedIn = useTypedSelector(state => state.pokemon.isLoggedIn);
 
   const handleClick = useCallback(() => {
     window.document.location.assign('https://pokemon.maybreak.com/');

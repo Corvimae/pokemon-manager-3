@@ -4,47 +4,48 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faMinus, faVenus, faStar, faLock, faMars, faBook } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faHollowStar } from '@fortawesome/free-regular-svg-icons';
-import { useTypedSelector, toggleEditMode, setPokemonActive, setPokemonName, setPokemonGender, showNotes } from '../store/store';
+import { toggleEditMode, setPokemonActive, setPokemonName, setPokemonGender, showNotes } from '../store/pokemon';
 import { calculateLevel } from '../utils/level';
 import { Gender } from '../utils/types';
 import { IconButton, Tooltip, TextInput } from './Layout';
 import { DropdownTooltip } from './DropdownTooltip';
 import { Theme } from '../utils/theme';
+import { useTypedSelector } from '../store/rootReducer';
 
-const GENDER_OPTIONS: Gender[] = ['Male', 'Female', 'None'];
+const GENDER_OPTIONS: Gender[] = ['male', 'female', 'neutral'];
 
-function getGenderColor(gender: Gender) {
+export function getGenderColor(gender: Gender) {
   switch (gender) {
-    case 'Male':
+    case 'male':
       return '#00f';
-    case 'Female':
+    case 'female':
       return '#f00';
-    case 'None':
+    case 'neutral':
       return '#999';
   }
 }
 
-function getGenderIcon(gender: Gender) {
+export function getGenderIcon(gender: Gender) {
   switch (gender) {
-    case 'Male':
+    case 'male':
       return faMars;
-    case 'Female':
+    case 'female':
       return faVenus;
-    case 'None':
+    case 'neutral':
       return faMinus;
   }
 }
 
 export const PokemonNameBar = () => {
   const dispatch = useDispatch();
-  const isLoggedIn = useTypedSelector(store => store.isLoggedIn);
-  const editMode = useTypedSelector(store => store.editMode);
-  const pokemonId = useTypedSelector(store => store.pokemon.id);
-  const name = useTypedSelector(store => store.pokemon.name);
-  const gender = useTypedSelector(store => store.pokemon.gender);
-  const experience = useTypedSelector(store => store.pokemon.experience);
-  const active = useTypedSelector(store => store.pokemon.isActive);
-  const speciesName = useTypedSelector(store => store.pokemon.species.name);
+  const isLoggedIn = useTypedSelector(store => store.pokemon.isLoggedIn);
+  const editMode = useTypedSelector(store => store.pokemon.editMode);
+  const pokemonId = useTypedSelector(store => store.pokemon.data.id);
+  const name = useTypedSelector(store => store.pokemon.data.name);
+  const gender = useTypedSelector(store => store.pokemon.data.gender);
+  const experience = useTypedSelector(store => store.pokemon.data.experience);
+  const active = useTypedSelector(store => store.pokemon.data.isActive);
+  const speciesName = useTypedSelector(store => store.pokemon.data.species.name);
 
   const [showGenderSelector, setShowGenderSelector] = useState(false);
 

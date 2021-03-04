@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { useTypedSelector, HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/store';
+import { HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/pokemon';
 import { TypeIndicator } from './TypeIndicator';
 import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, NumericInput, TypeList } from './Layout';
 import { useRequestData } from '../utils/requests';
@@ -13,12 +13,13 @@ import { TypeSelector } from './TypeSelector';
 import { RichTextEditor } from './RichTextEditor';
 import { Theme } from '../utils/theme';
 import { useCombinedDefensiveEffectivenesses } from '../utils/pokemonTypes';
+import { useTypedSelector } from '../store/rootReducer';
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
-  const mobileMode = useTypedSelector(store => store.mobileMode);
-  const editMode = useTypedSelector(store => store.editMode);
-  const pokemon = useTypedSelector(store => store.pokemon);
+  const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
+  const editMode = useTypedSelector(store => store.pokemon.editMode);
+  const pokemon = useTypedSelector(store => store.pokemon.data);
 
   
   const showGMEditor = editMode && pokemon.isUserGM;

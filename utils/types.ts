@@ -2,7 +2,7 @@ export type MobileMode = 'data' | 'stats' | 'moves' | 'notes' | 'allies';
 
 export type Frequency = 'At-Will' | 'EOT' | 'Battle' | 'Center';
 
-export type Gender = 'None' | 'Male' | 'Female';
+export type Gender = 'neutral' | 'male' | 'female';
   
 export interface AlliedPokemon {
   id: number;

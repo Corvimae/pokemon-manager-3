@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import styled from 'styled-components';
 import { useDispatch } from "react-redux";
 import { SortableContainer } from 'react-sortable-hoc';
-import { useTypedSelector, addCapability } from "../store/store";
+import { addCapability } from "../store/pokemon";
 import {  Button, NumericInput, AddItemButton, DropdownHeader } from "./Layout";
 import { CapabilityIndicator } from "./CapabilityIndicator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,12 +10,13 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { DefinitionLookahead } from "./DefinitionLookahead";
 import { DropdownTooltip } from "./DropdownTooltip";
 import { Theme } from "../utils/theme";
+import { useTypedSelector } from "../store/rootReducer";
 
 export const UnsortableCapabilityList: React.FC = () => {
   const dispatch = useDispatch();
-  const pokemonId = useTypedSelector(store => store.pokemon.id);
-  const capabilities = useTypedSelector(store => store.pokemon.capabilities);
-  const editMode = useTypedSelector(state => state.editMode);
+  const pokemonId = useTypedSelector(store => store.pokemon.data.id);
+  const capabilities = useTypedSelector(store => store.pokemon.data.capabilities);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
 
   const [showCapabilityEditor, setShowCapabilityEditor] = useState(false);
   const [editorCapabilitySelection, setEditorCapabilitySelection] = useState(null);

@@ -1,6 +1,6 @@
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { faFeatherAlt, faSkull, faGhost, faEye, faWater, faSnowflake, faDragon, faMoon, faGem, faMountain, faFistRaised, faBug, faCog, faFire, faLeaf, faBahai, faQuestion, faBolt } from '@fortawesome/free-solid-svg-icons';
-import { useTypedSelector } from '../store/store';
+import { useTypedSelector } from '../store/rootReducer';
 
 export const TYPE_COLORS = {
   none: '#ccc',
@@ -219,8 +219,8 @@ function isFourth(type: TypeName, type1: TypeEffectivenesses, type2: TypeEffecti
 }
 
 export function useCombinedDefensiveEffectivenesses(): TypeEffectivenesses {
-  const types = useTypedSelector(state => state.pokemon.types);
-  const abilities = useTypedSelector(state => state.pokemon.abilities);
+  const types = useTypedSelector(state => state.pokemon.data.types);
+  const abilities = useTypedSelector(state => state.pokemon.data.abilities);
 
   const immunities = abilities
     .filter(ability => Object.keys(immuneAbilities).indexOf(ability.definition.name) !== -1)

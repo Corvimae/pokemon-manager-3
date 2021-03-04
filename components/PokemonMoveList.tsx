@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useTypedSelector, MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestMove } from '../store/store';
+import { MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestMove } from '../store/pokemon';
 import { MoveData } from '../utils/types';
 import { Theme } from '../utils/theme';
 import { TypeIndicator } from './TypeIndicator';
@@ -16,11 +16,12 @@ import { getMoveFrequency } from '../utils/formula';
 import { TypeSelector } from './TypeSelector';
 import { CapabilityList } from './CapabilityList';
 import { SortableElement, SortableContainer } from 'react-sortable-hoc';
+import { useTypedSelector } from '../store/rootReducer';
 
 const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
   const dispatch = useDispatch();
-  const editMode = useTypedSelector(state => state.editMode);
-  const pokemonId = useTypedSelector(state => state.pokemon.id);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
+  const pokemonId = useTypedSelector(state => state.pokemon.data.id);
 
   const handleRequestMove = useCallback(() => {
     if (!editMode) dispatch(requestMove(pokemonId, move.definition.id));
@@ -67,11 +68,11 @@ const MoveList = SortableContainer(({ children }) => <MoveListContainer>{childre
 
 export const PokemonMoveList = () => {
   const dispatch = useDispatch();
-  const editMode = useTypedSelector(state => state.editMode);
-  const mobileMode = useTypedSelector(store => store.mobileMode);
-  const pokemonId = useTypedSelector(state => state.pokemon.id);
-  const moves = useTypedSelector(state => state.pokemon.moves);
-  const capabilities = useTypedSelector(state => state.pokemon.capabilities);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
+  const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
+  const pokemonId = useTypedSelector(state => state.pokemon.data.id);
+  const moves = useTypedSelector(state => state.pokemon.data.moves);
+  const capabilities = useTypedSelector(state => state.pokemon.data.capabilities);
 
   const [showMoveSelector, setShowMoveSelector] = useState(false);
   const [editorSelection, setEditorSelection] = useState(null);

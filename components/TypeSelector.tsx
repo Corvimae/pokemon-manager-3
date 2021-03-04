@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { DropdownTooltip } from "./DropdownTooltip";
-import { useTypedSelector } from "../store/store";
 import { TypeIndicator } from "./TypeIndicator";
 import { useCallback, useState } from "react";
+import { useTypedSelector } from '../store/rootReducer';
 
 interface TypeSelectorProps {
   value: string;
@@ -11,8 +11,8 @@ interface TypeSelectorProps {
 
 export const TypeSelector: React.FC<TypeSelectorProps> = ({ onSelect, value }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const editMode = useTypedSelector(state => state.editMode);
-  const typeIds = useTypedSelector(state => state.typeIds);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
+  const typeIds = useTypedSelector(state => state.pokemon.typeIds);
 
   const toggleShowDropdown = useCallback((event: Event) => {
     event.stopPropagation();

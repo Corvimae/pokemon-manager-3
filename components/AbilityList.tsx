@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { useTypedSelector, ABILITY, addAbility, removeAbility } from '../store/store';
+import { ABILITY, addAbility, removeAbility } from '../store/pokemon';
 import { useDispatch } from 'react-redux';
 import { useRequestData } from '../utils/requests';
 import { AbilityData } from '../utils/types';
@@ -8,11 +8,12 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DefinitionLookahead } from './DefinitionLookahead';
 import { StatValue, IconButton, Button } from './Layout';
 import { Theme } from '../utils/theme';
+import { useTypedSelector } from '../store/rootReducer';
 
 export const AbilityList: React.FC = () => {
   const dispatch = useDispatch();
-  const pokemon = useTypedSelector(store => store.pokemon);
-  const editMode = useTypedSelector(state => state.editMode);
+  const pokemon = useTypedSelector(store => store.pokemon.data);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
 
   const [selectedAbility, setSelectedAbility] = useState(null);
 

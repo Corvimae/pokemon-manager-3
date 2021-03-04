@@ -1,4 +1,3 @@
-import { useSelector, TypedUseSelectorHook } from "react-redux";
 import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon, MobileMode, Gender } from "../utils/types";
 
 export const MOVE = 'MOVE';
@@ -466,7 +465,7 @@ type PokemonReducerAction =
 interface State {
   isLoggedIn: boolean;
   mobileMode: MobileMode;
-  pokemon: PokemonData | undefined;
+  data: PokemonData | undefined;
   allies: AlliedPokemon[];
   typeIds: Record<string, number>;
   currentHealth: number;
@@ -480,7 +479,7 @@ interface State {
 const initialState: State = {
   isLoggedIn: false,
   mobileMode: 'data',
-  pokemon: undefined,
+  data: undefined,
   allies: [],
   typeIds: {},
   currentHealth: 0,
@@ -517,7 +516,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case LOAD_DATA_SUCCESS:
       return {
         ...state,
-        pokemon: action.payload.data,
+        data: action.payload.data,
         currentHealth: action.payload.data.currentHealth,
       };
     
@@ -530,12 +529,12 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_COMBAT_STAGE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           stats: {
-            ...state.pokemon.stats,
+            ...state.data.stats,
             combatStages: {
-              ...state.pokemon.stats.combatStages,
+              ...state.data.stats.combatStages,
               [action.payload.stat]: action.payload.value,
             },
           }
@@ -591,8 +590,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_NATURE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           nature: {
             id: action.payload.id,
             name: action.payload.name,
@@ -603,8 +602,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_HELD_ITEM:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           heldItem: {
             id: action.payload.heldItemId,
             name: action.payload.heldItemName,
@@ -613,16 +612,16 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
       };
 
     case ADD_ABILITY_SUCCESS: {
-      const alreadyHasAbility = state.pokemon.abilities.some(ability => ability.definition.id === action.meta.previousAction.payload.abilityId);
+      const alreadyHasAbility = state.data.abilities.some(ability => ability.definition.id === action.meta.previousAction.payload.abilityId);
 
       if (alreadyHasAbility) return state;
       
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           abilities: [
-            ...state.pokemon.abilities,
+            ...state.data.abilities,
             {
               id: action.payload.data,
               definition: {
@@ -638,18 +637,18 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case REMOVE_ABILITY:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          abilities: state.pokemon.abilities.filter(ability => ability.id !== action.payload.ability.id),
+        data: {
+          ...state.data,
+          abilities: state.data.abilities.filter(ability => ability.id !== action.payload.ability.id),
         },
       };
 
     case UPDATE_CAPABILITY_VALUE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          capabilities: state.pokemon.capabilities.map(capability => (
+        data: {
+          ...state.data,
+          capabilities: state.data.capabilities.map(capability => (
             capability.id === action.payload.capabilityId ? { ...capability, value: action.payload.value } : capability
           )),
         },
@@ -662,16 +661,16 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
       };
 
     case ADD_CAPABILITY_SUCCESS: {
-      const alreadyHasCapability = state.pokemon.capabilities.some(cap => cap.definition.id === action.meta.previousAction.payload.capabilityId);
+      const alreadyHasCapability = state.data.capabilities.some(cap => cap.definition.id === action.meta.previousAction.payload.capabilityId);
 
       if (alreadyHasCapability) return state;
       
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           capabilities: [
-            ...state.pokemon.capabilities,
+            ...state.data.capabilities,
             {
               id: action.payload.data,
               value: action.meta.previousAction.payload.value,
@@ -688,18 +687,18 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case REMOVE_CAPABILITY:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          capabilities: state.pokemon.capabilities.filter(cap => cap.id !== action.payload.capabilityId),
+        data: {
+          ...state.data,
+          capabilities: state.data.capabilities.filter(cap => cap.id !== action.payload.capabilityId),
         },
       };
 
     case ADD_MOVE_SUCCESS:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          moves: [...state.pokemon.moves, action.payload.data],
+        data: {
+          ...state.data,
+          moves: [...state.data.moves, action.payload.data],
         },
       };
 
@@ -707,27 +706,27 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case REMOVE_MOVE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          moves: state.pokemon.moves.filter(move => move.id !== action.payload.moveId),
+        data: {
+          ...state.data,
+          moves: state.data.moves.filter(move => move.id !== action.payload.moveId),
         },
       };
 
     case SET_MOVE_PP_UP:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          moves: state.pokemon.moves.map(move => move.id === action.payload.moveId ? { ...move, ppUp: action.payload.enabled } : move),
+        data: {
+          ...state.data,
+          moves: state.data.moves.map(move => move.id === action.payload.moveId ? { ...move, ppUp: action.payload.enabled } : move),
         },
       };
 
     case SET_MOVE_TYPE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          moves: state.pokemon.moves.map(move => move.id === action.payload.moveId ? {
+        data: {
+          ...state.data,
+          moves: state.data.moves.map(move => move.id === action.payload.moveId ? {
             ...move,
             type: {
               id: action.payload.typeId,
@@ -740,9 +739,9 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_TYPE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
-          types: state.pokemon.types.map((type, index) => index === action.payload.index ? { 
+        data: {
+          ...state.data,
+          types: state.data.types.map((type, index) => index === action.payload.index ? { 
             id: action.payload.typeId,
             name: action.payload.typeName
           } : type),
@@ -752,8 +751,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_ACTIVE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           isActive: action.payload.active,
         },
       };
@@ -761,8 +760,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_NAME:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           name: action.payload.value,
         },
       };
@@ -770,8 +769,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_SPECIES_SUCCESS:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           species: action.payload.data,
         },
       };
@@ -779,8 +778,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_EXPERIENCE:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           experience: action.payload.experience,
         },
       };
@@ -788,8 +787,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_GENDER:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           gender: action.payload.value as Gender,
         },
       };
@@ -797,8 +796,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_LOYALTY:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           loyalty: action.payload.value,
         },
       };
@@ -806,8 +805,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_POKEMON_OWNER:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           owner: {
             id: action.payload.ownerId,
             name: action.payload.ownerName,
@@ -819,12 +818,12 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_BASE_STAT:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           stats: {
-            ...state.pokemon.stats,
+            ...state.data.stats,
             base: {
-              ...state.pokemon.stats.base,
+              ...state.data.stats.base,
               [action.payload.stat]: action.payload.value,
             },
           },
@@ -834,12 +833,12 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_ADDED_STAT:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           stats: {
-            ...state.pokemon.stats,
+            ...state.data.stats,
             added: {
-              ...state.pokemon.stats.added,
+              ...state.data.stats.added,
               [action.payload.stat]: action.payload.value,
             },
           },
@@ -847,32 +846,32 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
       };
 
     case SET_MOVE_ORDER: {
-      const matchingMove = state.pokemon.moves.find(move => move.id === action.payload.moveId);
-      const moveSet = [...state.pokemon.moves];
+      const matchingMove = state.data.moves.find(move => move.id === action.payload.moveId);
+      const moveSet = [...state.data.moves];
       
       moveSet.splice(moveSet.indexOf(matchingMove), 1);
       moveSet.splice(action.payload.position, 0, matchingMove);
 
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           moves: moveSet
         },
       };
     }
 
     case SET_CAPABILITY_ORDER: {
-      const matchingCapability = state.pokemon.capabilities.find(cap => cap.id === action.payload.capabilityId);
-      const capabilitySet = [...state.pokemon.capabilities];
+      const matchingCapability = state.data.capabilities.find(cap => cap.id === action.payload.capabilityId);
+      const capabilitySet = [...state.data.capabilities];
       
       capabilitySet.splice(capabilitySet.indexOf(matchingCapability), 1);
       capabilitySet.splice(action.payload.position, 0, matchingCapability);
 
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           capabilities: capabilitySet
         },
       };
@@ -881,8 +880,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SAVE_NOTES:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           notes: action.payload.notes,
         },
       };
@@ -890,8 +889,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SAVE_GM_NOTES:
       return {
         ...state,
-        pokemon: {
-          ...state.pokemon,
+        data: {
+          ...state.data,
           gmNotes: action.payload.notes,
         },
       };
@@ -1345,5 +1344,3 @@ export function saveGMNotes(pokemonId: number, notes: string): PokemonReducerAct
     },
   };
 }
-
-export const useTypedSelector: TypedUseSelectorHook<State> = useSelector

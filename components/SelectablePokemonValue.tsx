@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { useTypedSelector } from '../store/store';
 import { StatValue } from './Layout';
 import { useCallback } from 'react';
 import { DefinitionLookahead } from './DefinitionLookahead';
+import { useTypedSelector } from '../store/rootReducer';
 
 interface SelectablePokemonValueProps {
   id: number;
@@ -15,8 +15,8 @@ interface SelectablePokemonValueProps {
 }
 
 export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, requireGMToEdit, className }) => {
-  const hasEditPermission = useTypedSelector(state => state.pokemon.isUserGM) || !requireGMToEdit;
-  const editMode = useTypedSelector(state => state.editMode) && hasEditPermission;
+  const hasEditPermission = useTypedSelector(state => state.pokemon.data.isUserGM) || !requireGMToEdit;
+  const editMode = useTypedSelector(state => state.pokemon.editMode) && hasEditPermission;
 
   const handleOnClick = useCallback(() => {
     if (!editMode) onClick?.();

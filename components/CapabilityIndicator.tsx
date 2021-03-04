@@ -1,13 +1,14 @@
 import { useCallback } from "react";
 import styled from 'styled-components';
 import { CapabilityData } from "../utils/types"
-import { useTypedSelector, CAPABILITY, updateCapabilityValue, removeCapability } from "../store/store";
+import { CAPABILITY, updateCapabilityValue, removeCapability } from "../store/pokemon";
 import { useRequestData } from "../utils/requests";
 import { Theme } from "../utils/theme";
 import { useDispatch } from "react-redux";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { IconButton } from "./Layout";
 import { SortableElement } from "react-sortable-hoc";
+import { useTypedSelector } from "../store/rootReducer";
 
 interface CapabilityIndicatorProps {
   capability: CapabilityData;
@@ -15,8 +16,8 @@ interface CapabilityIndicatorProps {
 
 export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capability }) => {
   const dispatch = useDispatch();
-  const pokemonId = useTypedSelector(store => store.pokemon.id);
-  const editMode = useTypedSelector(state => state.editMode);
+  const pokemonId = useTypedSelector(store => store.pokemon.data.id);
+  const editMode = useTypedSelector(state => state.pokemon.editMode);
 
   const requestCapabilityData = useRequestData(CAPABILITY);
 

@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import Tippy from '@tippy.js/react';
-import { useTypedSelector } from '../store/store';
 import { Theme } from '../utils/theme';
 import { calculateLevel } from '../utils/level';
+import { useTypedSelector } from '../store/rootReducer';
 
 export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
-  const mobileMode = useTypedSelector(store => store.mobileMode);
-  const allies = useTypedSelector(state => state.allies);
+  const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
+  const allies = useTypedSelector(state => state.pokemon.allies);
 
   return (
     <Container isActiveMobileMode={mobileMode === 'allies'} mobile={mobile}>
