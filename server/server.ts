@@ -21,6 +21,7 @@ const SequelizeStore = connectSessionSequelize(session.Store);
 
 const sequelize = new Sequelize({
   dialect: 'postgres',
+  host: process.env.PG_HOST ?? 'localhost',
   database: process.env.PG_DATABASE ?? 'pokemon-manager-3',
   username: process.env.PG_USERNAME ?? 'may',
   password: process.env.PG_PASSWORD,

@@ -32,3 +32,39 @@ spec:
         image: corvimae/pokemon-manager-3:latest
         ports:
         - containerPort: 3000
+        env:
+          - name: TWITCH_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: twitchClientId
+          - name: TWITCH_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name:  pokemon-manager-3
+                key: twitchClientSecret     
+          - name: PG_HOST
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: pgHost
+          - name: PG_PORT
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: pgPort
+          - name: PG_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: pgUsername
+          - name: PG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: pgPassword
+          - name: PG_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3
+                key: pgDatabase
