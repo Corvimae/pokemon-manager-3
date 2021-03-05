@@ -37,7 +37,12 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pokemon-manager-3-secrets
-                key: twitch.clientId
+                key: twitch.clientId     
+          - name: SESSION_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: pokemon-manager-3-secrets
+                key: session.secret
           - name: TWITCH_CLIENT_SECRET
             valueFrom:
               secretKeyRef:

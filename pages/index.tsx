@@ -135,7 +135,7 @@ const TrainerPage = ({ displayName }) => {
 };
 
 TrainerPage.getInitialProps = async (context) => ({
-  displayName: context.req.user[0]?.displayName,
+  displayName: context.req.user?.[0]?.displayName,
 });
 
 export default TrainerPage;
@@ -266,7 +266,6 @@ const TrainerSelector = styled.div<{ active: boolean }>`
     margin-top: 0.5rem;
   }
 `;
-
 
 const BottomBar = styled.div`
   position: absolute;
