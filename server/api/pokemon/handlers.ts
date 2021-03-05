@@ -72,7 +72,7 @@ export async function createNewPokemon(req: Request<{ trainerId: number }>, res:
   const pokemon = await Pokemon.create({
     name: 'New Pokemon',
     trainerId: trainer.id,
-    nature: (await RulebookNature.findOne({
+    natureId: (await RulebookNature.findOne({
       where: {
         name: 'Cuddly',
       },
