@@ -255,8 +255,8 @@ const TrainerSelector = styled.div<{ active: boolean }>`
   position: relative;
   height: 2rem;
   padding: 0.25rem 2rem;
-  background: ${props => props.active && '#333'};
-  color: ${props => props.active && '#fff'};
+  background: ${props => props.active ? '#333' : 'rgba(255, 255, 255, 0.5)' };
+  color: ${props => props.active ? '#fff' : '#333'};
   border-radius: 2rem;
   overflow: hidden;
   cursor: pointer;

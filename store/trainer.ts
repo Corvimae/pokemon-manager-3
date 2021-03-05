@@ -99,6 +99,12 @@ export function reducer(state: State = initialState, action: TrainerReducerActio
         selectedTrainer: action.payload.trainerId,
       };
 
+    case CREATE_NEW_TRAINER_SUCCESS:
+      return {
+        ...state,
+        trainers: [...state.trainers, action.payload.data],
+      };
+
     case CREATE_NEW_POKEMON_SUCCESS:
       return {
         ...state,
