@@ -36,35 +36,35 @@ spec:
           - name: TWITCH_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: twitch.clientId
           - name: TWITCH_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name:  pokemon-manager-3
+                name:  pokemon-manager-3-secrets
                 key: twitch.secret
           - name: PG_HOST
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: postgres.host
           - name: PG_PORT
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: postgres.port
           - name: PG_USERNAME
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: postgres.username
           - name: PG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: postgres.password
           - name: PG_DATABASE
             valueFrom:
               secretKeyRef:
-                name: pokemon-manager-3
+                name: pokemon-manager-3-secrets
                 key: postgress.database
