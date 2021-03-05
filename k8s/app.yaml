@@ -67,4 +67,4 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pokemon-manager-3-secrets
-                key: postgress.database
+                key: postgres.database
