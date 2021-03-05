@@ -71,6 +71,21 @@ const PokemonViewer = () => {
   ) : <LoadingIcon />;
 }
 
+export async function getServerSideProps(ctx) {
+  if (!ctx.req.isAuthenticated()) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/login',
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
+
 export default PokemonViewer;
 
 const Container = styled.div`

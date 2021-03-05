@@ -134,9 +134,22 @@ const TrainerPage = ({ displayName }) => {
  );
 };
 
-TrainerPage.getInitialProps = async (context) => ({
-  displayName: context.req.user?.[0]?.displayName,
-});
+export async function getServerSideProps(ctx) {
+  if (!ctx.req.isAuthenticated()) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/login',
+      },
+    };
+  }
+
+  return {
+    props: {
+      displayName: ctx.req.user?.[0]?.displayName,
+    },
+  };
+}
 
 export default TrainerPage;
 

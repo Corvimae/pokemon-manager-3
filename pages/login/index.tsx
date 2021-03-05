@@ -71,8 +71,9 @@ const PageTitle = styled.div`
 
 const ActionContainer = styled.div`
   position: absolute;
-  bottom: 4rem;
+  top: 50%;
   right: 8rem;
+  transform: translateY(-50%);
 `;
 
 const LoginAction = styled(Button)`

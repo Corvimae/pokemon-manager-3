@@ -26,8 +26,8 @@ const sequelize = new Sequelize({
   username: process.env.PG_USERNAME ?? 'may',
   password: process.env.PG_PASSWORD,
   port: parseInt(process.env.PG_PORT, 10) ?? 5432,
-  dialectOptions: {
-    ssl: dev ? {} : {
+  dialectOptions: dev ? undefined : {
+    ssl: {
       require: true,
       rejectUnauthorized: false,
     },
@@ -112,28 +112,22 @@ app.prepare().then(async () => {
       res.redirect("/");
     });
 
-    server.use('/api/v1', apiRouter);
-
     server.get('/login', (req, res) => handle(req, res));
 
     server.get('/logout', (req, res) => {
       req.logout();
       res.redirect('/login');
     });
-
-    server.use('*', (req, res, next) => {
-      if (req.is('*/html') && !req.isAuthenticated()) return res.redirect('/login');
-
-      next();
-    });
     
+    server.use('/api/v1', apiRouter);
+
     server.get('*', (req, res) => handle(req, res));
 
     server.listen(3000, (err: Error): void => {
       if (err) throw err;
 
       console.log(`> Server listening on port ${port} (dev: ${dev})`); 
-    })
+    });
   } catch(e) {
     console.error('Unable to start server, exiting...');
     console.error(e);
