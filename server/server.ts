@@ -26,7 +26,9 @@ const sequelize = new Sequelize({
   username: process.env.PG_USERNAME ?? 'may',
   password: process.env.PG_PASSWORD,
   port: parseInt(process.env.PG_PORT, 10) ?? 5432,
-  ssl: !dev,
+  dialectOptions: {
+    ssl: !dev,
+  },
   models: [`${__dirname}/models`],
   modelMatch: (filename, member) => {
     return filename[0].toUpperCase() + filename.substring(1) === member;
