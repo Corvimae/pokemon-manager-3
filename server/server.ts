@@ -27,7 +27,10 @@ const sequelize = new Sequelize({
   password: process.env.PG_PASSWORD,
   port: parseInt(process.env.PG_PORT, 10) ?? 5432,
   dialectOptions: {
-    ssl: !dev,
+    ssl: dev ? {} : {
+      require: true,
+      rejectUnauthorized: false,
+    },
   },
   models: [`${__dirname}/models`],
   modelMatch: (filename, member) => {
