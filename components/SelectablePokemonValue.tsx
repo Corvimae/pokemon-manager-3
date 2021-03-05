@@ -15,7 +15,7 @@ interface SelectablePokemonValueProps {
 }
 
 export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, requireGMToEdit, className }) => {
-  const hasEditPermission = useTypedSelector(state => state.pokemon.data.isUserGM) || !requireGMToEdit;
+  const hasEditPermission = useTypedSelector(state => state.pokemon.isUserGM) || !requireGMToEdit;
   const editMode = useTypedSelector(state => state.pokemon.editMode) && hasEditPermission;
 
   const handleOnClick = useCallback(() => {

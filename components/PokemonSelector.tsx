@@ -8,6 +8,7 @@ import Tippy from '@tippy.js/react';
 import { Theme } from '../utils/theme';
 import { calculateLevel } from '../utils/level';
 import { useTypedSelector } from '../store/rootReducer';
+import { PokemonIcon } from './Layout';
 
 export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
   const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
@@ -22,7 +23,7 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
       {allies.map(ally => (
         <AllySelector key={ally.id} href={`/pokemon/${ally.id}`}>
           <Tippy content={`${ally.name} - Lv. ${calculateLevel(ally.experience)} ${ally.species}`} boundary="viewport">
-            <AllyImage backgroundImage={ally.icon} />
+            <AllyImage dexNumber={ally.species?.dexNumber ?? 0} />
           </Tippy>
           <AllyName>{ally.name}</AllyName>
           <AllyDescription>
@@ -60,7 +61,7 @@ const AllySelector = styled.a`
   }
 `;
 
-const AllyImage = styled.div<{ backgroundImage?: string }>`
+const AllyImage = styled(PokemonIcon)`
   width: 100%;
   height: 100%;
   background-image: url(${({ backgroundImage }) => backgroundImage});

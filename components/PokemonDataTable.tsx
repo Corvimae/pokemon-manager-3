@@ -2,45 +2,43 @@ import { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { HELD_ITEM, setNature, setHeldItem, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/pokemon';
+import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/pokemon';
 import { TypeIndicator } from './TypeIndicator';
-import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, NumericInput, TypeList } from './Layout';
-import { useRequestData } from '../utils/requests';
+import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, TypeList } from './Layout';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
 import { SelectablePokemonValue } from './SelectablePokemonValue';
 import { AbilityList } from './AbilityList';
 import { TypeSelector } from './TypeSelector';
 import { RichTextEditor } from './RichTextEditor';
 import { Theme } from '../utils/theme';
-import { useCombinedDefensiveEffectivenesses } from '../utils/pokemonTypes';
+import { TypeName, useCombinedDefensiveEffectivenesses } from '../utils/pokemonTypes';
 import { useTypedSelector } from '../store/rootReducer';
+import { HeldItemList } from './HeldItemList';
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
   const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
   const editMode = useTypedSelector(store => store.pokemon.editMode);
   const pokemon = useTypedSelector(store => store.pokemon.data);
+  const isUserGM = useTypedSelector(store => store.pokemon.isUserGM);
 
-  
-  const showGMEditor = editMode && pokemon.isUserGM;
+  const showGMEditor = editMode && isUserGM;
   
   const physicalEvasions = usePhysicalEvasions();
   const specialEvasions = useSpecialEvasions();
   const speedEvasions = useSpeedEvasions();
   const defenses = useCombinedDefensiveEffectivenesses();
 
-  const requestHeldItemData = useRequestData(HELD_ITEM);
+  const handleChangeType1 = useCallback(name => {
+    dispatch(setPokemonType(pokemon.id, name, pokemon.type2 as TypeName));
+  }, [dispatch, pokemon.id,pokemon.type2]);
 
-  const handleChangeType = useCallback((index, id, name) => {
-    dispatch(setPokemonType(pokemon.id, index, id, name));
-  }, [dispatch, pokemon.id]);
+  const handleChangeType2 = useCallback(name => {
+    dispatch(setPokemonType(pokemon.id, pokemon.type1 as TypeName, name));
+  }, [dispatch, pokemon.id, pokemon.type1]);
 
-  const handleChangeNature = useCallback(({ value, label }) => {
-    dispatch(setNature(pokemon.id, value, label));
-  }, [dispatch, pokemon.id])
-  
-  const handleChangeHeldItem = useCallback(({ value, label }) => {
-    dispatch(setHeldItem(pokemon.id, value, label));
+  const handleChangeNature = useCallback(({ value }) => {
+    dispatch(setPokemonNature(pokemon.id, value));
   }, [dispatch, pokemon.id]);
 
   const handleChangeSpecies = useCallback(({ value }) => {
@@ -68,9 +66,9 @@ export const PokemonDataTable = () => {
       <StatRow>
         <StatKey>Trainer</StatKey>
         <SelectablePokemonValue
-          id={pokemon.owner.id}
-          value={pokemon.owner.name}
-          path={`trainers/${pokemon.campaign.id}`}
+          id={pokemon.trainer.id}
+          value={pokemon.trainer.name}
+          path={`trainers`}
           onChange={handleChangeOwner}
           requireGMToEdit
         />
@@ -80,16 +78,15 @@ export const PokemonDataTable = () => {
         <SelectablePokemonValue
           id={pokemon.species.id}
           value={pokemon.species.name}
-          path='species'
+          path='reference/species'
           onChange={handleChangeSpecies}
         />
       </StatRow>
       <StatRow>
         <StatKey>Type</StatKey>
         <TypeIcons>
-          {pokemon.types.map((type, index) => (
-            <TypeSelector key={index} value={type.name} onSelect={(id, name) => handleChangeType(index, id, name)} />
-          ))}
+          <TypeSelector value={pokemon.type1} onSelect={name => handleChangeType1(name)} />
+          <TypeSelector value={pokemon.type2} onSelect={name => handleChangeType2(name)} />
         </TypeIcons>
       </StatRow>
       <StatRowDivider />
@@ -126,7 +123,7 @@ export const PokemonDataTable = () => {
         <SelectablePokemonValue
           id={pokemon.nature.id}
           value={pokemon.nature.name}
-          path='natures'
+          path='reference/natures'
           onChange={handleChangeNature}
         />
       </StatRow>
@@ -135,14 +132,8 @@ export const PokemonDataTable = () => {
         <AbilityList />
       </StatRow>
       <StatRow>
-        <StatKey>Held Item</StatKey>
-        <SelectablePokemonValue
-          id={pokemon.heldItem.id}
-          value={pokemon.heldItem.name}
-          path='heldItems'
-          onChange={handleChangeHeldItem}
-          onClick={() => requestHeldItemData(pokemon.heldItem.id)}
-        />
+        <StatKey>Held Items</StatKey>
+        <HeldItemList />
       </StatRow>
       <StatRowDivider />
       <StatRow>

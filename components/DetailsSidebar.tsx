@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
-import { getAttackType } from './moves';
+import { getAttackType } from '../utils/moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -24,19 +24,19 @@ export const DetailsSidebar = () => {
     dispatch(saveNotes(pokemon.id, notes));
   }, [dispatch, pokemon.id]);
 
-  const typeEffectiveness = activeDetails.details?.type === MOVE && getOffensiveEffectivenesses(activeDetails.details?.value.type.name.toLowerCase() as TypeName);
+  const typeEffectiveness = activeDetails.details?.type === MOVE && getOffensiveEffectivenesses(activeDetails.details?.value?.type as TypeName);
 
   return(
     <Container className={activeDetails.mode == 'none' ? '' : 'active'}>
       <BackgroundStripe />
       <Title>
-        {activeDetails.mode !== 'notes' && (activeDetails.details?.value.name ?? <span>&nbsp;</span>)}
+        {activeDetails.mode !== 'notes' && (activeDetails.details?.value?.name ?? <span>&nbsp;</span>)}
         {activeDetails.mode === 'notes' && 'Notes'}
         <IconButton icon={faTimes} onClick={handleClose} inverse />
       </Title>
 
       <StatList>
-        {activeDetails.details?.type === MOVE && (
+        {activeDetails.details?.type === MOVE && activeDetails.details?.value && (
           <>
             <StatRow>
               <StatKey>Accuracy</StatKey>
@@ -44,27 +44,27 @@ export const DetailsSidebar = () => {
             </StatRow>
             <StatRow>
               <StatKey>Range</StatKey>
-              <StatValue>{activeDetails.details.value.attack_range}</StatValue>
+              <StatValue>{activeDetails.details.value.range}</StatValue>
             </StatRow>
             <StatRow>
               <StatKey>Attack Type</StatKey>
-              <StatValue>{getAttackType(activeDetails.details.value.attack_type)}</StatValue>
+              <StatValue>{getAttackType(activeDetails.details.value.damageType)}</StatValue>
             </StatRow>
-            {activeDetails.details.value.damage !== '-' && (
+            {activeDetails.details.value.damageBase !== -1 && (
               <StatRow>
                 <StatKey>Damage</StatKey>
-                <StatValue>{activeDetails.details.value.damage}</StatValue>
+                <StatValue>{activeDetails.details.value.damageBase}</StatValue>
               </StatRow>
             )}
-            {activeDetails.details.value.effects !== '-' && (
+            {activeDetails.details.value.effect !== '-' && (
               <>
                 <StatRowDivider />
                 <StatRow>
-                  <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effects}} />
+                  <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
                 </StatRow>
               </>
             )}
-            {activeDetails.details.value.attack_type !== 2 && (
+            {activeDetails.details.value.damageType !== 'status' && (
               <>
                 <StatRowDivider />
                 <StatRow>
@@ -95,7 +95,7 @@ export const DetailsSidebar = () => {
             )}
           </>
         )}
-        {activeDetails.details?.type === ABILITY && (
+        {activeDetails.details?.type === ABILITY && activeDetails.details?.value && (
           <>
             <StatRow>
               <StatKey>Frequency</StatKey>
@@ -103,14 +103,14 @@ export const DetailsSidebar = () => {
             </StatRow>
             <StatRowDivider />
             <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.description}} />
+              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
             </StatRow>
           </>
         )}
-        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM) && (
+        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM) && activeDetails.details?.value && (
           <>
             <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.description}} />
+              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
             </StatRow>
           </>
         )}

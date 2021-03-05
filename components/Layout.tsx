@@ -231,3 +231,13 @@ export const TypeList = styled(StatValue)`
     grid-template-columns: repeat(3, max-content);
   }
 `;
+
+export const PokemonIcon = styled.div<{ dexNumber: number }>`
+  width: 40px;
+  height: 30px;
+  background: url("https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png?v4") no-repeat scroll;
+  background-position-x: -${props => Math.floor(props.dexNumber % 12) * 40}px;
+  background-position-y: -${props => Math.floor(props.dexNumber / 12) * 30}px;
+  transform: scale(1.5);
+`;
+

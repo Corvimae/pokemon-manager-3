@@ -1,10 +1,7 @@
 import styled from 'styled-components';
-import { MOVE, addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestMove } from '../store/pokemon';
-import { MoveData } from '../utils/types';
+import { addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestDetails } from '../store/pokemon';
 import { Theme } from '../utils/theme';
-import { TypeIndicator } from './TypeIndicator';
-import { getAttackType } from './moves';
-import { useRequestData } from '../utils/requests';
+import { getAttackType } from '../utils/moves';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AddItemButton, Button, DropdownHeader, IconButton } from './Layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,15 +14,17 @@ import { TypeSelector } from './TypeSelector';
 import { CapabilityList } from './CapabilityList';
 import { SortableElement, SortableContainer } from 'react-sortable-hoc';
 import { useTypedSelector } from '../store/rootReducer';
+import { JunctionedMove } from '../server/models/pokemon';
+import { TypeName } from '../utils/pokemonTypes';
 
-const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
+const UnsortableMove: React.FC<{ move: JunctionedMove }> = ({ move }) => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.pokemon.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
 
   const handleRequestMove = useCallback(() => {
-    if (!editMode) dispatch(requestMove(pokemonId, move.definition.id));
-  }, [dispatch, pokemonId, move.definition.id, editMode]);
+    if (!editMode) dispatch(requestDetails('MOVE', move.id));
+  }, [dispatch, pokemonId, move.id, editMode]);
 
   const handleRemoveMove = useCallback(() => {
     dispatch(removeMove(pokemonId, move.id));
@@ -33,25 +32,25 @@ const UnsortableMove: React.FC<{ move: MoveData }> = ({ move }) => {
   
   const handleTogglePPUp = useCallback(() => {
     if (editMode) {
-      dispatch(setMovePPUp(pokemonId, move.id, !move.ppUp));
+      dispatch(setMovePPUp(pokemonId, move.id, !move.PokemonMove.isPPUpped));
     }
   }, [editMode, dispatch, pokemonId, move]);
 
-  const handleSetType = useCallback((id, name) => {
-    dispatch(setMoveType(pokemonId, move.id, id, name));
+  const handleSetType = useCallback((type: TypeName) => {
+    dispatch(setMoveType(pokemonId, move.id, type));
   }, [dispatch, pokemonId, move.id]);
 
   return (
     <MoveContainer onClick={handleRequestMove}>
       <MoveName>
         {editMode && <RemoveMoveButton icon={faTimes} onClick={handleRemoveMove} />}
-        {move.definition.name}
+        {move.name}
       </MoveName>
-      <MoveAccuracy>AC {move.definition.accuracy}</MoveAccuracy>
-      <MoveDamage>{move.definition.damage}</MoveDamage>
-      <MoveAttackType>{getAttackType(move.definition.attackType)}</MoveAttackType>
+      <MoveAccuracy>AC {move.ac}</MoveAccuracy>
+      <MoveDamage>{move.damageBase}</MoveDamage>
+      <MoveAttackType>{getAttackType(move.damageType)}</MoveAttackType>
       <MoveType>
-        <TypeSelector value={move.type.name} onSelect={handleSetType} />
+        <TypeSelector value={move.PokemonMove.typeOverride ?? move.type} onSelect={handleSetType} />
       </MoveType>
       <MoveFrequencyContainer>
         <MoveFrequency onClick={handleTogglePPUp} editMode={editMode}>
@@ -113,7 +112,7 @@ export const PokemonMoveList = () => {
                 <DropdownHeader>Move</DropdownHeader>
                 <DropdownHeader/>
                 <div>
-                  <DefinitionLookahead path='moves' onChange={setEditorSelection} />
+                  <DefinitionLookahead path='reference/moves' onChange={setEditorSelection} />
                 </div>
                 <div>
                   <AddMoveSubmitButton onClick={handleSubmit} disabled={editorSelection === null}>

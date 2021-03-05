@@ -1,132 +1,88 @@
-import { Pokemon } from "../server/models/pokemon";
+import { JunctionedMove, Pokemon } from "../server/models/pokemon";
 import { useTypedSelector } from "../store/rootReducer";
 import { calculateLevel } from "./level";
-import { PokemonData, MoveData } from "./types";
+import { Stat, CombatStage } from "./types";
 
 const MOVE_FREQUENCIES = ['At-Will', 'EOT', 'Battle', 'Center'];
 
-function useFormula(formula: string, pokemon: PokemonData): number {
-  const combatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages);
-  const totalAttack = useCalculatedAttackStat();
-  const totalDefense = useCalculatedDefenseStat();
-  const totalSpecialAttack = useCalculatedSpecialAttackStat();
-  const totalSpecialDefense = useCalculatedSpecialDefenseStat();
-  const totalSpeed = useCalculatedSpeedStat();
+function clamp(value: number, min: number, max: number): number {
+  if (value < min) return min;
+  if (value > max) return max;
 
-  const replacementValues = {
-    level: calculateLevel(pokemon.experience),
-    base_hp: pokemon.stats.base.hp,
-    base_attack: pokemon.stats.base.attack,
-    base_defense: pokemon.stats.base.defense,
-    base_spattack: pokemon.stats.base.spattack,
-    base_spdefense: pokemon.stats.base.spdefense,
-    base_speed: pokemon.stats.base.speed,
-    add_hp: pokemon.stats.added.hp,
-    add_attack: pokemon.stats.added.attack,
-    add_defense: pokemon.stats.added.defense,
-    add_spattack: pokemon.stats.added.spattack,
-    add_spdefense: pokemon.stats.added.spdefense,
-    add_speed: pokemon.stats.added.speed,
-    total_hp: pokemon.stats.base.hp + pokemon.stats.added.hp,
-    total_attack: totalAttack,
-    total_defense: totalDefense,
-    total_spattack: totalSpecialAttack,
-    total_spdefense: totalSpecialDefense,
-    total_speed: totalSpeed,
-    attack_stages: combatStages.attack,
-    defense_stages: combatStages.defense,
-    spattack_stages: combatStages.spattack,
-    spdefense_stages: combatStages.spdefense,
-    speed_stages: combatStages.speed,
-  };
-
-  const commands = {
-    min: 'Math.min',
-    max: 'Math.max',
-    floor: 'Math.floor',
-    ceil: 'Math.ceil',
-  }
-
-  const templateRegex = /{(\w*)}/g
-  
-  const templateReplaced = formula.replace(templateRegex, (_match, p1) => replacementValues[p1] ?? 9999);
-
-  return eval(Object.entries(commands).reduce((acc, [from, to]) => acc.split(from).join(to), templateReplaced));
+  return value;
 }
 
 export function useTotalHP() {
   const pokemon = useTypedSelector(state => state.pokemon.data);
 
-  return useFormula(pokemon.campaign.healthFormula, pokemon);
+  return calculateTotalHP(pokemon);
 }
 
 export function usePhysicalEvasions() {
-  const pokemon = useTypedSelector(state => state.pokemon.data);
-
-  return useFormula(pokemon.campaign.physicalEvasionFormula, pokemon);
+  const adjustedDefense = useCalculatedDefenseStat();
+  
+  return clamp(Math.floor(adjustedDefense / 5), -6, 6);
 }
 
 export function useSpecialEvasions() {
-  const pokemon = useTypedSelector(state => state.pokemon.data);
-
-  return useFormula(pokemon.campaign.specialEvasionFormula, pokemon);
+  const adjustdSpecialDefense = useCalculatedSpecialDefenseStat();
+  
+  return clamp(Math.floor(adjustdSpecialDefense / 5), -6, 6);
 }
 
 export function useSpeedEvasions() {
-  const pokemon = useTypedSelector(state => state.pokemon.data);
+  const adjustedSpeed = useCalculatedSpeedStat();
 
-  return useFormula(pokemon.campaign.speedEvasionFormula, pokemon);
+  return clamp(Math.floor(adjustedSpeed / 5), -6, 6);
 }
 
 function calculateCombatStageModifiedStat(total: number, stage: number) {
-  return stage === 0 ? total : stage < 0 ? Math.ceil(total * (1 - (Math.abs(stage) * 0.125))) : Math.floor(total * (1 + (stage * 0.25)));
+  return stage === 0 ? total : stage < 0 ? Math.ceil(total * (1 - (Math.abs(stage) * 0.1))) : Math.floor(total * (1 + (stage * 0.2)));
 }
 
 export function useCalculatedAttackStat() {
-  const stats = useTypedSelector(state => state.pokemon.data.stats);
-  const attackCombatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages.attack);
-
-  return calculateCombatStageModifiedStat(stats.base.attack + stats.added.attack, attackCombatStages);
+  const base = useTypedSelector(state => state.pokemon.data.baseAttack);
+  const added = useTypedSelector(state => state.pokemon.data.addedAttack);
+  const combatStages = useTypedSelector(state => state.pokemon.data.attackCombatStages);
+  
+  return calculateCombatStageModifiedStat(base + added, combatStages);
 }
 
 export function useCalculatedDefenseStat() {
-  const stats = useTypedSelector(state => state.pokemon.data.stats);
-  const defenseCombatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages.defense);
-
-  return calculateCombatStageModifiedStat(stats.base.defense + stats.added.defense, defenseCombatStages);
+  const base = useTypedSelector(state => state.pokemon.data.baseDefense);
+  const added = useTypedSelector(state => state.pokemon.data.addedDefense);
+  const combatStages = useTypedSelector(state => state.pokemon.data.defenseCombatStages);
+  
+  return calculateCombatStageModifiedStat(base + added, combatStages);
 }
 
-
 export function useCalculatedSpecialAttackStat() {
-  const stats = useTypedSelector(state => state.pokemon.data.stats);
-  const specialAttackCombatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages.spattack);
-
-  return calculateCombatStageModifiedStat(stats.base.spattack + stats.added.spattack, specialAttackCombatStages);
+  const base = useTypedSelector(state => state.pokemon.data.baseSpAttack);
+  const added = useTypedSelector(state => state.pokemon.data.addedSpAttack);
+  const combatStages = useTypedSelector(state => state.pokemon.data.spAttackCombatStages);
+  
+  return calculateCombatStageModifiedStat(base + added, combatStages);
 }
 
 
 export function useCalculatedSpecialDefenseStat() {
-  const stats = useTypedSelector(state => state.pokemon.data.stats);
-  const specialDefenseCombatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages.spdefense);
-
-  return calculateCombatStageModifiedStat(stats.base.spdefense + stats.added.spdefense, specialDefenseCombatStages);
+  const base = useTypedSelector(state => state.pokemon.data.baseSpDefense);
+  const added = useTypedSelector(state => state.pokemon.data.baseSpDefense);
+  const combatStages = useTypedSelector(state => state.pokemon.data.spDefenseCombatStages);
+  
+  return calculateCombatStageModifiedStat(base + added, combatStages);
 }
 
 export function useCalculatedSpeedStat() {
-  const stats = useTypedSelector(state => state.pokemon.data.stats);
-  const speedCombatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages.speed);
-
-  return calculateCombatStageModifiedStat(stats.base.speed + stats.added.speed, speedCombatStages);
+  const base = useTypedSelector(state => state.pokemon.data.baseSpeed);
+  const added = useTypedSelector(state => state.pokemon.data.addedSpeed);
+  const combatStages = useTypedSelector(state => state.pokemon.data.speedCombatStages);
+  
+  return calculateCombatStageModifiedStat(base + added, combatStages);
 }
 
-export function getMoveFrequency(move: MoveData) {
-  return MOVE_FREQUENCIES[Math.max(0, MOVE_FREQUENCIES.indexOf(move.definition.frequency) - (move.ppUp ? 1 : 0))];
-}
-
-export function useTrainerHasClass(className: string) {
-  const classes = useTypedSelector(state => state.pokemon.data.owner.classes);
-
-  return classes.some(item => item.name === className);
+export function getMoveFrequency(move: JunctionedMove) {
+  return MOVE_FREQUENCIES[Math.max(0, MOVE_FREQUENCIES.indexOf(move.frequency) - (move.PokemonMove.isPPUpped ? 1 : 0))];
 }
 
 export function calculateTotalHP(pokemon: Pokemon): number {
@@ -135,4 +91,23 @@ export function calculateTotalHP(pokemon: Pokemon): number {
 
 export function calculateHPPercentage(pokemon: Pokemon): number {
   return Math.min(1, pokemon.currentHealth / calculateTotalHP(pokemon));
+}
+
+type StatField = `base${Capitalize<CombatStage>}` | `added${Capitalize<CombatStage>}` | 'baseHP' | 'addedHP';
+type CombatStageField = `${CombatStage}CombatStages`;
+
+export function getBaseStatField(stat: Stat): StatField {
+  if (stat === 'hp') return 'baseHP';
+
+  return `base${stat[0].toUpperCase() + stat.substring(1)}` as StatField;
+}
+
+export function getAddedStatField(stat: Stat): StatField {
+  if (stat === 'hp') return 'addedHP';
+
+  return `added${stat[0].toUpperCase() + stat.substring(1)}` as StatField;
+}
+
+export function getCombatStageField(stat: CombatStage): CombatStageField {
+  return `${stat}CombatStages` as CombatStageField;
 }

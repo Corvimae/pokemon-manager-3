@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { loadData, loadTypeIds, loadAllies, setMobileMode, loadAuthStatus } from '../../store/pokemon';
+import { loadData, loadAllies, setMobileMode } from '../../store/pokemon';
 import { useDispatch } from 'react-redux';
 import { PokemonDataTable } from '../../components/PokemonDataTable';
 import { PokemonStatBar } from '../../components/PokemonStatBar';
@@ -15,7 +15,6 @@ import { LoadingIcon } from '../../components/LoadingIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDiceD20, faFistRaised, faScroll, faSync } from '@fortawesome/free-solid-svg-icons';
 import { MobileMode } from '../../utils/types';
-import { AuthStatus } from '../../components/AuthStatus';
 import { useTypedSelector } from '../../store/rootReducer';
 
 const PokemonViewer = () => {
@@ -23,14 +22,9 @@ const PokemonViewer = () => {
   const pokemon = useTypedSelector(store => store.pokemon.data);
 
   const dispatch = useDispatch();
-  
-  useOnMount(() => {
-    dispatch(loadTypeIds());
-  });
 
   useEffect(() => {
     if(router.query.id) {
-      dispatch(loadAuthStatus());
       dispatch(loadData(Number(router.query.id)));
       dispatch(loadAllies(Number(router.query.id)));
     }
@@ -43,7 +37,6 @@ const PokemonViewer = () => {
   return pokemon ? (
     <Container>
       <LeftPanel>
-        <AuthStatus />
         <LeftPanelBackground />
         <TopContent>
           <PokemonNameBar />
@@ -111,10 +104,10 @@ const LeftPanel = styled.div`
 `;
 
 const LeftPanelBackground = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: -6rem;
-  width: calc(100% + 6rem);
+  width: 45rem;
   height: 100%;
   background-color: ${Theme.backgroundStripe};
   clip-path: polygon(0 0, 100% 0%, calc(100% - 8rem) 100%, 0% 100%);

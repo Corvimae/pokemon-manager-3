@@ -3,16 +3,16 @@ import { DropdownTooltip } from "./DropdownTooltip";
 import { TypeIndicator } from "./TypeIndicator";
 import { useCallback, useState } from "react";
 import { useTypedSelector } from '../store/rootReducer';
+import { TypeName, TYPE_ICONS } from '../utils/pokemonTypes';
 
 interface TypeSelectorProps {
   value: string;
-  onSelect: (id: number, name: string) => void;
+  onSelect: (type: TypeName) => void;
 }
 
 export const TypeSelector: React.FC<TypeSelectorProps> = ({ onSelect, value }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const editMode = useTypedSelector(state => state.pokemon.editMode);
-  const typeIds = useTypedSelector(state => state.pokemon.typeIds);
 
   const toggleShowDropdown = useCallback((event: Event) => {
     event.stopPropagation();
@@ -22,18 +22,18 @@ export const TypeSelector: React.FC<TypeSelectorProps> = ({ onSelect, value }) =
     }
   }, [editMode, showDropdown]);
 
-  const handleSelection = useCallback((name: string) => {
-    onSelect(typeIds[name], name);
+  const handleSelection = useCallback((typeName: TypeName) => {
+    onSelect(typeName);
     setShowDropdown(false);
-  }, [typeIds]);
+  }, [onSelect]);
 
   return (
     <Container>
       <TypeIndicator name={value} onClick={toggleShowDropdown} disabled={!editMode} icon />
       <DropdownTooltip visible={editMode && showDropdown} onVisibilityChange={setShowDropdown}>
         <TypeSelectorList>
-          {Object.keys(typeIds).map(typeName => (
-            <TypeIndicator key={typeName} name={typeName} onClick={() => handleSelection(typeName)} icon />
+          {Object.keys(TYPE_ICONS).map(typeName => (
+            <TypeIndicator key={typeName} name={typeName} onClick={() => handleSelection(typeName as TypeName)} icon />
           ))}
         </TypeSelectorList>
       </DropdownTooltip>

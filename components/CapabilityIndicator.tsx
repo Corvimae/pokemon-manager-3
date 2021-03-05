@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import styled from 'styled-components';
-import { CapabilityData } from "../utils/types"
 import { CAPABILITY, updateCapabilityValue, removeCapability } from "../store/pokemon";
 import { useRequestData } from "../utils/requests";
 import { Theme } from "../utils/theme";
@@ -9,9 +8,10 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { IconButton } from "./Layout";
 import { SortableElement } from "react-sortable-hoc";
 import { useTypedSelector } from "../store/rootReducer";
+import { JunctionedCapability } from "../server/models/pokemon";
 
 interface CapabilityIndicatorProps {
-  capability: CapabilityData;
+  capability: JunctionedCapability;
 }
 
 export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capability }) => {
@@ -30,13 +30,19 @@ export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> =
   }, [dispatch, removeCapability, capability.id]);
 
   return (
-    <Container key={capability.id} role="button" tabIndex={0} hasValue={editMode || capability.value > 0} onClick={() => !editMode && requestCapabilityData(capability.definition.id)}>
+    <Container
+      key={capability.id}
+      role="button"
+      tabIndex={0}
+      hasValue={editMode || capability.PokemonCapability.value > 0}
+      onClick={() => !editMode && requestCapabilityData(capability.id)}
+    >
       {editMode && <DeleteButton icon={faTimes} onClick={handleDelete} inverse />}
-      <CapabilityIndicatorName>{capability.definition.name}</CapabilityIndicatorName>
-      {(capability.value > 0 || editMode) && (
+      <CapabilityIndicatorName>{capability.name}</CapabilityIndicatorName>
+      {(capability.PokemonCapability.value > 0 || editMode) && (
         <CapabilityIndicatorValue editMode={editMode}>
-          {editMode && <CapabilityValueInput type="number" defaultValue={capability.value} onChange={handleEditValueChange} />}
-          {!editMode && capability.value}
+          {editMode && <CapabilityValueInput type="number" defaultValue={capability.PokemonCapability.value} onChange={handleEditValueChange} />}
+          {!editMode && capability.PokemonCapability.value}
         </CapabilityIndicatorValue>
       )}
     </Container>

@@ -1,4 +1,53 @@
-import { PokemonData, CombatStages, PokemonDataResponse, MoveData, AbilityData, MoveDefinition, AbilityDefinition, CapabilityDefinition, HeldItemDefinition, TypeData, SpeciesData, StatBlock, AlliedPokemon, MobileMode, Gender } from "../utils/types";
+import { JunctionedCapability, JunctionedMove, Pokemon } from "../server/models/pokemon";
+import { PokemonCapability } from "../server/models/pokemonCapability";
+import { PokemonMove } from "../server/models/pokemonMove";
+import { RulebookAbility } from "../server/models/rulebookAbility";
+import { RulebookCapability } from "../server/models/rulebookCapability";
+import { RulebookHeldItem } from "../server/models/rulebookHeldItem";
+import { RulebookMove } from "../server/models/rulebookMove";
+import { Trainer } from "../server/models/trainer";
+import { getAddedStatField, getBaseStatField } from "../utils/formula";
+import { TypeName } from "../utils/pokemonTypes";
+import { CombatStage, Gender, MobileMode, Stat } from "../utils/types";
+
+function removeById<T extends { id?: number }>(list: T[], id: number): T[] {
+  return list.filter(element => element.id !== id);
+}
+
+function updateById<T extends { id?: number }>(list: T[], id: number, transform: (item: T) => T): T[] {
+  return list.reduce((acc, element) => [
+    ...acc,
+    element.id == id ? transform(element) : element,
+  ], []);
+}
+
+function updateMoveJunction<T extends keyof PokemonMove>(
+  move: JunctionedMove,
+  field: T,
+  value: any
+): JunctionedMove {
+  return {
+    ...move,
+    PokemonMove: {
+      ...move.PokemonMove,
+      [field]: value,
+    } as PokemonMove,
+  } as JunctionedMove;
+}
+
+function updateCapabilityJunction<T extends keyof PokemonCapability>(
+  capability: JunctionedCapability,
+  field: T,
+  value: any
+): JunctionedCapability {
+  return {
+    ...capability,
+    PokemonCapability: {
+      ...capability.PokemonCapability,
+      [field]: value,
+    } as PokemonCapability,
+  } as JunctionedCapability;
+}
 
 export const MOVE = 'MOVE';
 export const ABILITY = 'ABILITY';
@@ -6,17 +55,13 @@ export const CAPABILITY = 'CAPABILITY';
 export const HELD_ITEM = 'HELD_ITEM';
 
 const DETAIL_REQUEST_PATHS = {
-  MOVE: 'moves',
-  ABILITY: 'abilities',
-  CAPABILITY: 'capabilities',
-  HELD_ITEM: 'helditems',
+  MOVE: 'reference/moves',
+  ABILITY: 'reference/abilities',
+  CAPABILITY: 'reference/capabilities',
+  HELD_ITEM: 'reference/heldItems',
 };
 
-const LOAD_AUTH_STATUS = 'LOAD_AUTH_STATUS';
-const LOAD_AUTH_STATUS_SUCCESS = 'LOAD_AUTH_STATUS_SUCCESS';
 const SET_MOBILE_MODE = 'SET_MOBILE_MODE';
-const LOAD_TYPE_IDS = 'LOAD_TYPE_IDS';
-const LOAD_TYPE_IDS_SUCCESS = 'LOAD_TYPE_IDS_SUCCESS';
 const LOAD_DATA = 'LOAD_DATA';
 const LOAD_DATA_SUCCESS = 'LOAD_DATA_SUCCESS';
 const LOAD_ALLIES = 'LOAD_ALLIES';
@@ -28,8 +73,11 @@ const SHOW_NOTES = 'SHOW_NOTES';
 const CLOSE_DETAILS_PANEL_ACTION = 'CLOSE_DETAILS_PANEL_ACTION';
 const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 const SET_HEALTH = 'SET_HEALTH';
-const SET_NATURE = 'SET_NATURE';
-const SET_HELD_ITEM = 'SET_HELD_ITEM';
+const SET_POKEMON_NATURE = 'SET_POKEMON_NATURE';
+const SET_POKEMON_NATURE_SUCCESS = 'SET_POKEMON_NATURE_SUCCESS';
+const ADD_HELD_ITEM = 'ADD_HELD_ITEM';
+const ADD_HELD_ITEM_SUCCESS = 'ADD_HELD_ITEM_SUCCESS';
+const REMOVE_HELD_ITEM = 'REMOVE_HELD_ITEM';
 const ADD_ABILITY = 'ADD_ABILITY';
 const ADD_ABILITY_SUCCESS = 'ADD_ABILITY_SUCCESS';
 const REMOVE_ABILITY = 'REMOVE_ABILITY';
@@ -51,8 +99,9 @@ const SET_POKEMON_EXPERIENCE = 'SET_POKEMON_EXPERIENCE';
 const SET_POKEMON_GENDER = 'SET_POKEMON_GENDER';
 const SET_POKEMON_LOYALTY = 'SET_POKEMON_LOYALTY';
 const SET_POKEMON_OWNER = 'SET_POKEMON_OWNER';
-const SET_BASE_STAT = 'SET_BASE_STAT';
-const SET_ADDED_STAT = 'SET_ADDED_STAT';
+const SET_POKEMON_OWNER_SUCCESS = 'SET_POKEMON_OWNER_SUCCESS';
+const SET_POKEMON_BASE_STAT = 'SET_POKEMON_BASE_STAT';
+const SET_POKEMON_ADDED_STAT = 'SET_POKEMON_ADDED_STAT';
 const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
 const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
 const SAVE_NOTES = 'SAVE_NOTES';
@@ -60,27 +109,27 @@ const SAVE_GM_NOTES = 'SAVE_GM_NOTES';
 
 interface ActiveMove {
   type: typeof MOVE;
-  value: MoveDefinition | undefined;
+  value: RulebookMove | undefined;
 }
 
 interface ActiveAbility {
   type: typeof ABILITY;
-  value: AbilityDefinition | undefined;
+  value: RulebookAbility | undefined;
 }
 
 interface ActiveCapability {
   type: typeof CAPABILITY;
-  value: CapabilityDefinition | undefined;
+  value: RulebookCapability | undefined;
 }
 
 interface ActiveHeldItem {
   type: typeof HELD_ITEM;
-  value: HeldItemDefinition;
+  value: RulebookHeldItem;
 }
 
 type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem;
+type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem;
 export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY | typeof HELD_ITEM;
-
 interface AxiosRequest {
   request: {
     url: string;
@@ -93,80 +142,53 @@ interface AxiosResponse<T> {
   data: T;
 }
 
+type RequestActions<K extends string, T, U = {}> = {
+  type: K;
+  payload: AxiosRequest & U;
+} | {
+  type: `${K}_SUCCESS`,
+  payload: AxiosResponse<T>
+};
+
+type ImmediateUpdateRequestActions<K extends string, T, U = T> = RequestActions<K, T, { value: U }>;
+
+type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon, isUserOwner: boolean }>;
+type LoadAlliesActions = RequestActions<typeof LOAD_ALLIES, Pokemon[]>;
+type SetCombatStageActions = ImmediateUpdateRequestActions<typeof SET_COMBAT_STAGE, { stat: CombatStage, value: number}>;
+type RequestDetailsActions = ImmediateUpdateRequestActions<typeof REQUEST_DETAILS, ActiveDetailValue, ActiveDetailType>;
+type SetPokemonNatureActions = RequestActions<typeof SET_POKEMON_NATURE, Pokemon>;
+type AddHeldItemActions = RequestActions<typeof ADD_HELD_ITEM, Pokemon>;
+type RemoveHeldItemActions = ImmediateUpdateRequestActions<typeof REMOVE_HELD_ITEM, number>;
+type AddAbilityActions = RequestActions<typeof ADD_ABILITY, Pokemon>;
+type RemoveAbilityActions = ImmediateUpdateRequestActions<typeof REMOVE_ABILITY, number>;
+type UpdateCapabilityValueActions = ImmediateUpdateRequestActions<typeof UPDATE_CAPABILITY_VALUE, JunctionedCapability, { capabilityId: number; value: number }>;
+type AddCapabilityActions = RequestActions<typeof ADD_CAPABILITY, Pokemon>;
+type RemoveCapabilityActions = ImmediateUpdateRequestActions<typeof REMOVE_CAPABILITY, number>;
+type AddMoveActions = RequestActions<typeof ADD_MOVE, Pokemon>;
+type RemoveMoveActions = ImmediateUpdateRequestActions<typeof REMOVE_MOVE, number, number>;
+type SetMovePPUpActions = ImmediateUpdateRequestActions<typeof SET_MOVE_PP_UP, JunctionedMove, { moveId: number; enabled: boolean }>;
+type SetMoveTypeActions = ImmediateUpdateRequestActions<typeof SET_MOVE_TYPE, JunctionedMove, { moveId: number, type: TypeName }>;
+type SetPokemonTypeActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_TYPE, [string, string]>;
+type SetPokemonActiveActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ACTIVE, boolean>
+type SetPokemonNameActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_NAME, string>
+type SetPokemonSpeciesActions = RequestActions<typeof SET_POKEMON_SPECIES, Pokemon>;
+type SetPokemonExperienceActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_EXPERIENCE, number>
+type SetPokmeonGenderActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_GENDER, Gender>
+type SetPokemonLoyaltyActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_LOYALTY, number>
+type SetPokemonOwnerActions = RequestActions<typeof SET_POKEMON_OWNER, Trainer>;
+type SetPokemonBaseStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_BASE_STAT, { stat: Stat, value: number }>
+type SetPokemonAddedStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ADDED_STAT, { stat: Stat, value: number }>
+type SetHealthActions = ImmediateUpdateRequestActions<typeof SET_HEALTH, number>;
+type SetMoveOrderActions = ImmediateUpdateRequestActions<typeof SET_MOVE_ORDER, { moveId: number; position: number }>;
+type SetCapabilityOrderActions = ImmediateUpdateRequestActions<typeof SET_CAPABILITY_ORDER, { capabilityId: number; position: number }>;
+type SaveNotesActions = ImmediateUpdateRequestActions<typeof SAVE_NOTES, string>;
+type SaveGMNotesActions = ImmediateUpdateRequestActions<typeof SAVE_GM_NOTES, string>;
+
 type SetMobileModeAction = {
   type: typeof SET_MOBILE_MODE;
   payload: {
     mode: MobileMode;
   };
-};
-
-type LoadAuthStatusAction = {
-  type: typeof LOAD_AUTH_STATUS;
-  payload: AxiosRequest;
-};
-
-type LoadAuthStatusSuccessAction = {
-  type: typeof LOAD_AUTH_STATUS_SUCCESS;
-  payload: AxiosResponse<boolean>;
-}
-
-type LoadTypeIdsAction = {
-  type: typeof LOAD_TYPE_IDS;
-  payload: AxiosRequest;
-};
-
-type LoadTypeIdsSuccessAction = {
-  type: typeof LOAD_TYPE_IDS_SUCCESS;
-  payload: {
-    data: TypeData[];
-  }
-};
-
-type LoadDataAction = {
-  type: typeof LOAD_DATA;
-  payload: AxiosRequest;
-};
-
-type LoadDataSuccessAction = {
-  type: typeof LOAD_DATA_SUCCESS;
-  payload: AxiosResponse<PokemonDataResponse>;
-};
- 
-type LoadAlliesAction = {
-  type: typeof LOAD_ALLIES;
-  payload: AxiosRequest;
-};
-
-type LoadAlliesSuccessAction = {
-  type: typeof LOAD_ALLIES_SUCCESS;
-  payload: AxiosResponse<AlliedPokemon[]>;
-};
-
-type SetCombatStageAction = {
-  type: typeof SET_COMBAT_STAGE;
-  payload: {
-    stat: keyof CombatStages;
-    value: number;
-  } & AxiosRequest;
-}
-
-type RequestDetailsAction = {
-  type: typeof REQUEST_DETAILS;
-  payload: {
-    type: ActiveDetailType;
-  } & AxiosRequest;
-};
-
-type RequestDetailsSuccessAction = {
-  type: typeof REQUEST_DETAILS_SUCCESS;
-  payload: AxiosResponse<ActiveDetail | { base: ActiveDetail }>;
-  meta: {
-    previousAction: {
-      payload: {
-        type: ActiveDetailType;
-      }
-    }
-  }
 };
 
 type ShowNotesAction = {
@@ -181,343 +203,84 @@ type ToggleEditModeAction = {
   type: typeof TOGGLE_EDIT_MODE;
 }
 
-type SetHealthAction = {
-  type: typeof SET_HEALTH;
-  payload: {
-    value: number,
-  } & AxiosRequest;
-};
-
-type SetNatureAction = {
-  type: typeof SET_NATURE;
-  payload: {
-    id: number;
-    name: string;
-  } & AxiosRequest;
-}
-
-type SetHeldItemAction = {
-  type: typeof SET_HELD_ITEM;
-  payload: {
-    heldItemId: number;
-    heldItemName: string;
-  } & AxiosRequest;
-}
-
-type RemoveAbilityAction = {
-  type: typeof REMOVE_ABILITY;
-  payload: {
-    ability: AbilityData;
-  } & AxiosRequest;
-}
-
-type AddAbilityAction = {
-  type: typeof ADD_ABILITY;
-  payload: {
-    abilityId: number;
-    abilityName: string;
-  } & AxiosRequest;
-};
-
-type AddAbilitySuccessAction = {
-  type: typeof ADD_ABILITY_SUCCESS;
-  payload: AxiosResponse<number>;
-  meta: {
-    previousAction: {
-      payload: {
-        abilityId: number;
-        abilityName: string;
-      }
-    }
-  }
-};
-
-type UpdateCapabilityValueAction = {
-  type: typeof UPDATE_CAPABILITY_VALUE;
-  payload: {
-    capabilityId: number;
-    value: number;
-  } & AxiosRequest;
-};
-
-type AddCapabilityAction = {
-  type: typeof ADD_CAPABILITY;
-  payload: {
-    capabilityId: number;
-    capabilityName: string;
-    value: number;
-  } & AxiosRequest;
-};
-
-
-type AddCapabilitySuccessAction = {
-  type: typeof ADD_CAPABILITY_SUCCESS;
-  payload: AxiosResponse<number>;
-  meta: {
-    previousAction: {
-      payload: {
-        capabilityId: number;
-        capabilityName: string;
-        value: number;
-      }
-    }
-  }
-};
-
-type RemoveCapabilityAction = {
-  type: typeof REMOVE_CAPABILITY;
-  payload: {
-    capabilityId: number;
-  } & AxiosRequest;
-};
-
-type AddMoveAction = {
-  type: typeof ADD_MOVE;
-  payload: AxiosRequest;
-};
-
-type AddMoveSuccessAction = {
-  type: typeof ADD_MOVE_SUCCESS;
-  payload: {
-    data: MoveData;
-  };
-};
-
-type RemoveMoveAction = {
-  type: typeof REMOVE_MOVE;
-  payload: {
-    moveId: number;
-  } & AxiosRequest;
-};
-
-type SetMovePPUpAction = {
-  type: typeof SET_MOVE_PP_UP;
-  payload: {
-    moveId: number;
-    enabled: boolean;
-  } & AxiosRequest;
-};
-
-type SetMoveTypeAction = {
-  type: typeof SET_MOVE_TYPE;
-  payload: {
-    moveId: number;
-    typeId: number;
-    typeName: string;
-  } & AxiosRequest;
-};
-
-type SetPokemonTypeAction = {
-  type: typeof SET_POKEMON_TYPE;
-  payload: {
-    index: number;
-    typeId: number;
-    typeName: string;
-  } & AxiosRequest;
-};
-
-type SetPokemonActiveAction = {
-  type: typeof SET_POKEMON_ACTIVE;
-  payload: {
-    active: boolean;
-  } & AxiosRequest;
-};
-
-type SetPokemonNameAction = {
-  type: typeof SET_POKEMON_NAME;
-  payload: {
-    value: string;
-  } & AxiosRequest;
-}
-
-type SetPokemonSpeciesAction = {
-  type: typeof SET_POKEMON_SPECIES;
-  payload: AxiosRequest;
-}
-
-type SetPokemonSpeciesSucessAction = {
-  type: typeof SET_POKEMON_SPECIES_SUCCESS;
-  payload: AxiosResponse<SpeciesData>;
-}
-
-type SetPokemonExperienceAction = {
-  type: typeof SET_POKEMON_EXPERIENCE;
-  payload: {
-    experience: number;
-  } & AxiosRequest;
-};
-
-type SetPokemonGenderAction = {
-  type: typeof SET_POKEMON_GENDER;
-  payload: {
-    value: string;
-  } & AxiosRequest;
-};
-
-type SetPokemonLoyaltyAction = {
-  type: typeof SET_POKEMON_LOYALTY;
-  payload: {
-    value: number;
-  } & AxiosRequest;
-};
-
-type SetPokemonOwnerAction = {
-  type: typeof SET_POKEMON_OWNER;
-  payload: {
-    ownerId: number;
-    ownerName: string;
-  } & AxiosRequest;
-};
-
-type SetBaseStatAction = {
-  type: typeof SET_BASE_STAT;
-  payload: {
-    stat: keyof StatBlock;
-    value: number;
-  } & AxiosRequest;
-};
-
-type SetAddedStatAction = {
-  type: typeof SET_ADDED_STAT;
-  payload: {
-    stat: keyof StatBlock;
-    value: number;
-  } & AxiosRequest;
-};
-
-type SetMoveOrderAction = {
-  type: typeof SET_MOVE_ORDER;
-  payload: {
-    moveId: number;
-    position: number;
-  } & AxiosRequest;
-};
-
-type SetCapabilityOrderAction = {
-  type: typeof SET_CAPABILITY_ORDER;
-  payload: {
-    capabilityId: number;
-    position: number;
-  } & AxiosRequest;
-};
-
-type SaveNotesAction = {
-  type: typeof SAVE_NOTES;
-  payload: {
-    notes: string;
-  } & AxiosRequest;
-};
-
-type SaveGMNotesAction = {
-  type: typeof SAVE_GM_NOTES;
-  payload: {
-    notes: string;
-  } & AxiosRequest;
-};
-
 type PokemonReducerAction =
-  LoadAuthStatusAction |
-  LoadAuthStatusSuccessAction |
   SetMobileModeAction |
-  LoadTypeIdsAction |
-  LoadTypeIdsSuccessAction |
-  LoadDataAction |
-  LoadDataSuccessAction |
-  LoadAlliesAction | 
-  LoadAlliesSuccessAction |
-  SetCombatStageAction |
-  RequestDetailsAction |
-  RequestDetailsSuccessAction |
-  ShowNotesAction |
-  CloseDetailsPanelAction |
+  ShowNotesAction | 
+  CloseDetailsPanelAction | 
   ToggleEditModeAction |
-  SetHealthAction |
-  SetNatureAction |
-  SetHeldItemAction |
-  AddAbilityAction | 
-  AddAbilitySuccessAction |
-  RemoveAbilityAction |
-  UpdateCapabilityValueAction |
-  AddCapabilityAction | 
-  AddCapabilitySuccessAction |
-  RemoveCapabilityAction |
-  AddMoveAction | 
-  AddMoveSuccessAction |
-  RemoveMoveAction |
-  SetMovePPUpAction |
-  SetMoveTypeAction |
-  SetPokemonTypeAction |
-  SetPokemonActiveAction |
-  SetPokemonNameAction |
-  SetPokemonSpeciesAction |
-  SetPokemonSpeciesSucessAction |
-  SetPokemonExperienceAction |
-  SetPokemonGenderAction |
-  SetPokemonLoyaltyAction |
-  SetPokemonOwnerAction |
-  SetBaseStatAction |
-  SetAddedStatAction |
-  SetMoveOrderAction |
-  SetCapabilityOrderAction |
-  SaveNotesAction |
-  SaveGMNotesAction;
+  LoadDataActions |
+  LoadAlliesActions |
+  SetCombatStageActions |
+  RequestDetailsActions |
+  SetPokemonNatureActions |
+  AddHeldItemActions |
+  RemoveHeldItemActions |
+  RemoveAbilityActions |
+  AddAbilityActions |
+  UpdateCapabilityValueActions |
+  AddCapabilityActions |
+  RemoveCapabilityActions |
+  AddMoveActions |
+  RemoveMoveActions |
+  SetMovePPUpActions |
+  SetMoveTypeActions |
+  SetPokemonTypeActions |
+  SetPokemonActiveActions |
+  SetPokemonNameActions |
+  SetPokemonSpeciesActions |
+  SetPokemonExperienceActions |
+  SetPokmeonGenderActions |
+  SetPokemonLoyaltyActions |
+  SetPokemonOwnerActions |
+  SetPokemonBaseStatActions |
+  SetPokemonAddedStatActions |
+  SetHealthActions |
+  SetMoveOrderActions |
+  SetCapabilityOrderActions |
+  SaveNotesActions |
+  SaveGMNotesActions;
 
 interface State {
-  isLoggedIn: boolean;
   mobileMode: MobileMode;
-  data: PokemonData | undefined;
-  allies: AlliedPokemon[];
+  data: Pokemon | undefined;
+  allies: Pokemon[];
   typeIds: Record<string, number>;
-  currentHealth: number;
   activeDetails: {
     mode: 'none' | 'notes' | 'description';
     details: ActiveDetail | undefined;
   };
+  isUserOwner: boolean;
+  isUserGM: boolean;
   editMode: boolean;
 }
 
 const initialState: State = {
-  isLoggedIn: false,
   mobileMode: 'data',
   data: undefined,
   allies: [],
   typeIds: {},
-  currentHealth: 0,
   activeDetails: {
     mode: 'none',
     details: undefined,
   },
+  isUserOwner: false,
+  isUserGM: false,
   editMode: false,
 };
 
 export function reducer(state: State = initialState, action: PokemonReducerAction): State {
   switch (action.type) {
-    case LOAD_AUTH_STATUS_SUCCESS:
-      return {
-        ...state,
-        isLoggedIn: action.payload.data,
-      };
-      
     case SET_MOBILE_MODE:
       return {
         ...state,
         mobileMode: action.payload.mode,
       };
 
-    case LOAD_TYPE_IDS_SUCCESS:
-      return {
-        ...state,
-        typeIds: action.payload.data.reduce((acc, { id, name }) => ({
-          ...acc,
-          [name]: id
-        }), {}),
-      };
-
     case LOAD_DATA_SUCCESS:
       return {
         ...state,
-        data: action.payload.data,
-        currentHealth: action.payload.data.currentHealth,
+        data: action.payload.data.pokemon,
+        isUserOwner: action.payload.data.isUserOwner,
       };
     
     case LOAD_ALLIES_SUCCESS:
@@ -531,14 +294,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          stats: {
-            ...state.data.stats,
-            combatStages: {
-              ...state.data.stats.combatStages,
-              [action.payload.stat]: action.payload.value,
-            },
-          }
-        },
+          [`${action.payload.value.stat}CombatStages`]: action.payload.value.value,
+        } as Pokemon,
       };
 
     case REQUEST_DETAILS:
@@ -547,6 +304,10 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         activeDetails: {
           ...state.activeDetails,
           mode: 'description',
+          details: {
+            type: action.payload.value,
+            value: undefined,
+          }
         },
       };
 
@@ -556,9 +317,9 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         activeDetails: {
           ...state.activeDetails,
           details: {
-            type: action.meta.previousAction.payload.type,
-            value: ('base' in action.payload.data ? action.payload.data.base : action.payload.data) as any,
-          }
+            ...state.activeDetails.details,
+            value: action.payload.data,
+          } as ActiveDetail,
         },
       };
 
@@ -584,63 +345,65 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
     case SET_HEALTH:
       return {
         ...state,
-        currentHealth: action.payload.value,
+        data: {
+          ...state.data,
+          currentHealth: action.payload.value,
+        } as Pokemon,
       };
 
-    case SET_NATURE:
+    case SET_POKEMON_NATURE_SUCCESS:
       return {
         ...state,
         data: {
           ...state.data,
-          nature: {
-            id: action.payload.id,
-            name: action.payload.name,
-          }
-        }
+          nature: action.payload.data.nature,
+          natureId: action.payload.data.nature.id,
+        } as Pokemon,
       };
 
-    case SET_HELD_ITEM:
+    case ADD_HELD_ITEM_SUCCESS:
       return {
         ...state,
         data: {
           ...state.data,
-          heldItem: {
-            id: action.payload.heldItemId,
-            name: action.payload.heldItemName,
-          }
-        }
+          heldItems: action.payload.data.heldItems,
+        } as Pokemon,
       };
 
-    case ADD_ABILITY_SUCCESS: {
-      const alreadyHasAbility = state.data.abilities.some(ability => ability.definition.id === action.meta.previousAction.payload.abilityId);
-
-      if (alreadyHasAbility) return state;
-      
+    case REMOVE_HELD_ITEM:
       return {
         ...state,
         data: {
           ...state.data,
-          abilities: [
-            ...state.data.abilities,
-            {
-              id: action.payload.data,
-              definition: {
-                id: action.meta.previousAction.payload.abilityId,
-                name: action.meta.previousAction.payload.abilityName,
-              },
-            },
-          ],
-        },
+          heldItems: removeById(state.data.heldItems, action.payload.value),
+        } as Pokemon,
       };
-    }
+
+    case ADD_ABILITY_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          abilities: action.payload.data.abilities,
+        } as Pokemon,
+      };
 
     case REMOVE_ABILITY:
       return {
         ...state,
         data: {
           ...state.data,
-          abilities: state.data.abilities.filter(ability => ability.id !== action.payload.ability.id),
-        },
+          abilities: removeById(state.data.abilities, action.payload.value),
+        } as Pokemon,
+      };
+
+    case ADD_CAPABILITY_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          capabilities: action.payload.data.capabilities,
+        } as Pokemon,
       };
 
     case UPDATE_CAPABILITY_VALUE:
@@ -648,10 +411,12 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          capabilities: state.data.capabilities.map(capability => (
-            capability.id === action.payload.capabilityId ? { ...capability, value: action.payload.value } : capability
-          )),
-        },
+          capabilities: updateById(
+            state.data.capabilities,
+            action.payload.value.capabilityId,
+            capability => updateCapabilityJunction(capability, 'value', action.payload.value.value),
+          ),
+        } as Pokemon,
       };
 
     case TOGGLE_EDIT_MODE:
@@ -660,37 +425,13 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         editMode: !state.editMode,
       };
 
-    case ADD_CAPABILITY_SUCCESS: {
-      const alreadyHasCapability = state.data.capabilities.some(cap => cap.definition.id === action.meta.previousAction.payload.capabilityId);
-
-      if (alreadyHasCapability) return state;
-      
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          capabilities: [
-            ...state.data.capabilities,
-            {
-              id: action.payload.data,
-              value: action.meta.previousAction.payload.value,
-              definition: {
-                id: action.meta.previousAction.payload.capabilityId,
-                name: action.meta.previousAction.payload.capabilityName,
-              },
-            },
-          ],
-        },
-      };
-    }
-
     case REMOVE_CAPABILITY:
       return {
         ...state,
         data: {
           ...state.data,
-          capabilities: state.data.capabilities.filter(cap => cap.id !== action.payload.capabilityId),
-        },
+          capabilities: removeById(state.data.capabilities, action.payload.value),
+        } as Pokemon,
       };
 
     case ADD_MOVE_SUCCESS:
@@ -698,27 +439,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          moves: [...state.data.moves, action.payload.data],
-        },
-      };
-
-
-    case REMOVE_MOVE:
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          moves: state.data.moves.filter(move => move.id !== action.payload.moveId),
-        },
-      };
-
-    case SET_MOVE_PP_UP:
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          moves: state.data.moves.map(move => move.id === action.payload.moveId ? { ...move, ppUp: action.payload.enabled } : move),
-        },
+          moves: action.payload.data.moves,
+        } as Pokemon,
       };
 
     case SET_MOVE_TYPE:
@@ -726,14 +448,34 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          moves: state.data.moves.map(move => move.id === action.payload.moveId ? {
-            ...move,
-            type: {
-              id: action.payload.typeId,
-              name: action.payload.typeName,
-            },
-          } : move),
-        },
+          moves: updateById(
+            state.data.moves,
+            action.payload.value.moveId,
+            move => updateMoveJunction(move, 'typeOverride', action.payload.value.type)
+          ),
+        } as Pokemon,
+      };
+
+    case SET_MOVE_PP_UP:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          moves: updateById(
+            state.data.moves,
+            action.payload.value.moveId,
+            move => updateMoveJunction(move, 'isPPUpped', action.payload.value.enabled)
+          ),
+        } as Pokemon,
+      };
+
+    case REMOVE_MOVE:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          moves: removeById(state.data.moves, action.payload.value),
+        } as Pokemon,
       };
 
     case SET_POKEMON_TYPE:
@@ -741,11 +483,9 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          types: state.data.types.map((type, index) => index === action.payload.index ? { 
-            id: action.payload.typeId,
-            name: action.payload.typeName
-          } : type),
-        },
+          type1: action.payload.value[0],
+          type2: action.payload.value[1],
+        } as Pokemon,
       };
 
     case SET_POKEMON_ACTIVE:
@@ -753,8 +493,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          isActive: action.payload.active,
-        },
+          active: action.payload.value,
+        } as Pokemon,
       };
 
     case SET_POKEMON_NAME:
@@ -763,7 +503,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         data: {
           ...state.data,
           name: action.payload.value,
-        },
+        } as Pokemon,
       };
 
     case SET_POKEMON_SPECIES_SUCCESS:
@@ -771,8 +511,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          species: action.payload.data,
-        },
+          species: action.payload.data.species,
+        } as Pokemon,
       };
 
     case SET_POKEMON_EXPERIENCE:
@@ -780,8 +520,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          experience: action.payload.experience,
-        },
+          experience: action.payload.value,
+        } as Pokemon,
       };
 
     case SET_POKEMON_GENDER:
@@ -789,8 +529,8 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          gender: action.payload.value as Gender,
-        },
+          gender: action.payload.value,
+        } as Pokemon,
       };
 
     case SET_POKEMON_LOYALTY:
@@ -799,91 +539,76 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         data: {
           ...state.data,
           loyalty: action.payload.value,
-        },
+        } as Pokemon,
       };
 
-    case SET_POKEMON_OWNER:
+    case SET_POKEMON_OWNER_SUCCESS:
       return {
         ...state,
         data: {
           ...state.data,
-          owner: {
-            id: action.payload.ownerId,
-            name: action.payload.ownerName,
-            classes: [] // todo: maybe implement this?
-          },
-        },
+          trainer: action.payload.data,
+          trainerId: action.payload.data.id,
+        } as Pokemon,
       };
 
-    case SET_BASE_STAT:
+    case SET_POKEMON_BASE_STAT:
       return {
         ...state,
         data: {
           ...state.data,
-          stats: {
-            ...state.data.stats,
-            base: {
-              ...state.data.stats.base,
-              [action.payload.stat]: action.payload.value,
-            },
-          },
-        },
+          [getBaseStatField(action.payload.value.stat)]: action.payload.value.value,
+        } as Pokemon,
       };
 
-    case SET_ADDED_STAT:
+    case SET_POKEMON_ADDED_STAT:
       return {
         ...state,
         data: {
           ...state.data,
-          stats: {
-            ...state.data.stats,
-            added: {
-              ...state.data.stats.added,
-              [action.payload.stat]: action.payload.value,
-            },
-          },
-        },
+          [getAddedStatField(action.payload.value.stat)]: action.payload.value.value,
+        } as Pokemon,
       };
 
-    case SET_MOVE_ORDER: {
-      const matchingMove = state.data.moves.find(move => move.id === action.payload.moveId);
-      const moveSet = [...state.data.moves];
+    // case SET_MOVE_ORDER: {
+    //   const matchingMove = state.data.moves.find(move => move.id === action.payload.moveId);
+    //   const moveSet = [...state.data.moves];
       
-      moveSet.splice(moveSet.indexOf(matchingMove), 1);
-      moveSet.splice(action.payload.position, 0, matchingMove);
+    //   moveSet.splice(moveSet.indexOf(matchingMove), 1);
+    //   moveSet.splice(action.payload.position, 0, matchingMove);
 
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          moves: moveSet
-        },
-      };
-    }
+    //   return {
+    //     ...state,
+    //     data: {
+    //       ...state.data,
+    //       moves: moveSet
+    //     },
+    //   };
+    // }
 
-    case SET_CAPABILITY_ORDER: {
-      const matchingCapability = state.data.capabilities.find(cap => cap.id === action.payload.capabilityId);
-      const capabilitySet = [...state.data.capabilities];
+    // case SET_CAPABILITY_ORDER: {
+    //   const matchingCapability = state.data.capabilities.find(cap => cap.id === action.payload.capabilityId);
+    //   const capabilitySet = [...state.data.capabilities];
       
-      capabilitySet.splice(capabilitySet.indexOf(matchingCapability), 1);
-      capabilitySet.splice(action.payload.position, 0, matchingCapability);
+    //   capabilitySet.splice(capabilitySet.indexOf(matchingCapability), 1);
+    //   capabilitySet.splice(action.payload.position, 0, matchingCapability);
 
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          capabilities: capabilitySet
-        },
-      };
-    }
+    //   return {
+    //     ...state,
+    //     data: {
+    //       ...state.data,
+    //       capabilities: capabilitySet
+    //     },
+    //   };
+    // }
 
     case SAVE_NOTES:
       return {
         ...state,
         data: {
           ...state.data,
-          notes: action.payload.notes,
-        },
+          notes: action.payload.value,
+        } as Pokemon,
       };
 
     case SAVE_GM_NOTES:
@@ -891,24 +616,13 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: {
           ...state.data,
-          gmNotes: action.payload.notes,
-        },
+          gmNotes: action.payload.value,
+        } as Pokemon,
       };
 
     default:
       return state;
   }
-}
-
-export function loadAuthStatus(): PokemonReducerAction {
-  return {
-    type: LOAD_AUTH_STATUS,
-    payload: {
-      request: {
-        url: '/v2/authStatus',
-      },
-    },
-  };
 }
 
 export function setMobileMode(mode: MobileMode): PokemonReducerAction {
@@ -920,23 +634,12 @@ export function setMobileMode(mode: MobileMode): PokemonReducerAction {
   };
 }
 
-export function loadTypeIds(): PokemonReducerAction {
-  return {
-    type: LOAD_TYPE_IDS,
-    payload: {
-      request: {
-        url: '/v2/types',
-      }
-    },
-  };
-}
-
 export function loadData(id: number): PokemonReducerAction {
   return {
     type: LOAD_DATA,
     payload: {
       request: {
-        url: `/v1/pokemon/${id}`,
+        url: `/pokemon/${id}`,
       }
     },
   };
@@ -953,16 +656,23 @@ export function loadAllies(id: number): PokemonReducerAction {
   }
 }
 
-export function setCombatStage(pokemonId: number, stat: keyof CombatStages, value: number): PokemonReducerAction {
+export function setCombatStage(pokemonId: number, stat: CombatStage, value: number): PokemonReducerAction {
   const clampedValue = Math.max(-6, Math.min(value, 6));
 
   return {
     type: SET_COMBAT_STAGE,
     payload: {
-      stat,
-      value: clampedValue,
+      value: {
+        stat,
+        value: clampedValue,
+      },
       request: {
-        url: `/v2/pokemon/${pokemonId}/combatStage/${stat}/${clampedValue}`,
+        url: `/pokemon/${pokemonId}/combatStage`,
+        method: 'POST',
+        data: {
+          stat,
+          value: clampedValue,
+        },
       }
     },
   };
@@ -972,21 +682,9 @@ export function requestDetails(type: ActiveDetailType, id: number): PokemonReduc
   return {
     type: REQUEST_DETAILS,
     payload: {
-      type: type,
+      value: type,
       request: {
-        url: `/v1/${DETAIL_REQUEST_PATHS[type]}/${id}`
-      }
-    }
-  };
-};
-
-export function requestMove(pokemonId: number, id: number): PokemonReducerAction {
-  return {
-    type: REQUEST_DETAILS,
-    payload: {
-      type: 'MOVE',
-      request: {
-        url: `/v2/pokemon/${pokemonId}/move/${id}`,
+        url: `/${DETAIL_REQUEST_PATHS[type]}/${id}`
       }
     }
   };
@@ -1004,13 +702,17 @@ export function closeDetailsPanel(): PokemonReducerAction {
   };
 }
 
-export function setHealth(pokemonId: number, value: number): PokemonReducerAction {
+export function setHealth(pokemonId: number, health: number): PokemonReducerAction {
   return {
     type: SET_HEALTH,
     payload: {
-      value,
+      value: health,
       request: {
-        url: `/v1/pokemon/${pokemonId}/update/health/${value}`,
+        url: `/pokemon/${pokemonId}/health`,
+        method: 'POST',
+        data: {
+          health,
+        }
       },
     },
   };
@@ -1022,79 +724,117 @@ export function toggleEditMode(): PokemonReducerAction {
   };
 }
 
-export function setNature(pokemonId: number, id: number, name: string): PokemonReducerAction {
+export function setPokemonNature(pokemonId: number, natureId: number): PokemonReducerAction {
   return {
-    type: SET_NATURE,
+    type: SET_POKEMON_NATURE,
     payload: {
-      id,
-      name,
       request: {
-        url: `/v1/pokemon/${pokemonId}/update/nature/${name}`,
+        url: `/pokemon/${pokemonId}/nature`,
+        method: 'POST',
+        data: {
+          natureId,
+        },
       },
     },
   };
 }
 
-export function setHeldItem(pokemonId: number, heldItemId: number, heldItemName: string): PokemonReducerAction {
+export function addHeldItem(pokemonId: number, heldItemId: number): PokemonReducerAction {
   return {
-    type: SET_HELD_ITEM,
+    type: ADD_HELD_ITEM,
     payload: {
-      heldItemId,
-      heldItemName,
       request: {
-        url: `/v1/pokemon/${pokemonId}/update/helditem/${heldItemName}`,
+        url: `/pokemon/${pokemonId}/heldItem`,
+        method: 'POST',
+        data: {
+          heldItemId: heldItemId,
+        },
       },
     }
   }
 }
 
-export function addAbility(pokemonId: number, abilityId: number, abilityName: string): PokemonReducerAction {
+export function removeHeldItem(pokemonId: number, heldItem: RulebookHeldItem): PokemonReducerAction {
+  return {
+    type: REMOVE_HELD_ITEM,
+    payload: {
+      value: heldItem.id,
+      request: {
+        url: `/pokemon/${pokemonId}/heldItem`,
+        method: 'DELETE',
+        data: {
+          heldItemId: heldItem.id,
+        },
+      },
+    }
+  }
+}
+
+export function addAbility(pokemonId: number, abilityId: number): PokemonReducerAction {
   return {
     type: ADD_ABILITY,
     payload: {
-      abilityId,
-      abilityName,
       request: {
-        url: `/v1/pokemon/${pokemonId}/insert/ability/${abilityName}`,
+        url: `/pokemon/${pokemonId}/ability`,
+        method: 'POST',
+        data: {
+          abilityId,
+        }
       },
     },
   };
 }
 
-export function removeAbility(pokemonId: number, ability: AbilityData): PokemonReducerAction {
+export function removeAbility(pokemonId: number, ability: RulebookAbility): PokemonReducerAction {
   return {
     type: REMOVE_ABILITY,
     payload: {
-      ability,
+      value: ability.id,
       request: {
-        url: `/v1/pokemon/${pokemonId}/remove/ability/${ability.definition.id}`,
+        url: `/pokemon/${pokemonId}/ability`,
+        method: 'DELETE',
+        data: {
+          abilityId: ability.id,
+        },
       },
     },
   };
 }
 
 export function updateCapabilityValue(pokemonId: number, capabilityId: number, value: number): PokemonReducerAction {
-  return {
-    type: UPDATE_CAPABILITY_VALUE,
-    payload: {
-      capabilityId,
-      value,
-      request: {
-        url: `/v1/pokemon/${pokemonId}/update/capability/${capabilityId}/${value || 0}`,
+  const safeValue = Number(value);
+
+  if (!Number.isNaN(safeValue)) {
+    return {
+      type: UPDATE_CAPABILITY_VALUE,
+      payload: {
+        value: {
+          capabilityId,
+          value: safeValue,
+        },
+        request: {
+          url: `/pokemon/${pokemonId}/capability/${capabilityId}/value`,
+          method: 'POST',
+          data: {
+            value: safeValue,
+          },
+        },
       },
-    },
-  };
+    };
+  }
 }
 
-export function addCapability(pokemonId: number, capabilityId: number, capabilityName: string, value: number): PokemonReducerAction {
+export function addCapability(pokemonId: number, capabilityId: number, value: number): PokemonReducerAction {
   return {
     type: ADD_CAPABILITY,
     payload: {
-      capabilityId,
-      capabilityName,
-      value,
       request: {
-        url: `/v1/pokemon/${pokemonId}/insert/capability/${capabilityName}/${value || 0}`,
+        url: `/pokemon/${pokemonId}/capability`,
+        method: 'POST',
+        data: {
+          capabilityId,
+          value,
+        },
       },
     },
   };
@@ -1104,9 +844,13 @@ export function removeCapability(pokemonId: number, capabilityId: number): Pokem
   return {
     type: REMOVE_CAPABILITY,
     payload: {
-      capabilityId,
+      value: capabilityId,
       request: {
-        url: `/v1/pokemon/${pokemonId}/remove/capability/${capabilityId}`,
+        url: `/pokemon/${pokemonId}/capability`,
+        method: 'DELETE',
+        data: {
+          capabilityId,
+        },
       },
     },
   };
@@ -1117,20 +861,27 @@ export function addMove(pokemonId: number, moveId: number): PokemonReducerAction
     type: ADD_MOVE,
     payload: {
       request: {
-        url: `/v2/pokemon/${pokemonId}/moves/add/${moveId}`,
+        url: `/pokemon/${pokemonId}/move`,
+        method: 'POST',
+        data: {
+          moveId,
+        }
       },
     },
   };
 }
 
-
 export function removeMove(pokemonId: number, moveId: number): PokemonReducerAction {
   return {
     type: REMOVE_MOVE,
     payload: {
-      moveId,
+      value: moveId,
       request: {
-        url: `/v2/pokemon/${pokemonId}/moves/delete/${moveId}`,
+        url: `/pokemon/${pokemonId}/move`,
+        method: 'DELETE',
+        data: {
+          moveId,
+        }
       },
     },
   };
@@ -1140,38 +891,52 @@ export function setMovePPUp(pokemonId: number, moveId: number, enabled: boolean)
   return {
     type: SET_MOVE_PP_UP,
     payload: {
-      moveId,
-      enabled,
+      value: {
+        moveId,
+        enabled,
+      },
       request: {
-        url: `/v2/pokemon/${pokemonId}/moves/${moveId}/ppUp/${enabled ? 1 : 0}`,
+        url: `/pokemon/${pokemonId}/move/${moveId}/ppup`,
+        method: 'POST',
+        data: {
+          isPPUpped: enabled,
+        },
       },
     },
   };
 }
 
-export function setMoveType(pokemonId: number, moveId: number, typeId: number, typeName: string): PokemonReducerAction {
+export function setMoveType(pokemonId: number, moveId: number, type: TypeName): PokemonReducerAction {
   return {
     type: SET_MOVE_TYPE,
     payload: {
-      moveId,
-      typeId,
-      typeName,
+      value: {
+        moveId,
+        type,
+      },
       request: {
-        url: `/v2/pokemon/${pokemonId}/moves/${moveId}/type/${typeId}`,
+        url: `/pokemon/${pokemonId}/move/${moveId}/type`,
+        method: 'POST',
+        data: {
+          type,
+        },
       },
     },
   };
 }
 
-export function setPokemonType(pokemonId: number, index: number, typeId: number, typeName: string): PokemonReducerAction {
+export function setPokemonType(pokemonId: number, type1: TypeName, type2: TypeName): PokemonReducerAction {
   return {
     type: SET_POKEMON_TYPE,
     payload: {
-      index,
-      typeId,
-      typeName,
+      value: [type1, type2],
       request: {
-        url: `/v2/pokemon/${pokemonId}/types/${index + 1}/${typeId}`,
+        url: `/pokemon/${pokemonId}/types`,
+        method: 'POST',
+        data: {
+          type1,
+          type2,
+        },
       },
     },
   };
@@ -1181,21 +946,29 @@ export function setPokemonActive(pokemonId: number, active: boolean): PokemonRed
   return {
     type: SET_POKEMON_ACTIVE,
     payload: {
-      active,
+      value: active,
       request: {
-        url: `/v2/pokemon/${pokemonId}/active/${active ? 1 : 0}`,
+        url: `/pokemon/${pokemonId}/active`,
+        method: 'POST',
+        data: {
+          active,
+        },
       },
     },
   };
 }
 
-export function setPokemonName(pokemonId: number, value: string): PokemonReducerAction {
+export function setPokemonName(pokemonId: number, name: string): PokemonReducerAction {
   return {
     type: SET_POKEMON_NAME,
     payload: {
-      value,
+      value: name,
       request: {
-        url: `/v2/pokemon/${pokemonId}/name/${value}`,
+        url: `/pokemon/${pokemonId}/name`,
+        method: 'POST',
+        data: {
+          name,
+        }
       },
     },
   };
@@ -1206,31 +979,47 @@ export function setPokemonSpecies(pokemonId: number, speciesId: number): Pokemon
     type: SET_POKEMON_SPECIES,
     payload: {
       request: {
-        url: `/v2/pokemon/${pokemonId}/species/${speciesId}`,
+        url: `/pokemon/${pokemonId}/species`,
+        method: 'POST',
+        data: {
+          speciesId,
+        }
       },
     },
   };
 }
 
 export function setPokemonExperience(pokemonId: number, experience: number): PokemonReducerAction {
-  return {
-    type: SET_POKEMON_EXPERIENCE,
-    payload: {
-      experience,
-      request: {
-        url: `/v2/pokemon/${pokemonId}/experience/${experience || 0}`,
+  const value = Number(experience);
+
+  if (!Number.isNaN(value)) {
+    return {
+      type: SET_POKEMON_EXPERIENCE,
+      payload: {
+        value: experience,
+        request: {
+          url: `pokemon/${pokemonId}/experience`,
+          method: 'POST',
+          data: {
+            experience: value,
+          },
+        },
       },
-    },
-  };
+    };
+  }
 }
 
-export function setPokemonGender(pokemonId: number, value: string): PokemonReducerAction {
+export function setPokemonGender(pokemonId: number, value: Gender): PokemonReducerAction {
   return {
     type: SET_POKEMON_GENDER,
     payload: {
       value,
       request: {
-        url: `/v2/pokemon/${pokemonId}/gender/${value}`,
+        url: `/pokemon/${pokemonId}/gender`,
+        method: 'POST',
+        data: {
+          gender: value,
+        }
       },
     },
   };
@@ -1252,8 +1041,6 @@ export function setPokemonOwner(pokemonId: number, ownerId: number, ownerName: s
   return {
     type: SET_POKEMON_OWNER,
     payload: {
-      ownerId,
-      ownerName,
       request: {
         url: `/v2/pokemon/${pokemonId}/owner/${ownerId}`,
       },
@@ -1261,27 +1048,43 @@ export function setPokemonOwner(pokemonId: number, ownerId: number, ownerName: s
   };
 }
 
-export function setBaseStat(pokemonId: number, stat: keyof StatBlock, value: number): PokemonReducerAction {
+export function setPokemonBaseStat(pokemonId: number, stat: Stat, value: number): PokemonReducerAction {
   return {
-    type: SET_BASE_STAT,
+    type: SET_POKEMON_BASE_STAT,
     payload: {
-      stat,
-      value: Number(value),
+      value: {
+        stat,
+        value: Number(value),
+      },
       request: {
-        url: `/v2/pokemon/${pokemonId}/stats/${stat}/base/${value || 0}`,
+        url: `/pokemon/${pokemonId}/stat`,
+        method: 'POST',
+        data: {
+          isBase: true,
+          stat,
+          value: value || 0,
+        },
       },
     },
   };
 }
 
-export function setAddedStat(pokemonId: number, stat: keyof StatBlock, value: number): PokemonReducerAction {
+export function setPokemonAddedStat(pokemonId: number, stat: Stat, value: number): PokemonReducerAction {
   return {
-    type: SET_ADDED_STAT,
+    type: SET_POKEMON_ADDED_STAT,
     payload: {
-      stat,
-      value: Number(value),
+      value: {
+        stat,
+        value: Number(value),
+      },
       request: {
-        url: `/v2/pokemon/${pokemonId}/stats/${stat}/added/${value || 0}`,
+        url: `/pokemon/${pokemonId}/stat`,
+        method: 'POST',
+        data: {
+          isBase: false,
+          stat,
+          value: value || 0,
+        },
       },
     },
   };
@@ -1291,8 +1094,10 @@ export function setMoveOrder(pokemonId: number, moveId: number, position: number
   return {
     type: SET_MOVE_ORDER,
     payload: {
-      moveId,
-      position,
+      value: {
+        moveId,
+        position,
+      },
       request: {
         url: `/v2/pokemon/${pokemonId}/moves/${moveId}/order/${position + 1}`,
       },
@@ -1304,8 +1109,10 @@ export function setCapabilityOrder(pokemonId: number, capabilityId: number, posi
   return {
     type: SET_CAPABILITY_ORDER,
     payload: {
-      capabilityId,
-      position,
+      value: {
+        capabilityId,
+        position,
+      },
       request: {
         url: `/v2/pokemon/${pokemonId}/capabilities/${capabilityId}/order/${position + 1}`,
       },
@@ -1317,10 +1124,10 @@ export function saveNotes(pokemonId: number, notes: string): PokemonReducerActio
   return {
     type: SAVE_GM_NOTES,
     payload: {
-      notes,
+      value: notes,
       request: {
-        method: 'post',
-        url: `/v2/pokemon/${pokemonId}/notes`,
+        url: `/pokemon/${pokemonId}/notes`,
+        method: 'POST',
         data: {
           notes,
         },
@@ -1333,7 +1140,7 @@ export function saveGMNotes(pokemonId: number, notes: string): PokemonReducerAct
   return {
     type: SAVE_GM_NOTES,
     payload: {
-      notes,
+      value: notes,
       request: {
         method: 'post',
         url: `/v2/pokemon/${pokemonId}/gmNotes`,

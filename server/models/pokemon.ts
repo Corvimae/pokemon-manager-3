@@ -17,6 +17,10 @@ import { Trainer } from './trainer';
 
 export type PokemonGender = 'male' | 'female' | 'neutral';
 
+export type JunctionedCapability = RulebookCapability & { PokemonCapability: PokemonCapability };
+export type JunctionedMove = RulebookMove & { PokemonMove: PokemonMove };
+export type JunctionedSkill = RulebookSkill & { PokemonSkill: PokemonSkill };
+
 @Table({ tableName: 'Pokemon' })
 export class Pokemon extends Model {
   @Column
@@ -165,13 +169,13 @@ export class Pokemon extends Model {
   heldItems: RulebookHeldItem[];
 
   @BelongsToMany(() => RulebookCapability, () => PokemonCapability)
-  capabilities: Array<RulebookCapability & { PokemonCapability: PokemonCapability }>;
+  capabilities: JunctionedCapability[];
 
   @BelongsToMany(() => RulebookMove, () => PokemonMove)
-  moves: Array<RulebookMove & { PokemonMove: PokemonMove }>;
+  moves: JunctionedMove[];
   
   @BelongsToMany(() => RulebookSkill, () => PokemonSkill)
-  skills: Array<RulebookSkill & { PokemonSkill: PokemonSkill }>;
+  skills: JunctionedSkill[];
 
   @BelongsToMany(() => RulebookEdge, () => PokemonEdge)
   edges: RulebookEdge[];

@@ -31,8 +31,7 @@ export const UnsortableCapabilityList: React.FC = () => {
     dispatch(addCapability(
       pokemonId,
       editorCapabilitySelection.value,
-      editorCapabilitySelection.label,
-      editorCapabilityValue || 0
+      editorCapabilityValue || 0,
     ));
     setShowCapabilityEditor(false);
   }, [dispatch, pokemonId, editorCapabilitySelection, editorCapabilityValue]);
@@ -57,7 +56,10 @@ export const UnsortableCapabilityList: React.FC = () => {
                 <DropdownHeader>Value (optional)</DropdownHeader>
                 <DropdownHeader/>
                 <div>
-                  <DefinitionLookahead path='capabilities' onChange={setEditorCapabilitySelection} />
+                  <DefinitionLookahead
+                    path='reference/capabilities'
+                    onChange={setEditorCapabilitySelection}
+                  />
                 </div>
                 <div>
                   <AddCapabilityValueInput onChange={handleSetEditorCapabilityValue} />

@@ -1,31 +1,32 @@
 import styled from 'styled-components';
-import { setCombatStage, setHealth, setBaseStat, setAddedStat } from '../store/pokemon';
-import { useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP, useTrainerHasClass } from '../utils/formula';
+import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat } from '../store/pokemon';
+import { getAddedStatField, getBaseStatField, getCombatStageField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
-import { CombatStages } from '../utils/types';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calculateLevel } from '../utils/level';
 import { useTypedSelector } from '../store/rootReducer';
+import { CombatStage, Stat } from '../utils/types';
 
 interface StatEditorProps { 
-  stat: keyof CombatStages | "hp";
+  stat: Stat;
 }
 
 const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
   const dispatch = useDispatch();
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
-  const { base, added } = useTypedSelector(state => state.pokemon.data.stats);
+  const baseStat = useTypedSelector(state => state.pokemon.data[getBaseStatField(stat)]);
+  const addedStat = useTypedSelector(state => state.pokemon.data[getAddedStatField(stat)]);
 
   const handleChangeBaseStat = useCallback(event => {
-    dispatch(setBaseStat(pokemonId, stat, event.target.value));
+    dispatch(setPokemonBaseStat(pokemonId, stat, event.target.value));
   }, [dispatch, stat, pokemonId]);
 
   const handleChangeAddedStat = useCallback(event => {
-    dispatch(setAddedStat(pokemonId, stat, event.target.value));
+    dispatch(setPokemonAddedStat(pokemonId, stat, event.target.value));
   }, [dispatch, stat, pokemonId]);
 
   return (
@@ -33,28 +34,28 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
       <DropdownHeader>Base</DropdownHeader>
       <div />
       <DropdownHeader>Added</DropdownHeader>
-      <NumericInput type="number" onChange={handleChangeBaseStat} defaultValue={base[stat]} />
+      <NumericInput type="number" onChange={handleChangeBaseStat} defaultValue={baseStat} />
       <StatEditPlus>
         <FontAwesomeIcon icon={faPlus} size="xs" />
       </StatEditPlus>
-      <NumericInput type="number" onChange={handleChangeAddedStat} defaultValue={added[stat]} />
+      <NumericInput type="number" onChange={handleChangeAddedStat} defaultValue={addedStat} />
     </StatEditContainer>
   );
 };
  
 interface CombatStageModifierProps { 
   area: string;
-  stat: keyof CombatStages;
+  stat: CombatStage;
 }
 
 const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat }) => {
   const dispatch = useDispatch();
   const editMode = useTypedSelector(state => state.pokemon.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
-  const combatStages = useTypedSelector(state => state.pokemon.data.stats.combatStages);
+  const combatStages = useTypedSelector(state => state.pokemon.data[getCombatStageField(stat)]);
 
   const handleSetCombatStage = useCallback((amount: number) => {
-    dispatch(setCombatStage(pokemonId, stat, combatStages[stat] + amount));
+    dispatch(setCombatStage(pokemonId, stat, combatStages + amount));
   }, [dispatch, pokemonId, combatStages, stat]);
 
   return (
@@ -63,7 +64,7 @@ const CombatStageModifier: React.FC<CombatStageModifierProps> = ({ area, stat })
         <>
           <CombatStageButton icon={faMinus} onClick={() => handleSetCombatStage(-1)} />
           <CombatStageValue>
-            {combatStages[stat]}
+            {combatStages}
           </CombatStageValue>
           <CombatStageButton icon={faPlus} onClick={() => handleSetCombatStage(1)} />
         </>
@@ -78,8 +79,22 @@ export const PokemonStatBar = () => {
   const editMode = useTypedSelector(state => state.pokemon.editMode);
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
   const experience = useTypedSelector(store => store.pokemon.data.experience);
-  const stats = useTypedSelector(store => store.pokemon.data.stats);
-  const currentHealth = useTypedSelector(store => store.pokemon.currentHealth);
+
+  const baseHP = useTypedSelector(store => store.pokemon.data.baseHP);
+  const baseAttack = useTypedSelector(store => store.pokemon.data.baseAttack);
+  const baseDefense = useTypedSelector(store => store.pokemon.data.baseDefense);
+  const baseSpAttack = useTypedSelector(store => store.pokemon.data.baseSpAttack);
+  const baseSpDefense = useTypedSelector(store => store.pokemon.data.baseSpDefense);
+  const baseSpeed = useTypedSelector(store => store.pokemon.data.baseSpeed);
+  
+  const addedHP = useTypedSelector(store => store.pokemon.data.addedHP);
+  const addedAttack = useTypedSelector(store => store.pokemon.data.addedAttack);
+  const addedDefense = useTypedSelector(store => store.pokemon.data.addedDefense);
+  const addedSpAttack = useTypedSelector(store => store.pokemon.data.addedSpAttack);
+  const addedSpDefense = useTypedSelector(store => store.pokemon.data.addedSpDefense);
+  const addedSpeed = useTypedSelector(store => store.pokemon.data.addedSpeed);
+
+  const currentHealth = useTypedSelector(store => store.pokemon.data.currentHealth);
 
   const [modifyHealthValue, setModifyHealthValue] = useState(1);
 
@@ -91,9 +106,7 @@ export const PokemonStatBar = () => {
   const specialDefense = useCalculatedSpecialDefenseStat();
   const speed = useCalculatedSpeedStat();
 
-  const showPressOnThreshold = useTrainerHasClass('Enduring Soul');
-
-  const pointsOverCap = Object.values(stats.added).reduce((acc, value) => acc + value, 0) - level;
+  const pointsOverCap = addedHP + addedAttack + addedDefense + addedSpAttack + addedSpDefense + addedSpeed - 10 - level;
 
   const updateHealth = useCallback((value: number) => {
     dispatch(setHealth(pokemonId, value));
@@ -112,27 +125,27 @@ export const PokemonStatBar = () => {
           <CurrentHealth>{currentHealth}&nbsp;</CurrentHealth>
           <TotalHealth>/&nbsp;{totalHealth}</TotalHealth>
         </div>
-        <StatCalculation>({stats.base.hp} + {stats.added.hp})</StatCalculation>
+        <StatCalculation>({baseHP} + {addedHP})</StatCalculation>
       </StatTotal>
       <StatTotal area="atk">
         <TotalValue>{attack}</TotalValue>
-        <StatCalculation>({stats.base.attack} + {stats.added.attack})</StatCalculation>
+        <StatCalculation>({baseAttack} + {addedAttack})</StatCalculation>
       </StatTotal>
       <StatTotal area="def">
         <TotalValue>{defense}</TotalValue>
-        <StatCalculation>({stats.base.defense} + {stats.added.defense})</StatCalculation>
+        <StatCalculation>({baseDefense} + {addedDefense})</StatCalculation>
       </StatTotal>
       <StatTotal area="spatk">
         <TotalValue>{specialAttack}</TotalValue>
-        <StatCalculation>({stats.base.spattack} + {stats.added.spattack})</StatCalculation>
+        <StatCalculation>({baseSpAttack} + {addedSpAttack})</StatCalculation>
       </StatTotal>
       <StatTotal area="spdef">
         <TotalValue>{specialDefense}</TotalValue>
-        <StatCalculation>({stats.base.spdefense} + {stats.added.spdefense})</StatCalculation>
+        <StatCalculation>({baseSpDefense} + {addedSpDefense})</StatCalculation>
       </StatTotal>
       <StatTotal area="spd">
         <TotalValue>{speed}</TotalValue>
-        <StatCalculation>({stats.base.speed} + {stats.added.speed})</StatCalculation>
+        <StatCalculation>({baseSpeed} + {addedSpeed})</StatCalculation>
       </StatTotal>
       <HealthCell>
         {!editMode && (
@@ -153,11 +166,6 @@ export const PokemonStatBar = () => {
               <HealthModifyButton  onClick={() => updateHealth(totalHealth)}>
                 Heal to full
               </HealthModifyButton>
-              {showPressOnThreshold && (
-                <PressOnThreshold>Press On (-25%):
-                  <PressOnValue>&nbsp;-{Math.ceil(totalHealth / 4)}</PressOnValue>
-                </PressOnThreshold>
-              )}
             </HealthCellDropdown>
           </>
         )}
@@ -165,8 +173,8 @@ export const PokemonStatBar = () => {
       </HealthCell>
       <CombatStageModifier area="atk" stat="attack" />
       <CombatStageModifier area="def" stat="defense" />
-      <CombatStageModifier area="spatk" stat="spattack" />
-      <CombatStageModifier area="spdef" stat="spdefense" />
+      <CombatStageModifier area="spatk" stat="spAttack" />
+      <CombatStageModifier area="spdef" stat="spDefense" />
       <CombatStageModifier area="spd" stat="speed" />
       {pointsOverCap > 0 && (
         <StatAllocationWarning over>

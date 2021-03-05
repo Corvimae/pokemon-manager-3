@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { DropdownTooltip } from '../components/DropdownTooltip';
-import { Button, DropdownHeader, TextInput } from '../components/Layout';
+import { Button, DropdownHeader, PokemonIcon, TextInput } from '../components/Layout';
 import { LoadingIcon } from '../components/LoadingIcon';
 import { getGenderColor, getGenderIcon } from '../components/PokemonNameBar';
 import { useTypedSelector } from '../store/rootReducer';
@@ -317,14 +317,8 @@ const PokemonCell = styled.button`
   }
 `;
 
-const PokemonCellIcon = styled.div<{ dexNumber: number }>`
-  width: 40px;
-  height: 30px;
+const PokemonCellIcon = styled(PokemonIcon)`
   margin: 9.5px 0.5rem;
-  background: url("https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png?v4") no-repeat scroll;
-  background-position-x: -${props => Math.floor(props.dexNumber % 12) * 40}px;
-  background-position-y: -${props => Math.floor(props.dexNumber / 12) * 30}px;
-  transform: scale(1.5);
 `;
 
 const PokemonDescriptionContainer = styled.div`

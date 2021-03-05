@@ -175,6 +175,16 @@ interface TypeEffectivenesses {
 }
 
 export function getOffensiveEffectivenesses(type: TypeName): TypeEffectivenesses {
+  if (!type) {
+    return {
+      x4: [],
+      x2: [],
+      x0: [],
+      half: [],
+      fourth: []
+    };
+  }
+
   const { double, half, immune } = typeChart[type];
 
   return {
@@ -219,14 +229,17 @@ function isFourth(type: TypeName, type1: TypeEffectivenesses, type2: TypeEffecti
 }
 
 export function useCombinedDefensiveEffectivenesses(): TypeEffectivenesses {
-  const types = useTypedSelector(state => state.pokemon.data.types);
+  const type1Name = useTypedSelector(state => state.pokemon.data.type1);
+  const type2Name = useTypedSelector(state => state.pokemon.data.type2);
   const abilities = useTypedSelector(state => state.pokemon.data.abilities);
 
   const immunities = abilities
-    .filter(ability => Object.keys(immuneAbilities).indexOf(ability.definition.name) !== -1)
-    .map(ability => immuneAbilities[ability.definition.name]);
+    .filter(ability => Object.keys(immuneAbilities).indexOf(ability.name) !== -1)
+    .map(ability => immuneAbilities[ability.name]);
 
-  const [type1, type2] = types.map(type => getDefensiveEffectivenesses(type.name.toLocaleLowerCase() as TypeName));
+  const type1 = getDefensiveEffectivenesses(type1Name as TypeName);
+  const type2 = getDefensiveEffectivenesses(type2Name as TypeName);
+
   const allImmunities = [...immunities, ...type1.x0, ...type2.x0];
 
   return {

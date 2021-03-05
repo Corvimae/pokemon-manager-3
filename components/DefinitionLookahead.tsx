@@ -28,7 +28,10 @@ export const DefinitionLookahead: React.FC<DefinitionLookaheadProps> = ({ path, 
   }, [onChange]);
 
   const handleLoadOptions = useCallback((value: string) => new Promise(resolve => {
-    Axios.get(`${API_ENDPOINT}${path}?query=${value}`).then(response => resolve(response.data));
+    Axios.get(`${API_ENDPOINT}${path}?query=${value}`).then(response => resolve(response.data.map(item => ({
+      label: item.name,
+      value: item.id,
+    }))));
   }), [path]);
 
   return (

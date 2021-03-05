@@ -38,13 +38,13 @@ export function getGenderIcon(gender: Gender) {
 
 export const PokemonNameBar = () => {
   const dispatch = useDispatch();
-  const isLoggedIn = useTypedSelector(store => store.pokemon.isLoggedIn);
+  const isUserOwner = useTypedSelector(store => store.pokemon.isUserOwner);
   const editMode = useTypedSelector(store => store.pokemon.editMode);
   const pokemonId = useTypedSelector(store => store.pokemon.data.id);
   const name = useTypedSelector(store => store.pokemon.data.name);
   const gender = useTypedSelector(store => store.pokemon.data.gender);
   const experience = useTypedSelector(store => store.pokemon.data.experience);
-  const active = useTypedSelector(store => store.pokemon.data.isActive);
+  const active = useTypedSelector(store => store.pokemon.data.active);
   const speciesName = useTypedSelector(store => store.pokemon.data.species.name);
 
   const [showGenderSelector, setShowGenderSelector] = useState(false);
@@ -78,7 +78,6 @@ export const PokemonNameBar = () => {
       setShowGenderSelector(!showGenderSelector);
     }
   }, [editMode, showGenderSelector]);
-
 
   return (
     <NameBar>
@@ -117,8 +116,8 @@ export const PokemonNameBar = () => {
         </DropdownTooltip>
       </GenderSelector>
       <ActionButtons>
-        {!editMode && isLoggedIn && <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>}
-        {isLoggedIn && (
+        {!editMode && <NotesButton icon={faBook} onClick={handleShowNotes} inverse>Notes</NotesButton>}
+        {isUserOwner && (
           <EditButton icon={editMode ? faLock : faPencilAlt} onClick={handleToggleEditMode} inverse>
             {editMode ? 'Lock' : 'Edit'}
           </EditButton>

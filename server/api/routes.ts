@@ -3,6 +3,7 @@ import { Trainer } from '../models/trainer';
 import { Pokemon } from '../models/pokemon';
 import { RulebookSpecies } from '../models/rulebookSpecies';
 import { router as pokemonApiRouter } from './pokemon/routes';
+import { router as referenceApiRouter } from './reference/routes';
 
 export const apiRouter = express.Router();
 
@@ -19,6 +20,7 @@ apiRouter.use('*', (req, res, next) => {
 });
 
 apiRouter.use('/pokemon', pokemonApiRouter);
+apiRouter.use('/reference', referenceApiRouter);
 
 apiRouter.route('/trainer')
   .get(async (req, res) => {
