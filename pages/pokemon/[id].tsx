@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { loadData, loadAllies, setMobileMode } from '../../store/pokemon';
+import { loadData, setMobileMode } from '../../store/pokemon';
 import { useDispatch } from 'react-redux';
 import { PokemonDataTable } from '../../components/PokemonDataTable';
 import { PokemonStatBar } from '../../components/PokemonStatBar';
@@ -21,14 +21,10 @@ const PokemonViewer = () => {
   const router = useRouter();
   const pokemon = useTypedSelector(store => store.pokemon.data);
 
-
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(router.query.id) {
-      dispatch(loadData(Number(router.query.id)));
-      dispatch(loadAllies(Number(router.query.id)));
-    }
+    if(router.query.id) dispatch(loadData(Number(router.query.id)));
   }, [router.query.id])
   
   const handleSetMobileMode = useCallback((mode: MobileMode) => {

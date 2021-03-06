@@ -100,8 +100,6 @@ const DETAIL_REQUEST_PATHS = {
 const SET_MOBILE_MODE = 'SET_MOBILE_MODE';
 const LOAD_DATA = 'LOAD_DATA';
 const LOAD_DATA_SUCCESS = 'LOAD_DATA_SUCCESS';
-const LOAD_ALLIES = 'LOAD_ALLIES';
-const LOAD_ALLIES_SUCCESS = 'LOAD_ALLIES_SUCCESS';
 const SET_COMBAT_STAGE = 'SET_COMBAT_STAGE';
 const REQUEST_DETAILS = 'REQUEST_DETAILS';
 const REQUEST_DETAILS_SUCCESS = 'REQUEST_DETAILS_SUCCESS';
@@ -213,9 +211,8 @@ type RequestActions<K extends string, T, U = {}> = {
 
 type ImmediateUpdateRequestActions<K extends string, T, U = T> = RequestActions<K, T, { value: U }>;
 
-type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon, isUserOwner: boolean }>;
-type LoadAlliesActions = RequestActions<typeof LOAD_ALLIES, Pokemon[]>;
-type SetCombatStageActions = ImmediateUpdateRequestActions<typeof SET_COMBAT_STAGE, { stat: CombatStage, value: number}>;
+type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon; isUserOwner: boolean; allies: Pokemon[] }>;
+type SetCombatStageActions = ImmediateUpdateRequestActions<typeof SET_COMBAT_STAGE, { stat: CombatStage; value: number}>;
 type RequestDetailsActions = ImmediateUpdateRequestActions<typeof REQUEST_DETAILS, ActiveDetailValue, ActiveDetailType>;
 type SetPokemonNatureActions = RequestActions<typeof SET_POKEMON_NATURE, Pokemon>;
 type AddHeldItemActions = RequestActions<typeof ADD_HELD_ITEM, Pokemon>;
@@ -283,7 +280,6 @@ type PokemonReducerAction =
   CloseDetailsPanelAction | 
   ToggleEditModeAction |
   LoadDataActions |
-  LoadAlliesActions |
   SetCombatStageActions |
   RequestDetailsActions |
   SetPokemonNatureActions |
@@ -368,12 +364,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: action.payload.data.pokemon,
         isUserOwner: action.payload.data.isUserOwner,
-      };
-    
-    case LOAD_ALLIES_SUCCESS:
-      return {
-        ...state,
-        allies: action.payload.data,
+        allies: action.payload.data.allies,
       };
 
     case SET_COMBAT_STAGE:
@@ -863,17 +854,6 @@ export function loadData(id: number): PokemonReducerAction {
       }
     },
   };
-}
-
-export function loadAllies(id: number): PokemonReducerAction {
-  return {
-    type: LOAD_ALLIES,
-    payload: {
-      request: {
-        url: `/v2/pokemon/${id}/allies`,
-      }
-    },
-  }
 }
 
 export function setCombatStage(pokemonId: number, stat: CombatStage, value: number): PokemonReducerAction {

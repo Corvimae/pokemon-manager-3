@@ -9,6 +9,7 @@ import { Strategy as twitchStrategy } from 'passport-twitch-new';
 import connectSessionSequelize from 'connect-session-sequelize';
 import { apiRouter } from './api/routes';
 import { User } from './models/user';
+import { Server } from 'https';
 
 dotenv.config();
 
@@ -121,6 +122,13 @@ app.prepare().then(async () => {
     server.use('/api/v1', apiRouter);
 
     server.get('*', (req, res) => handle(req, res));
+
+    server.use(function (err, req, res, next) {
+      console.error(err);
+      
+      res.status(500);
+      res.send("Oops, something went wrong.")
+    });
 
     server.listen(3000, (err: Error): void => {
       if (err) throw err;

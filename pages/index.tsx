@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { DropdownTooltip } from '../components/DropdownTooltip';
-import { Button, DropdownHeader, PokemonIcon, TextInput } from '../components/Layout';
+import { Button, DropdownHeader, HealthBar, PokemonIcon, TextInput } from '../components/Layout';
 import { LoadingIcon } from '../components/LoadingIcon';
 import { getGenderColor, getGenderIcon } from '../components/PokemonNameBar';
 import { useTypedSelector } from '../store/rootReducer';
@@ -111,7 +111,7 @@ const TrainerPage = ({ displayName }) => {
                     <FontAwesomeIcon icon={getGenderIcon(pokemon.gender)} size="sm"/>
                   </GenderIcon>
                 </PokemonNameRow>
-                <HealthBar percentage={calculateHPPercentage(pokemon)} />
+                <PokemonHealthBar pokemon={pokemon} />
                 <PokemonStatRow>
                   <div>
                     {pokemon.currentHealth}/{calculateTotalHP(pokemon)}
@@ -377,29 +377,14 @@ const NewPokemonCell = styled(PokemonCell)`
   border: 1px dashed #aaa;
 `;
 
-const HealthBar = styled.div<{ percentage: number }>`
-  position: relative;
-  height: 0.25rem;
-  min-height: 0.25rem;
-  width: calc(100% - 4rem);
-  margin-top: 0.25rem;
-  background-color: #606060;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: ${props => props.percentage}%;
-    height: 100%;
-    background-color: #13a8b0;
-  }
-`;
-
 const PokemonStatRow = styled.div`
   display: flex;
   width: 100%;
   padding-right: 1rem;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const PokemonHealthBar = styled(HealthBar)`
+  width: calc(100% - 4rem);
 `;

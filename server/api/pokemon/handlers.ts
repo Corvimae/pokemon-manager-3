@@ -109,6 +109,8 @@ export async function getPokemonData(req: Request, res: Response): Promise<void>
     res.json({
       isUserOwner: pokemon.trainer.userId === req.user[0].id, 
       pokemon,
+      allies: (await pokemon.trainer.$get('pokemon', { include: [RulebookSpecies] }))
+        .filter(item => item.active && item.id !== pokemon.id),
     });
   }
 }

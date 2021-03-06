@@ -3,6 +3,8 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Theme } from '../utils/theme';
 import Tippy from '@tippy.js/react';
+import { calculateHPPercentage } from '../utils/formula';
+import { Pokemon } from '../server/models/pokemon';
 
 interface IconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   icon: IconDefinition;
@@ -110,13 +112,13 @@ export const AddItemButton = styled(Button)`
   align-items: center;
   font-weight: 400;
   font-size: 0.875rem;
-  background-color: transparent;
+  background-color: #eaeaea;
   border: 1px dashed #333;
   line-height: 1;
   color: #666;
 
   &:hover:not(:disabled) {
-    background-color: #eaeaea;
+    background-color: #fff;
   }
 `
 
@@ -234,10 +236,30 @@ export const TypeList = styled(StatValue)`
 
 export const PokemonIcon = styled.div<{ dexNumber: number }>`
   width: 40px;
+  min-width: 40px;
   height: 30px;
+  min-height: 30px;
   background: url("https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png?v4") no-repeat scroll;
   background-position-x: -${props => Math.floor(props.dexNumber % 12) * 40}px;
   background-position-y: -${props => Math.floor(props.dexNumber / 12) * 30}px;
   transform: scale(1.5);
 `;
 
+export const HealthBar = styled.div<{ pokemon: Pokemon; backgroundColor?: string }>`
+  position: relative;
+  min-height: 0.25rem;
+  height: 0.25rem;
+  width: 100%;
+  margin-top: 0.25rem;
+  background-color: ${props => props.backgroundColor ?? '#606060'};
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: ${props => calculateHPPercentage(props.pokemon) * 100}%;
+    height: 100%;
+    background-color: #13a8b0;
+  }
+`;

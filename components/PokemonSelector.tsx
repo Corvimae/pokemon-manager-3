@@ -1,104 +1,149 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import Tippy from '@tippy.js/react';
+import { useRouter } from 'next/router';
 import { Theme } from '../utils/theme';
 import { calculateLevel } from '../utils/level';
 import { useTypedSelector } from '../store/rootReducer';
-import { PokemonIcon } from './Layout';
+import { HealthBar, PokemonIcon } from './Layout';
+import { Pokemon } from '../server/models/pokemon';
+import Link from 'next/link';
 
 export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
+  const router = useRouter();
+  const [visible, setVisible] = useState(false); 
   const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
   const allies = useTypedSelector(state => state.pokemon.allies);
 
-  return (
-    <Container isActiveMobileMode={mobileMode === 'allies'} mobile={mobile}>
-      <AllySelector href="/">
-        <FontAwesomeIcon icon={faHome} size="lg" />
-      </AllySelector>
+  const toggleVisibility = useCallback(() => {
+    setVisible(!visible);
+  }, [visible]);
 
-      {allies.map(ally => (
-        <AllySelector key={ally.id} href={`/pokemon/${ally.id}`}>
-          <Tippy content={`${ally.name} - Lv. ${calculateLevel(ally.experience)} ${ally.species}`} boundary="viewport">
+  const navigateToAlly = useCallback((event: React.MouseEvent<HTMLButtonElement>, pokemon: Pokemon) => {
+    event.stopPropagation();
+    router.push('/pokemon/:id', `/pokemon/${pokemon.id}`);
+  }, []);
+
+  useEffect(() => {
+    const handleClick = event => {
+      setVisible(false);
+    };
+
+    document.body.addEventListener('click', handleClick);
+
+    return () => {
+      document.body.removeEventListener('click', handleClick);
+    };
+  }, []);
+
+  return (
+    <Container
+      isActiveMobileMode={mobileMode === 'allies'}
+      mobile={mobile}
+      visible={visible}
+      onClick={toggleVisibility}
+    >
+      <PullTab onClick={toggleVisibility}/>
+      <AllyList>
+        <Link href="/">
+          <HomeSelector>
+            <FontAwesomeIcon icon={faHome} size="lg" />
+          </HomeSelector>
+        </Link>
+
+        {allies.map(ally => (
+          <AllySelector key={ally.id} onClick={event => navigateToAlly(event, ally)}>
             <AllyImage dexNumber={ally.species?.dexNumber ?? 0} />
-          </Tippy>
-          <AllyName>{ally.name}</AllyName>
-          <AllyDescription>
-            Lv. {calculateLevel(ally.experience)} {ally.species}
-          </AllyDescription>
-        </AllySelector>
-      ))}
+            <AllyDetails>
+              <AllyName>{ally.name}</AllyName>
+              <HealthBar pokemon={ally} backgroundColor="#aaa"/>
+              <AllyDescription>
+                Lv. {calculateLevel(ally.experience)}
+              </AllyDescription>
+            </AllyDetails>
+          </AllySelector>
+        ))}
+      </AllyList>
     </Container>
   );
 };
 
-const AllySelector = styled.a`
+const AllySelector = styled.button`
   position: relative;
   display: flex;
-  width: 3rem;
-  min-width: 3rem;
-  height: 3rem;
   flex-direction: row;
+  min-width: 10rem;
+  width: max-content;
+  height: 3rem;
+  margin: 0.5rem 0;
+  border-radius: 1.5rem;
   justify-content: center;
   align-items: center;
-  background-color: transparent;
   border: none;
   font-family: inherit;
-  border-radius: 0.25rem;
   padding: 0;
   text-decoration: none;
-  color: #333;
+  background-color: #fff;
+  font-size: 0.825rem;
+  box-shadow: ${Theme.dropShadow};
+  cursor: pointer;
   
   &:not(:last-child) {
     margin-right: 0.5rem;
   }
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: ${Theme.backgroundStripe};
+    color: #fff;
   }
 `;
 
 const AllyImage = styled(PokemonIcon)`
-  width: 100%;
-  height: 100%;
-  background-image: url(${({ backgroundImage }) => backgroundImage});
-  background-size: cover;
+  transform: scale(1.25);
+  margin-left: 0.5rem;
 `;
 
 const AllyName = styled.span`
-  display: none;
-  font-size: 1.125rem;
-  margin-top: -0.25rem;
-  flex-grow: 1;
+  white-space: nowrap;
+  font-weight: 700;
+  text-align: left;
+`;
+
+const AllyDetails = styled.div`
+  position: relative; 
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
   align-self: stretch;
-  align-items: center;
-  line-height: normal;
+  flex-grow: 1;
+  padding: 0.25rem 1rem 0.25rem 0.25rem;
 `;
 
 const AllyDescription = styled.span`
-  display: none;
-  min-width: max-content;
-  font-size: 0.875rem;
-  overflow: visible;
-  align-items: center;
-  line-height: normal;
-  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: right;
 `;
 
 const Container = styled.div`
+  position: fixed;
   display: ${({ mobile }) => mobile ? 'none' : 'flex'};
-  min-width: min-content;
-  max-width: max-content;
+  left: 0;
+  top: ${props => props.visible ? 0 : '-4rem'};
+  width: 100vw;
+  height: 4rem;
   flex-direction: row;
-  margin: -1rem 2rem 0;
-  padding: 0.25rem 0.5rem;
-  background-color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 0 0 0.25rem 0.25rem;
-  overflow-x: auto;
+  padding: 0 0.5rem;
+  background-color: #333;
+  overflow: visible;
+  transition: top 250ms ease-in-out;
+  cursor: pointer;
+  z-index: 999;
+
+  &:hover {
+    top: ${props => !props.visible && '-3.5rem'};
+  }
 
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     position: relative;
@@ -137,5 +182,45 @@ const Container = styled.div`
     & ${AllyDescription} {
       display: flex;
     }
+  }
+`;
+
+const PullTab = styled.div`
+  position: absolute;
+  left: 50%;
+  bottom: -1rem;
+  width: 4rem;
+  height: 1rem;
+  background-color: #333;
+  border-radius: 0 0 0.25rem 0.25rem;
+  transform: translateX(-50%);
+`;
+
+const AllyList = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: row;
+  overflow-x: auto;
+`;
+
+const HomeSelector = styled.a`
+  display: flex;
+  width: 3rem;
+  min-width: 3rem;
+  height: 3rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  & svg {
+    color: #999;
   }
 `;
