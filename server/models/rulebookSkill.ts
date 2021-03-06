@@ -1,11 +1,11 @@
-import { Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table
 export class RulebookSkill extends Model {
   @Column
   name: string;
 
-  @Column
+  @Column(DataType.TEXT)
   description: string;
 
   @CreatedAt

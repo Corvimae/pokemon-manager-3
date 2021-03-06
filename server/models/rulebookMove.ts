@@ -1,4 +1,4 @@
-import { AllowNull, Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table
 export class RulebookMove extends Model {
@@ -25,7 +25,7 @@ export class RulebookMove extends Model {
   @Column
   range: string;
 
-  @Column
+  @Column(DataType.TEXT)
   effect: string;
 
   @CreatedAt

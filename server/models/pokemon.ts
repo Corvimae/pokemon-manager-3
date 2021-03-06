@@ -1,4 +1,4 @@
-import { BelongsTo, BelongsToMany, Column, CreatedAt, Default, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { BelongsTo, BelongsToMany, Column, CreatedAt, DataType, Default, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
 import { PokemonAbility } from './pokemonAbility';
 import { PokemonCapability } from './pokemonCapability';
 import { PokemonEdge } from './pokemonEdge';
@@ -56,11 +56,11 @@ export class Pokemon extends Model {
   type2: string;
 
   @Default('')
-  @Column
+  @Column(DataType.TEXT)
   notes: string;
 
   @Default('')
-  @Column
+  @Column(DataType.TEXT)
   gmNotes: string;
 
   @Default(0)

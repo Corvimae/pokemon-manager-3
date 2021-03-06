@@ -1,4 +1,4 @@
-import { Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table
 export class RulebookCapability extends Model {
@@ -8,7 +8,7 @@ export class RulebookCapability extends Model {
   @Column
   isMovementCapability: boolean;
   
-  @Column
+  @Column(DataType.TEXT)
   effect: string;
 
   @CreatedAt
