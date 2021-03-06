@@ -175,7 +175,7 @@ interface TypeEffectivenesses {
 }
 
 export function getOffensiveEffectivenesses(type: TypeName): TypeEffectivenesses {
-  if (!type) {
+  if (!type || !typeChart[type]) {
     return {
       x4: [],
       x2: [],
@@ -197,6 +197,16 @@ export function getOffensiveEffectivenesses(type: TypeName): TypeEffectivenesses
 }
 
 export function getDefensiveEffectivenesses(type: TypeName): TypeEffectivenesses {
+  if (!type || !typeChart[type]) {
+    return {
+      x4: [],
+      x2: [],
+      x0: [],
+      half: [],
+      fourth: []
+    };
+  }
+
   return {
     x4: [],
     x2: Object.entries(typeChart).filter(([key, rules]) => rules.double.indexOf(type) !== -1).map(([key]) => key as TypeName),

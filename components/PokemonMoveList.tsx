@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestDetails } from '../store/pokemon';
+import { addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestDetails, setMoveIsTutored } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { getAttackType } from '../utils/moves';
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faGraduationCap, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AddItemButton, Button, DropdownHeader, IconButton } from './Layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useCallback } from 'react';
@@ -42,10 +42,22 @@ const UnsortableMove: React.FC<{ move: JunctionedMove }> = ({ move }) => {
     dispatch(setMoveType(pokemonId, move.id, type));
   }, [dispatch, pokemonId, move.id]);
 
+  const handleToggleTutorMode = useCallback(() => {
+    dispatch(setMoveIsTutored(pokemonId, move.id, !move.PokemonMove.isTutorMove));
+  }, [pokemonId, move.id, !move.PokemonMove.isTutorMove]);
+
   return (
     <MoveContainer onClick={handleRequestMove}>
       <MoveName>
         {editMode && <RemoveMoveButton icon={faTimes} onClick={handleRemoveMove} />}
+        {(editMode || move.PokemonMove.isTutorMove) && (
+          <TutorMoveToggle
+            icon={faGraduationCap}
+            data-is-tutor-move={move.PokemonMove.isTutorMove}
+            data-edit-mode={editMode}
+            onClick={handleToggleTutorMode}
+          />
+        )}
         {move.name}
       </MoveName>
       <MoveAccuracy>AC {move.ac}</MoveAccuracy>
@@ -344,5 +356,16 @@ const Container = styled.div`
     & ${AddMoveButton} {
       width: 100%;
     }
+  }
+`;
+
+const TutorMoveToggle = styled(FontAwesomeIcon)`
+  display: ${props => props['data-edit-mode'] || props['data-is-tutor-move'] ? 'block' : 'none'};
+  color: ${props => props['data-edit-mode']  && !props['data-is-tutor-move']  ? '#999' : '#333'};
+  margin-right: 0.5rem;
+  cursor: ${props => props['data-edit-mode'] && 'pointer'};
+  
+  &:hover {
+    color: ${props => !props['data-is-tutor-move']  && props['data-edit-mode'] && '#333'};
   }
 `;

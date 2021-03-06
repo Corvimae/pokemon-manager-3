@@ -558,6 +558,37 @@ export async function setPokemonMovePPUp(req: Request, res: Response): Promise<v
   res.json(pokemon);
 }
 
+export async function setPokemonMoveIsTutored(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.moveId)) {
+    return res.status(400).json({
+      error: 'Invalid value for moveId.',
+    });
+  }
+
+  if (typeof req.body.isTutored !== 'boolean') {
+    return res.status(400).json({
+      error: 'Invalid value for isTutored.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookMove] });
+  const move = pokemon.moves.find(item => item.id === Number(req.params.moveId));
+
+  if (!move) {
+    return res.status(400).json({
+      error: `Move instance not found on ${pokemon.name}.`,
+    });
+  }
+
+  await move.PokemonMove.update({
+    isTutorMove: req.body.isTutored
+  });
+  
+  pokemon.setDataValue('moves', await pokemon.$get('moves'));
+
+  res.json(pokemon);
+}
+
 export async function addPokemonCapability(req: Request, res: Response): Promise<void> {
   if (Number.isNaN(req.body.capabilityId)) {
     return res.status(400).json({

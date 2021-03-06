@@ -1,7 +1,7 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries } from './handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries, setPokemonMoveIsTutored } from './handlers';
 
 export const router = express.Router();
 
@@ -62,6 +62,7 @@ router.route('/:id/heldItem')
 
 router.post('/:id/move/:moveId/type', setPokemonMoveType)
 router.post('/:id/move/:moveId/ppup', setPokemonMovePPUp);
+router.post('/:id/move/:moveId/tutored', setPokemonMoveIsTutored);
 router.route('/:id/move')
   .post(addPokemonMove)
   .delete(removePokemonMove);

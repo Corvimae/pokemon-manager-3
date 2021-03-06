@@ -38,10 +38,12 @@ export const DetailsSidebar = () => {
       <StatList>
         {activeDetails.details?.type === MOVE && activeDetails.details?.value && (
           <>
-            <StatRow>
-              <StatKey>Accuracy</StatKey>
-              <StatValue>{activeDetails.details.value.ac}</StatValue>
-            </StatRow>
+            {activeDetails.details.value.ac !== null && (
+              <StatRow>
+                <StatKey>Accuracy</StatKey>
+                <StatValue>{activeDetails.details.value.ac}</StatValue>
+              </StatRow>
+            )}
             <StatRow>
               <StatKey>Range</StatKey>
               <StatValue>{activeDetails.details.value.range}</StatValue>
@@ -50,7 +52,7 @@ export const DetailsSidebar = () => {
               <StatKey>Attack Type</StatKey>
               <StatValue>{getAttackType(activeDetails.details.value.damageType)}</StatValue>
             </StatRow>
-            {activeDetails.details.value.damageBase !== -1 && (
+            {activeDetails.details.value.damageBase !== null && (
               <StatRow>
                 <StatKey>Damage</StatKey>
                 <StatValue>{activeDetails.details.value.damageBase}</StatValue>

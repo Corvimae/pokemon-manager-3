@@ -139,6 +139,7 @@ const ADD_MOVE_SUCCESS = 'ADD_MOVE_SUCCESS'
 const REMOVE_MOVE = 'REMOVE_MOVE';
 const SET_MOVE_PP_UP = 'SET_MOVE_PP_UP';
 const SET_MOVE_TYPE = 'SET_MOVE_TYPE';
+const SET_MOVE_IS_TUTORED = 'SET_MOVE_IS_TUTORED';
 const SET_POKEMON_TYPE = 'SET_POKEMON_TYPE';
 const SET_POKEMON_ACTIVE = 'SET_POKEMON_ACTIVE';
 const SET_POKEMON_NAME = 'SET_POKEMON_NAME';
@@ -234,6 +235,7 @@ type AddMoveActions = RequestActions<typeof ADD_MOVE, Pokemon>;
 type RemoveMoveActions = ImmediateUpdateRequestActions<typeof REMOVE_MOVE, number, number>;
 type SetMovePPUpActions = ImmediateUpdateRequestActions<typeof SET_MOVE_PP_UP, JunctionedMove, { moveId: number; enabled: boolean }>;
 type SetMoveTypeActions = ImmediateUpdateRequestActions<typeof SET_MOVE_TYPE, JunctionedMove, { moveId: number, type: TypeName }>;
+type SetMoveIsTutoredActions = ImmediateUpdateRequestActions<typeof SET_MOVE_IS_TUTORED, JunctionedMove, { moveId: number, isTutored: boolean }>;
 type SetPokemonTypeActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_TYPE, [string, string]>;
 type SetPokemonActiveActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ACTIVE, boolean>
 type SetPokemonNameActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_NAME, string>
@@ -301,6 +303,7 @@ type PokemonReducerAction =
   RemoveMoveActions |
   SetMovePPUpActions |
   SetMoveTypeActions |
+  SetMoveIsTutoredActions |
   SetPokemonTypeActions |
   SetPokemonActiveActions |
   SetPokemonNameActions |
@@ -644,6 +647,19 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
             state.data.moves,
             action.payload.value.moveId,
             move => updateMoveJunction(move, 'typeOverride', action.payload.value.type)
+          ),
+        } as Pokemon,
+      };
+
+    case SET_MOVE_IS_TUTORED:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          moves: updateById(
+            state.data.moves,
+            action.payload.value.moveId,
+            move => updateMoveJunction(move, 'isTutorMove', action.payload.value.isTutored)
           ),
         } as Pokemon,
       };
@@ -1334,6 +1350,25 @@ export function setMoveType(pokemonId: number, moveId: number, type: TypeName): 
         method: 'POST',
         data: {
           type,
+        },
+      },
+    },
+  };
+}
+
+export function setMoveIsTutored(pokemonId: number, moveId: number, isTutored: boolean): PokemonReducerAction {
+  return {
+    type: SET_MOVE_IS_TUTORED,
+    payload: {
+      value: {
+        moveId,
+        isTutored,
+      },
+      request: {
+        url: `/pokemon/${pokemonId}/move/${moveId}/tutored`,
+        method: 'POST',
+        data: {
+          isTutored,
         },
       },
     },
