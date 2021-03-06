@@ -43,5 +43,7 @@ apiRouter.route('/trainer')
       name: req.body.name,
     });
 
+    trainer.setDataValue('pokemon', await trainer.$get('pokemon'));
+
     res.json(trainer);
   });
