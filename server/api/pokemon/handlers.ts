@@ -203,6 +203,16 @@ export async function setPokemonTempHealth(req: Request, res: Response): Promise
   res.json(await updatePokemon(req, 'tempHealth', req.body.health));
 }
 
+export async function setPokemonInjuries(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.injuries)) {
+    return res.status(400).json({
+      error: 'Invalid value for injuries.',
+    });
+  }
+
+  res.json(await updatePokemon(req, 'injuries', req.body.injuries));
+}
+
 export async function setPokemonBonusTutorPoints(req: Request, res: Response): Promise<void> {
   if (Number.isNaN(req.body.value)) {
     return res.status(400).json({
@@ -212,7 +222,6 @@ export async function setPokemonBonusTutorPoints(req: Request, res: Response): P
 
   res.json(await updatePokemon(req, 'bonusTutorPoints', req.body.value));
 }
-
 
 export async function setPokemonSpentTutorPoints(req: Request, res: Response): Promise<void> {
   if (Number.isNaN(req.body.value)) {

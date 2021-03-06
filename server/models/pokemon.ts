@@ -71,6 +71,10 @@ export class Pokemon extends Model {
   @Column
   tempHealth: number;
 
+  @Default(0)
+  @Column
+  injuries: number;
+
   @Column
   sortOrder: number;
 

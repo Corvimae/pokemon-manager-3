@@ -1,7 +1,7 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints } from './handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries } from './handlers';
 
 export const router = express.Router();
 
@@ -43,13 +43,14 @@ router.post('/:id/experience', setPokemonExperience);
 router.post('/:id/loyalty', setPokemonLoyalty);
 router.post('/:id/health', setPokemonHealth);
 router.post('/:id/tempHealth', setPokemonTempHealth);
+router.post('/:id/injuries', setPokemonInjuries);
+router.post('/:id/bonusTutorPoints', setPokemonBonusTutorPoints);
+router.post('/:id/spentTutorPoints', setPokemonSpentTutorPoints);
 router.post('/:id/active', setPokemonActive);
 router.post('/:id/nature', setPokemonNature);
 router.post('/:id/notes', setPokemonNotes);
 router.post('/:id/stat', setPokemonStat);
 router.post('/:id/combatStage', setPokemonCombatStage);
-router.post('/:id/bonusTutorPoints', setPokemonBonusTutorPoints);
-router.post('/:id/spentTutorPoints', setPokemonSpentTutorPoints);
 
 router.route('/:id/ability')
   .post(addPokemonAbility)

@@ -110,6 +110,7 @@ const CLOSE_DETAILS_PANEL_ACTION = 'CLOSE_DETAILS_PANEL_ACTION';
 const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 const SET_HEALTH = 'SET_HEALTH';
 const SET_TEMP_HEALTH = 'SET_TEMP_HEALTH';
+const SET_INJURIES = 'SET_INJURIES';
 const SET_SPENT_TUTOR_POINTS = 'SET_SPENT_TUTOR_POINTS';
 const SET_BONUS_TUTOR_POINTS = 'SET_BONUS_TUTOR_POINTS';
 const SET_POKEMON_NATURE = 'SET_POKEMON_NATURE';
@@ -245,6 +246,7 @@ type SetPokemonBaseStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMO
 type SetPokemonAddedStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ADDED_STAT, { stat: Stat, value: number }>
 type SetHealthActions = ImmediateUpdateRequestActions<typeof SET_HEALTH, number>;
 type SetTempHealthActions = ImmediateUpdateRequestActions<typeof SET_TEMP_HEALTH, number>;
+type SetInjuriesAction = ImmediateUpdateRequestActions<typeof SET_INJURIES, number>;
 type SetSpentTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_SPENT_TUTOR_POINTS, number>;
 type SetBonusTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_BONUS_TUTOR_POINTS, number>;
 type SetMoveOrderActions = ImmediateUpdateRequestActions<typeof SET_MOVE_ORDER, { moveId: number; position: number }>;
@@ -311,6 +313,7 @@ type PokemonReducerAction =
   SetPokemonAddedStatActions |
   SetHealthActions |
   SetTempHealthActions |
+  SetInjuriesAction |
   SetSpentTutorPointsActions |
   SetBonusTutorPointsActions |
   SetMoveOrderActions |
@@ -435,6 +438,15 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         data: {
           ...state.data,
           tempHealth: action.payload.value,
+        } as Pokemon,
+      };
+
+    case SET_INJURIES:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          injuries: action.payload.value,
         } as Pokemon,
       };
 
@@ -883,35 +895,63 @@ export function closeDetailsPanel(): PokemonReducerAction {
 }
 
 export function setHealth(pokemonId: number, health: number): PokemonReducerAction {
-  return {
-    type: SET_HEALTH,
-    payload: {
-      value: health,
-      request: {
-        url: `/pokemon/${pokemonId}/health`,
-        method: 'POST',
-        data: {
-          health,
-        }
+  const safeHealth = Number(health);
+
+  if (!Number.isNaN(safeHealth)) {
+    return {
+      type: SET_HEALTH,
+      payload: {
+        value: safeHealth,
+        request: {
+          url: `/pokemon/${pokemonId}/health`,
+          method: 'POST',
+          data: {
+            health: safeHealth,
+          }
+        },
       },
-    },
-  };
+    };
+  }
 }
 
 export function setTempHealth(pokemonId: number, health: number): PokemonReducerAction {
-  return {
-    type: SET_TEMP_HEALTH,
-    payload: {
-      value: health,
-      request: {
-        url: `/pokemon/${pokemonId}/tempHealth`,
-        method: 'POST',
-        data: {
-          health,
-        }
+  const safeHealth = Number(health);
+
+  if (!Number.isNaN(safeHealth)) {
+    return {
+      type: SET_TEMP_HEALTH,
+      payload: {
+        value: safeHealth,
+        request: {
+          url: `/pokemon/${pokemonId}/tempHealth`,
+          method: 'POST',
+          data: {
+            health: safeHealth,
+          }
+        },
       },
-    },
-  };
+    };
+  }
+}
+
+export function setInjuries(pokemonId: number, injuries: number): PokemonReducerAction {
+  const safeInjuries = Number(injuries);
+
+  if (!Number.isNaN(safeInjuries)) {
+    return {
+      type: SET_INJURIES,
+      payload: {
+        value: safeInjuries,
+        request: {
+          url: `/pokemon/${pokemonId}/injuries`,
+          method: 'POST',
+          data: {
+            injuries: safeInjuries,
+          }
+        },
+      },
+    };
+  }
 }
 
 export function setBonusTutorPoints(pokemonId: number, value: number): PokemonReducerAction {

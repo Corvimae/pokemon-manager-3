@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth } from '../store/pokemon';
+import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth, setInjuries } from '../store/pokemon';
 import { getAddedStatField, getBaseStatField, getCombatStageField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faPlus, faTintSlash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Button, NumericInput, DropdownHeader } from './Layout';
 import { Theme } from '../utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -96,6 +96,7 @@ export const PokemonStatBar = () => {
 
   const currentHealth = useTypedSelector(store => store.pokemon.data.currentHealth);
   const tempHealth = useTypedSelector(store => store.pokemon.data.tempHealth);
+  const injuries = useTypedSelector(store => store.pokemon.data.injuries);
 
   const [modifyHealthValue, setModifyHealthValue] = useState(1);
   const [modifyTempHealthValue, setModifyTempHealthValue] = useState(1);
@@ -118,6 +119,10 @@ export const PokemonStatBar = () => {
     dispatch(setTempHealth(pokemonId, value));
   }, [dispatch, pokemonId]);
 
+  const updateInjuries = useCallback((value: number) => {
+    dispatch(setInjuries(pokemonId, value));
+  }, [dispatch, pokemonId]);
+
   return (
     <Container isActiveMobileMode={mobileMode === 'stats'}>
       <Title area="hp">HP</Title>
@@ -135,6 +140,9 @@ export const PokemonStatBar = () => {
             <TempHealth>+&nbsp;{tempHealth}</TempHealth>
           )}
           <TotalHealth>/&nbsp;{totalHealth}</TotalHealth>
+          {injuries > 0 && (
+            <InjuryIcon icon={faTintSlash} color="#990000" size="xs"/>
+          )}
         </HealthDisplayContainer>
         <StatCalculation>({baseHP} + {addedHP})</StatCalculation>
       </StatTotal>
@@ -177,7 +185,7 @@ export const PokemonStatBar = () => {
               <HealthModifyButton  onClick={() => updateHealth(totalHealth)}>
                 Heal to full
               </HealthModifyButton>
-              <TempHealthActionsLabel>Temporary HP</TempHealthActionsLabel>
+              <HealthDropdownSubheader>Temporary HP</HealthDropdownSubheader>
               <AddSubtractHealthButtons>
                 <CombatStageButton icon={faMinus} onClick={() => updateTempHealth(Math.max(0, tempHealth - modifyTempHealthValue))}/>
                 <HealthModifyInput
@@ -186,6 +194,12 @@ export const PokemonStatBar = () => {
                   defaultValue={modifyTempHealthValue}
                 /> 
                 <CombatStageButton icon={faPlus} onClick={() => updateTempHealth(tempHealth + modifyTempHealthValue)}/>
+              </AddSubtractHealthButtons>
+              <HealthDropdownSubheader>Injuries</HealthDropdownSubheader>
+              <AddSubtractHealthButtons>
+                <CombatStageButton icon={faMinus} onClick={() => updateInjuries(Math.max(0, injuries - 1))}/>
+                <InjuryCount>{injuries}</InjuryCount>
+                <CombatStageButton icon={faPlus} onClick={() => updateInjuries(injuries + 1)}/>
             </AddSubtractHealthButtons>
             </HealthCellDropdown>
           </>
@@ -419,7 +433,7 @@ const TempHealth = styled.div`
   padding-right: 0.125rem;
 `;
 
-const TempHealthActionsLabel = styled.div`
+const HealthDropdownSubheader = styled.div`
   font-weight: 700;
   font-size: 0.825rem;
   padding: 0.25rem;
@@ -427,4 +441,16 @@ const TempHealthActionsLabel = styled.div`
   color: #666;
   border-top: 1px solid #eaeaea;
   text-align: center;
+`;
+
+const InjuryCount = styled.div`
+  width: 3rem;
+  margin: 0 0.25rem;
+  text-align: center;
+  font-weight: 700;
+`;
+
+const InjuryIcon = styled(FontAwesomeIcon)`
+  margin-left: 0.125rem;
+  height: 0.5rem;
 `;
