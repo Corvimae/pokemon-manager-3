@@ -15,7 +15,7 @@ function clamp(value: number, min: number, max: number): number {
 export function useTotalHP() {
   const pokemon = useTypedSelector(state => state.pokemon.data);
 
-  return Math.floor(calculateTotalHP(pokemon) * (1 - 0.1 * pokemon.injuries));
+  return Math.floor(calculateTotalHP(pokemon) * (1 - 0.1 * Math.min(pokemon.injuries, 9)));
 }
 
 export function usePhysicalEvasions() {

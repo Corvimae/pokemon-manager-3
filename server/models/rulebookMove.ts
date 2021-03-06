@@ -1,4 +1,4 @@
-import { Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table
 export class RulebookMove extends Model {
@@ -11,9 +11,11 @@ export class RulebookMove extends Model {
   @Column
   frequency: string;
 
+  @AllowNull
   @Column
   ac: number;
 
+  @AllowNull
   @Column
   damageBase: number;
 
