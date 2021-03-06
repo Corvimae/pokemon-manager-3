@@ -132,6 +132,11 @@ export class Pokemon extends Model {
 
   @Default(0)
   @Column
+  addedSpeed: number;
+  
+
+  @Default(0)
+  @Column
   attackCombatStages: number;
 
   @Default(0)
@@ -152,7 +157,27 @@ export class Pokemon extends Model {
 
   @Default(0)
   @Column
-  addedSpeed: number;
+  vitaminHP: number;
+
+  @Default(0)
+  @Column
+  vitaminAttack: number;
+
+  @Default(0)
+  @Column
+  vitaminDefense: number;
+
+  @Default(0)
+  @Column
+  vitaminSpAttack: number;
+
+  @Default(0)
+  @Column
+  vitaminSpDefense: number;
+
+  @Default(0)
+  @Column
+  vitaminSpeed: number;
 
   @Default(0)
   @Column

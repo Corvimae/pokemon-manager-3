@@ -410,10 +410,15 @@ export async function setPokemonStat(req: Request, res: Response): Promise<void>
     });
   }
 
-  const prefix = req.body.isBase ? 'base' : 'added';
+  if(['base', 'added', 'vitamin'].indexOf(req.body.type) === -1) {
+    return res.status(400).json({
+      error: `${stat} is not a valid type.`,
+    });
+  }
+
   const suffix = stat === 'hp' ? 'HP' : stat[0].toUpperCase() + stat.substring(1);
 
-  res.json(await updatePokemon(req, `${prefix}${suffix}` as keyof Pokemon, req.body.value));
+  res.json(await updatePokemon(req, `${req.body.type}${suffix}` as keyof Pokemon, req.body.value));
 }
 
 export async function setPokemonCombatStage(req: Request, res: Response): Promise<void> {

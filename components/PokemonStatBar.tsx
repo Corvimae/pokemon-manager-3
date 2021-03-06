@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth, setInjuries } from '../store/pokemon';
-import { getAddedStatField, getBaseStatField, getCombatStageField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
+import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth, setInjuries, setPokemonVitaminStat } from '../store/pokemon';
+import { getAddedStatField, getBaseStatField, getCombatStageField, getVitaminStatField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { faMinus, faPlus, faTintSlash } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,14 @@ import { calculateLevel } from '../utils/level';
 import { useTypedSelector } from '../store/rootReducer';
 import { CombatStage, Stat } from '../utils/types';
 
+const VITAMIN_NAMES: Record<Stat, string> = {
+  hp: 'HP Up',
+  attack: 'Protein',
+  defense: 'Iron',
+  spAttack: 'Calcium',
+  spDefense: 'Zinc',
+  speed: 'Carbos',
+};
 interface StatEditorProps { 
   stat: Stat;
 }
@@ -20,6 +28,7 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
   const baseStat = useTypedSelector(state => state.pokemon.data[getBaseStatField(stat)]);
   const addedStat = useTypedSelector(state => state.pokemon.data[getAddedStatField(stat)]);
+  const vitaminStat = useTypedSelector(state => state.pokemon.data[getVitaminStatField(stat)]);
 
   const handleChangeBaseStat = useCallback(event => {
     dispatch(setPokemonBaseStat(pokemonId, stat, event.target.value));
@@ -27,6 +36,10 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
 
   const handleChangeAddedStat = useCallback(event => {
     dispatch(setPokemonAddedStat(pokemonId, stat, event.target.value));
+  }, [dispatch, stat, pokemonId]);
+
+  const handleChangeVitaminStat = useCallback(event => {
+    dispatch(setPokemonVitaminStat(pokemonId, stat, event.target.value));
   }, [dispatch, stat, pokemonId]);
 
   return (
@@ -39,6 +52,10 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
         <FontAwesomeIcon icon={faPlus} size="xs" />
       </StatEditPlus>
       <NumericInput type="number" onChange={handleChangeAddedStat} defaultValue={addedStat} />
+      <StatVitaminRow>
+        <VitaminName>{VITAMIN_NAMES[stat]}</VitaminName>
+        <NumericInput type="number" onChange={handleChangeVitaminStat} defaultValue={vitaminStat} />
+      </StatVitaminRow>
     </StatEditContainer>
   );
 };
@@ -93,6 +110,13 @@ export const PokemonStatBar = () => {
   const addedSpAttack = useTypedSelector(store => store.pokemon.data.addedSpAttack);
   const addedSpDefense = useTypedSelector(store => store.pokemon.data.addedSpDefense);
   const addedSpeed = useTypedSelector(store => store.pokemon.data.addedSpeed);
+  
+  const vitaminHP = useTypedSelector(store => store.pokemon.data.vitaminHP);
+  const vitaminAttack = useTypedSelector(store => store.pokemon.data.vitaminAttack);
+  const vitaminDefense = useTypedSelector(store => store.pokemon.data.vitaminDefense);
+  const vitaminSpAttack = useTypedSelector(store => store.pokemon.data.vitaminSpAttack);
+  const vitaminSpDefense = useTypedSelector(store => store.pokemon.data.vitaminSpDefense);
+  const vitaminSpeed = useTypedSelector(store => store.pokemon.data.vitaminSpeed);
 
   const currentHealth = useTypedSelector(store => store.pokemon.data.currentHealth);
   const tempHealth = useTypedSelector(store => store.pokemon.data.tempHealth);
@@ -144,27 +168,27 @@ export const PokemonStatBar = () => {
             <InjuryIcon icon={faTintSlash} color="#990000" size="xs"/>
           )}
         </HealthDisplayContainer>
-        <StatCalculation>({baseHP} + {addedHP})</StatCalculation>
+        <StatCalculation>({baseHP} + {addedHP}{vitaminHP > 0 && ` + ${vitaminHP}`})</StatCalculation>
       </StatTotal>
       <StatTotal area="atk">
         <TotalValue>{attack}</TotalValue>
-        <StatCalculation>({baseAttack} + {addedAttack})</StatCalculation>
+        <StatCalculation>({baseAttack} + {addedAttack}{vitaminAttack > 0 && ` + ${vitaminAttack}`})</StatCalculation>
       </StatTotal>
       <StatTotal area="def">
         <TotalValue>{defense}</TotalValue>
-        <StatCalculation>({baseDefense} + {addedDefense})</StatCalculation>
+        <StatCalculation>({baseDefense} + {addedDefense}{vitaminDefense > 0 && ` + ${vitaminDefense}`})</StatCalculation>
       </StatTotal>
       <StatTotal area="spatk">
         <TotalValue>{specialAttack}</TotalValue>
-        <StatCalculation>({baseSpAttack} + {addedSpAttack})</StatCalculation>
+        <StatCalculation>({baseSpAttack} + {addedSpAttack}{vitaminSpAttack > 0 && ` + ${vitaminSpDefense}`})</StatCalculation>
       </StatTotal>
       <StatTotal area="spdef">
         <TotalValue>{specialDefense}</TotalValue>
-        <StatCalculation>({baseSpDefense} + {addedSpDefense})</StatCalculation>
+        <StatCalculation>({baseSpDefense} + {addedSpDefense}{vitaminSpDefense > 0 && ` + ${vitaminSpDefense}`})</StatCalculation>
       </StatTotal>
       <StatTotal area="spd">
         <TotalValue>{speed}</TotalValue>
-        <StatCalculation>({baseSpeed} + {addedSpeed})</StatCalculation>
+        <StatCalculation>({baseSpeed} + {addedSpeed}{vitaminSpeed > 0 && ` + ${vitaminSpeed}`})</StatCalculation>
       </StatTotal>
       <HealthCell>
         {!editMode && (
@@ -338,6 +362,7 @@ const StatEditContainer = styled.div`
 
   & ${DropdownHeader} {
     margin: 0;
+    text-align: center;
   }
 `;
 
@@ -347,6 +372,27 @@ const StatEditPlus = styled.div`
   & svg {
     color: #999;
   }
+`;
+
+
+const StatVitaminRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  grid-column: span 3;
+  margin-top: 0.125rem;
+  justify-content: center;
+  align-items: center;
+
+  & > input {
+    width: 3rem;
+  }
+`;
+
+const VitaminName = styled.div`
+  color: #666;
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
 `;
 
 const TotalValue = styled.div`

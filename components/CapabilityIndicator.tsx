@@ -17,6 +17,7 @@ interface CapabilityIndicatorProps {
 export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> = ({ capability }) => {
   const dispatch = useDispatch();
   const pokemonId = useTypedSelector(store => store.pokemon.data.id);
+  const speedCombatStages = useTypedSelector(store => store.pokemon.data.speedCombatStages);
   const editMode = useTypedSelector(state => state.pokemon.editMode);
 
   const requestCapabilityData = useRequestData(CAPABILITY);
@@ -28,6 +29,8 @@ export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> =
   const handleDelete = useCallback(() => {
     dispatch(removeCapability(pokemonId, capability.id));
   }, [dispatch, removeCapability, capability.id]);
+
+  const calculatedValue = capability.PokemonCapability.value + (capability.isMovementCapability ? Math.floor(speedCombatStages / 2) : 0);
 
   return (
     <Container
@@ -42,7 +45,7 @@ export const UnsortableCapabilityIndicator: React.FC<CapabilityIndicatorProps> =
       {(capability.PokemonCapability.value > 0 || editMode) && (
         <CapabilityIndicatorValue editMode={editMode}>
           {editMode && <CapabilityValueInput type="number" defaultValue={capability.PokemonCapability.value} onChange={handleEditValueChange} />}
-          {!editMode && capability.PokemonCapability.value}
+          {!editMode && calculatedValue}
         </CapabilityIndicatorValue>
       )}
     </Container>
