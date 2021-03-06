@@ -21,6 +21,7 @@ const PokemonViewer = () => {
   const router = useRouter();
   const pokemon = useTypedSelector(store => store.pokemon.data);
 
+
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes } from '../store/pokemon';
+import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes, SKILL, EDGE } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
 import { getAttackType } from '../utils/moves';
@@ -107,10 +107,32 @@ export const DetailsSidebar = () => {
             </StatRow>
           </>
         )}
-        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM) && activeDetails.details?.value && (
+        {activeDetails.details?.type === EDGE && activeDetails.details?.value && (
+          <>
+            <StatRow>
+              <StatKey>Cost</StatKey>
+              <StatValue>
+                {activeDetails.details.value.cost}&nbsp;Tutor&nbsp;Point{activeDetails.details.value.cost !== 1 && 's'}
+              </StatValue>
+            </StatRow>
+            <StatRowDivider />
+            <StatRow>
+              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
+            </StatRow>
+          </>
+        )}
+        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM || activeDetails.details?.type === EDGE) && activeDetails.details?.value && (
           <>
             <StatRow>
               <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
+            </StatRow>
+          </>
+        )}
+
+        {activeDetails.details?.type === SKILL && activeDetails.details?.value && (
+          <>
+            <StatRow>
+              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.description}} />
             </StatRow>
           </>
         )}

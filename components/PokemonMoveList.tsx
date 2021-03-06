@@ -16,6 +16,8 @@ import { SortableElement, SortableContainer } from 'react-sortable-hoc';
 import { useTypedSelector } from '../store/rootReducer';
 import { JunctionedMove } from '../server/models/pokemon';
 import { TypeName } from '../utils/pokemonTypes';
+import { SkillList } from './SkillList';
+import { EdgeList } from './EdgeList';
 
 const UnsortableMove: React.FC<{ move: JunctionedMove }> = ({ move }) => {
   const dispatch = useDispatch();
@@ -72,6 +74,8 @@ export const PokemonMoveList = () => {
   const pokemonId = useTypedSelector(state => state.pokemon.data.id);
   const moves = useTypedSelector(state => state.pokemon.data.moves);
   const capabilities = useTypedSelector(state => state.pokemon.data.capabilities);
+  const skills = useTypedSelector(state => state.pokemon.data.skills);
+  const edges = useTypedSelector(state => state.pokemon.data.edges);
 
   const [showMoveSelector, setShowMoveSelector] = useState(false);
   const [editorSelection, setEditorSelection] = useState(null);
@@ -94,6 +98,14 @@ export const PokemonMoveList = () => {
     dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
   }, [dispatch, pokemonId, capabilities]);
 
+  const handleSkillDrag = useCallback(({ oldIndex, newIndex }) => {
+    // dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
+  }, [dispatch, pokemonId, skills]);
+
+  const handleEdgeDrag = useCallback(({ oldIndex, newIndex }) => {
+    // dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
+  }, [dispatch, pokemonId, edges]);
+
   return (
     <Container isActiveMobileMode={mobileMode === 'moves'}>
       <MoveList axis="y" onSortEnd={handleMoveDrag} pressDelay={100}>
@@ -104,6 +116,7 @@ export const PokemonMoveList = () => {
         <AddMoveContainer>
           <AddMoveButton onClick={toggleMoveEditor}>
             <FontAwesomeIcon icon={faPlus} />
+            &nbsp;Add Move
           </AddMoveButton>
 
           {showMoveSelector && (
@@ -126,6 +139,8 @@ export const PokemonMoveList = () => {
       )}
 
       <CapabilityList axis="xy" onSortEnd={handleCapabilityDrag} pressDelay={100} />
+      <SkillList axis="xy" onSortEnd={handleSkillDrag} pressDelay={100} />
+      <EdgeList axis="xy" onSortEnd={handleEdgeDrag} pressDelay={100} />
     </Container>
   );
 }
@@ -253,6 +268,7 @@ const AddMoveButton = styled(AddItemButton)`
   width: 38.25rem;
   height: 100%;
   border-radius: 1.25rem;
+  font-weight: 700;
 `;
 
 const AddMoveDropdownContent = styled.div`

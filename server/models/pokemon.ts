@@ -20,6 +20,7 @@ export type PokemonGender = 'male' | 'female' | 'neutral';
 export type JunctionedCapability = RulebookCapability & { PokemonCapability: PokemonCapability };
 export type JunctionedMove = RulebookMove & { PokemonMove: PokemonMove };
 export type JunctionedSkill = RulebookSkill & { PokemonSkill: PokemonSkill };
+export type JunctionedEdge = RulebookEdge & { PokemonEdge: PokemonEdge };
 
 @Table({ tableName: 'Pokemon' })
 export class Pokemon extends Model {
@@ -178,7 +179,7 @@ export class Pokemon extends Model {
   skills: JunctionedSkill[];
 
   @BelongsToMany(() => RulebookEdge, () => PokemonEdge)
-  edges: RulebookEdge[];
+  edges: JunctionedEdge[];
   
   @CreatedAt
   createdAt: Date;

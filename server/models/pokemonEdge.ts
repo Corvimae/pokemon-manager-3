@@ -1,4 +1,4 @@
-import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { Column, Default, ForeignKey, Model, Table } from 'sequelize-typescript';
 import { Pokemon } from './pokemon';
 import { RulebookEdge } from './rulebookEdge';
 
@@ -6,9 +6,16 @@ import { RulebookEdge } from './rulebookEdge';
 export class PokemonEdge extends Model {
   @ForeignKey(() => Pokemon)
   @Column
-  pokemonId: number
+  pokemonId: number;
 
   @ForeignKey(() => RulebookEdge)
   @Column
-  edgeId: number
+  edgeId: number;
+  
+  @Default(1)
+  @Column
+  ranks: number;
+  
+  @Column
+  sortOrder: number;
 }

@@ -2,9 +2,11 @@ import express from 'express';
 import { Model, Op } from 'sequelize';
 import { RulebookAbility } from '../../models/rulebookAbility';
 import { RulebookCapability } from '../../models/rulebookCapability';
+import { RulebookEdge } from '../../models/rulebookEdge';
 import { RulebookHeldItem } from '../../models/rulebookHeldItem';
 import { RulebookMove } from '../../models/rulebookMove';
 import { RulebookNature } from '../../models/rulebookNature';
+import { RulebookSkill } from '../../models/rulebookSkill';
 import { RulebookSpecies } from '../../models/rulebookSpecies';
 
 function fetchWithQuerying<T extends Model>(model: new() => T): (req: express.Request, res: express.Response) => Promise<void> {
@@ -53,3 +55,7 @@ router.get('/moves', fetchWithQuerying(RulebookMove));
 router.get('/moves/:id', fetchById(RulebookMove));
 router.get('/capabilities', fetchWithQuerying(RulebookCapability));
 router.get('/capabilities/:id', fetchById(RulebookCapability));
+router.get('/skills', fetchWithQuerying(RulebookSkill));
+router.get('/skills/:id', fetchById(RulebookSkill));
+router.get('/edges', fetchWithQuerying(RulebookEdge));
+router.get('/edges/:id', fetchById(RulebookEdge));

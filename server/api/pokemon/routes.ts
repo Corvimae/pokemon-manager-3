@@ -1,7 +1,7 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes } from './handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks } from './handlers';
 
 export const router = express.Router();
 
@@ -68,4 +68,15 @@ router.route('/:id/capability')
 
 router.post('/:id/capability/:capabilityId/value', setPokemonCapabilityValue)
 
+router.route('/:id/skill')
+  .post(addPokemonSkill)
+  .delete(removePokemonSkill);
 
+router.post('/:id/skill/:skillId/level', setPokemonSkillLevel)
+router.post('/:id/skill/:skillId/bonus', setPokemonSkillBonus)
+
+router.route('/:id/edge')
+  .post(addPokemonEdge)
+  .delete(removePokemonEdge);
+
+router.post('/:id/edge/:edgeId/ranks', setPokemonEdgeRanks)

@@ -88,7 +88,6 @@ app.prepare().then(async () => {
     };
 
     if (server.get('env') === 'production') {
-      console.log('securing....');
       server.set('trust proxy', 1) 
       sessionConfig.cookie.secure = true;
     }

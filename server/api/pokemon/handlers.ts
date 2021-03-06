@@ -416,7 +416,11 @@ export async function addPokemonMove(req: Request, res: Response): Promise<void>
     });
   }
 
-  await pokemon.$add('moves', move);
+  await pokemon.$add('moves', move, {
+    through: {
+      sortOrder: pokemon.moves.length,
+    }
+  });
   
   pokemon.setDataValue('moves', await pokemon.$get('moves'));
 
@@ -515,7 +519,7 @@ export async function setPokemonMovePPUp(req: Request, res: Response): Promise<v
 }
 
 export async function addPokemonCapability(req: Request, res: Response): Promise<void> {
-  if (Number.isNaN(req.body.capability)) {
+  if (Number.isNaN(req.body.capabilityId)) {
     return res.status(400).json({
       error: 'Invalid value for capabilityId.',
     });
@@ -545,6 +549,7 @@ export async function addPokemonCapability(req: Request, res: Response): Promise
   await pokemon.$add('capabilities', capability, {
     through: {
       value: req.body.value,
+      sortOrder: pokemon.capabilities.length,
     },
   });
   
@@ -609,6 +614,244 @@ export async function setPokemonCapabilityValue(req: Request, res: Response): Pr
   });
   
   pokemon.setDataValue('capabilities', await pokemon.$get('capabilities'));
+
+  res.json(pokemon);
+}
+
+export async function addPokemonSkill(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.skillId)) {
+    return res.status(400).json({
+      error: 'Invalid value for skillId.',
+    });
+  }
+
+  if (Number.isNaN(req.body.level)) {
+    return res.status(400).json({
+      error: 'Invalid value for level.',
+    });
+  }
+
+  if (Number.isNaN(req.body.bonus)) {
+    return res.status(400).json({
+      error: 'Invalid value for bonus.',
+    });
+  }
+  
+  const pokemon = await fetchPokemon(req, { include: [RulebookSkill] });
+  const skill = await RulebookSkill.findByPk(req.body.skillId);
+
+  if (!skill) {
+    return res.status(400).json({
+      error: 'Skill not found.',
+    });
+  }
+
+  if (pokemon.skills.find(item => item.id === skill.id)) {
+    return res.status(400).json({
+      error: 'The Pokemon already has this skill.',
+    });
+  }
+
+  await pokemon.$add('skills', skill, {
+    through: {
+      level: req.body.level,
+      bonus: req.body.bonus,
+      sortOrder: pokemon.skills.length,
+    },
+  });
+  
+  pokemon.setDataValue('skills', await pokemon.$get('skills'));
+
+  res.json(pokemon);
+}
+
+export async function removePokemonSkill(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.skillId)) {
+    return res.status(400).json({
+      error: 'Invalid value for skillId.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookSkill] });
+  const skill = await RulebookSkill.findByPk(req.body.skillId);
+
+  if (!skill) {
+    return res.status(400).json({
+      error: 'Skill not found.',
+    });
+  }
+
+  if (!pokemon.skills.find(item => item.id === skill.id)) {
+    return res.status(400).json({
+      error: 'The Pokemon does not have this skill.',
+    });
+  }
+
+  pokemon.$remove('skills', skill);
+  
+  pokemon.setDataValue('skills', await pokemon.$get('skills'));
+
+  res.json(pokemon);
+}
+
+export async function setPokemonSkillLevel(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.skillId)) {
+    return res.status(400).json({
+      error: 'Invalid value for skillId.',
+    });
+  }
+
+  if (Number.isNaN(req.body.level)) {
+    return res.status(400).json({
+      error: 'Invalid value for level.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookSkill] });
+  const skill = pokemon.skills.find(item => item.id === Number(req.params.skillId));
+
+  if (!skill) {
+    return res.status(400).json({
+      error: `Skill instance not found on ${pokemon.name}.`,
+    });
+  }
+
+  await skill.PokemonSkill.update({
+    level: req.body.level
+  });
+  
+  pokemon.setDataValue('skills', await pokemon.$get('skills'));
+
+  res.json(pokemon);
+}
+
+export async function setPokemonSkillBonus(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.skillId)) {
+    return res.status(400).json({
+      error: 'Invalid value for skillId.',
+    });
+  }
+
+  if (Number.isNaN(req.body.bonus)) {
+    return res.status(400).json({
+      error: 'Invalid value for bonus.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookSkill] });
+  const skill = pokemon.skills.find(item => item.id === Number(req.params.skillId));
+
+  if (!skill) {
+    return res.status(400).json({
+      error: `Skill instance not found on ${pokemon.name}.`,
+    });
+  }
+
+  await skill.PokemonSkill.update({
+    bonus: req.body.bonus
+  });
+  
+  pokemon.setDataValue('skills', await pokemon.$get('skills'));
+
+  res.json(pokemon);
+}
+
+export async function addPokemonEdge(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.edgeId)) {
+    return res.status(400).json({
+      error: 'Invalid value for edgeId.',
+    });
+  }
+
+  if (Number.isNaN(req.body.ranks)) {
+    return res.status(400).json({
+      error: 'Invalid value for ranks.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookEdge] });
+  const edge = await RulebookEdge.findByPk(req.body.edgeId);
+
+  if (!edge) {
+    return res.status(400).json({
+      error: 'Edge not found.',
+    });
+  }
+
+  if (pokemon.edges.find(item => item.id === edge.id)) {
+    return res.status(400).json({
+      error: 'The Pokemon already has this edge.',
+    });
+  }
+
+  await pokemon.$add('edges', edge, {
+    through: {
+      ranks: req.body.ranks || 1,
+      sortOrder: pokemon.edges.length,
+    },
+  });
+  
+  pokemon.setDataValue('edges', await pokemon.$get('edges'));
+
+  res.json(pokemon);
+}
+
+export async function removePokemonEdge(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.edgeId)) {
+    return res.status(400).json({
+      error: 'Invalid value for edgeId.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookEdge] });
+  const edge = await RulebookEdge.findByPk(req.body.edgeId);
+
+  if (!edge) {
+    return res.status(400).json({
+      error: 'Edge not found.',
+    });
+  }
+
+  if (!pokemon.edges.find(item => item.id === edge.id)) {
+    return res.status(400).json({
+      error: 'The Pokemon does not have this edge.',
+    });
+  }
+
+  pokemon.$remove('edges', edge);
+  
+  pokemon.setDataValue('edges', await pokemon.$get('edges'));
+
+  res.json(pokemon);
+}
+
+export async function setPokemonEdgeRanks(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.edgeId)) {
+    return res.status(400).json({
+      error: 'Invalid value for edgeId.',
+    });
+  }
+
+  if (Number.isNaN(req.body.ranks)) {
+    return res.status(400).json({
+      error: 'Invalid value for ranks.',
+    });
+  }
+
+  const pokemon = await fetchPokemon(req, { include: [RulebookEdge] });
+  const edge = pokemon.edges.find(item => item.id === Number(req.params.edgeId));
+
+  if (!edge) {
+    return res.status(400).json({
+      error: `Edge instance not found on ${pokemon.name}.`,
+    });
+  }
+
+  await edge.PokemonEdge.update({
+    ranks: req.body.ranks
+  });
+  
+  pokemon.setDataValue('edges', await pokemon.$get('edges'));
 
   res.json(pokemon);
 }

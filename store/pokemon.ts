@@ -1,10 +1,14 @@
-import { JunctionedCapability, JunctionedMove, Pokemon } from "../server/models/pokemon";
+import { JunctionedCapability, JunctionedEdge, JunctionedMove, JunctionedSkill, Pokemon } from "../server/models/pokemon";
 import { PokemonCapability } from "../server/models/pokemonCapability";
+import { PokemonEdge } from "../server/models/pokemonEdge";
 import { PokemonMove } from "../server/models/pokemonMove";
+import { PokemonSkill } from "../server/models/pokemonSkill";
 import { RulebookAbility } from "../server/models/rulebookAbility";
 import { RulebookCapability } from "../server/models/rulebookCapability";
+import { RulebookEdge } from "../server/models/rulebookEdge";
 import { RulebookHeldItem } from "../server/models/rulebookHeldItem";
 import { RulebookMove } from "../server/models/rulebookMove";
+import { RulebookSkill } from "../server/models/rulebookSkill";
 import { Trainer } from "../server/models/trainer";
 import { getAddedStatField, getBaseStatField } from "../utils/formula";
 import { TypeName } from "../utils/pokemonTypes";
@@ -49,15 +53,47 @@ function updateCapabilityJunction<T extends keyof PokemonCapability>(
   } as JunctionedCapability;
 }
 
+function updateSkillJunction<T extends keyof PokemonSkill>(
+  skill: JunctionedSkill,
+  field: T,
+  value: any
+): JunctionedSkill {
+  return {
+    ...skill,
+    PokemonSkill: {
+      ...skill.PokemonSkill,
+      [field]: value,
+    } as PokemonSkill,
+  } as JunctionedSkill;
+}
+
+function updateEdgeJunction<T extends keyof PokemonEdge>(
+  edge: JunctionedEdge,
+  field: T,
+  value: any
+): JunctionedEdge {
+  return {
+    ...edge,
+    PokemonEdge: {
+      ...edge.PokemonEdge,
+      [field]: value,
+    } as PokemonEdge,
+  } as JunctionedEdge;
+}
+
 export const MOVE = 'MOVE';
 export const ABILITY = 'ABILITY';
 export const CAPABILITY = 'CAPABILITY';
+export const SKILL = 'SKILL';
+export const EDGE = 'EDGE';
 export const HELD_ITEM = 'HELD_ITEM';
 
 const DETAIL_REQUEST_PATHS = {
   MOVE: 'reference/moves',
   ABILITY: 'reference/abilities',
   CAPABILITY: 'reference/capabilities',
+  SKILL: 'reference/skills',
+  EDGE: 'reference/edges',
   HELD_ITEM: 'reference/heldItems',
 };
 
@@ -85,6 +121,15 @@ const UPDATE_CAPABILITY_VALUE = 'UPDATE_CAPABILITY_VALUE';
 const ADD_CAPABILITY = 'ADD_CAPABILITY'
 const ADD_CAPABILITY_SUCCESS = 'ADD_CAPABILITY_SUCCESS'
 const REMOVE_CAPABILITY = 'REMOVE_CAPABILITY';
+const ADD_EDGE = 'ADD_EDGE'
+const ADD_EDGE_SUCCESS = 'ADD_EDGE_SUCCESS'
+const UPDATE_EDGE_RANKS = 'UPDATE_EDGE_RANKS';
+const REMOVE_EDGE = 'REMOVE_EDGE';
+const ADD_SKILL = 'ADD_SKILL'
+const ADD_SKILL_SUCCESS = 'ADD_SKILL_SUCCESS'
+const UPDATE_SKILL_LEVEL = 'UPDATE_SKILL_LEVEL';
+const UPDATE_SKILL_BONUS = 'UPDATE_SKILL_BONUS';
+const REMOVE_SKILL = 'REMOVE_SKILL';
 const ADD_MOVE = 'ADD_MOVE'
 const ADD_MOVE_SUCCESS = 'ADD_MOVE_SUCCESS'
 const REMOVE_MOVE = 'REMOVE_MOVE';
@@ -124,12 +169,22 @@ interface ActiveCapability {
 
 interface ActiveHeldItem {
   type: typeof HELD_ITEM;
-  value: RulebookHeldItem;
+  value: RulebookHeldItem | undefined;
 }
 
-type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem;
-type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem;
-export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY | typeof HELD_ITEM;
+interface ActiveSkill {
+  type: typeof SKILL;
+  value: RulebookSkill | undefined;
+}
+
+interface ActiveEdge {
+  type: typeof EDGE;
+  value: RulebookEdge | undefined;
+}
+
+type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem | ActiveSkill | ActiveEdge;
+type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem | RulebookSkill | RulebookEdge;
+export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY | typeof HELD_ITEM | typeof SKILL | typeof EDGE;
 interface AxiosRequest {
   request: {
     url: string;
@@ -164,6 +219,13 @@ type RemoveAbilityActions = ImmediateUpdateRequestActions<typeof REMOVE_ABILITY,
 type UpdateCapabilityValueActions = ImmediateUpdateRequestActions<typeof UPDATE_CAPABILITY_VALUE, JunctionedCapability, { capabilityId: number; value: number }>;
 type AddCapabilityActions = RequestActions<typeof ADD_CAPABILITY, Pokemon>;
 type RemoveCapabilityActions = ImmediateUpdateRequestActions<typeof REMOVE_CAPABILITY, number>;
+type AddEdgeActions = RequestActions<typeof ADD_EDGE, Pokemon>;
+type UpdateEdgeRanksActions = ImmediateUpdateRequestActions<typeof UPDATE_EDGE_RANKS, JunctionedSkill, { edgeId: number; ranks: number }>;
+type RemoveEdgeActions = ImmediateUpdateRequestActions<typeof REMOVE_EDGE, number>;
+type AddSkillActions = RequestActions<typeof ADD_SKILL, Pokemon>;
+type UpdateSkillLevelActions = ImmediateUpdateRequestActions<typeof UPDATE_SKILL_LEVEL, JunctionedSkill, { skillId: number; level: number }>;
+type UpdateSkillBonusActions = ImmediateUpdateRequestActions<typeof UPDATE_SKILL_BONUS, JunctionedSkill, { skillId: number; bonus: number }>;
+type RemoveSkillActions = ImmediateUpdateRequestActions<typeof REMOVE_SKILL, number>;
 type AddMoveActions = RequestActions<typeof ADD_MOVE, Pokemon>;
 type RemoveMoveActions = ImmediateUpdateRequestActions<typeof REMOVE_MOVE, number, number>;
 type SetMovePPUpActions = ImmediateUpdateRequestActions<typeof SET_MOVE_PP_UP, JunctionedMove, { moveId: number; enabled: boolean }>;
@@ -220,6 +282,13 @@ type PokemonReducerAction =
   UpdateCapabilityValueActions |
   AddCapabilityActions |
   RemoveCapabilityActions |
+  AddEdgeActions |
+  UpdateEdgeRanksActions |
+  RemoveEdgeActions |
+  AddSkillActions |
+  UpdateSkillLevelActions |
+  UpdateSkillBonusActions |
+  RemoveSkillActions |
   AddMoveActions |
   RemoveMoveActions |
   SetMovePPUpActions |
@@ -419,12 +488,6 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         } as Pokemon,
       };
 
-    case TOGGLE_EDIT_MODE:
-      return {
-        ...state,
-        editMode: !state.editMode,
-      };
-
     case REMOVE_CAPABILITY:
       return {
         ...state,
@@ -432,6 +495,87 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
           ...state.data,
           capabilities: removeById(state.data.capabilities, action.payload.value),
         } as Pokemon,
+      };
+
+    case ADD_EDGE_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          edges: action.payload.data.edges,
+        } as Pokemon,
+      };
+
+    case UPDATE_EDGE_RANKS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          edges: updateById(
+            state.data.edges,
+            action.payload.value.edgeId,
+            edge => updateEdgeJunction(edge, 'ranks', action.payload.value.ranks),
+          ),
+        } as Pokemon,
+      };
+
+    case REMOVE_EDGE:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          edges: removeById(state.data.edges, action.payload.value),
+        } as Pokemon,
+      };
+
+    case ADD_SKILL_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: action.payload.data.skills,
+        } as Pokemon,
+      };
+
+    case UPDATE_SKILL_LEVEL:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: updateById(
+            state.data.skills,
+            action.payload.value.skillId,
+            skill => updateSkillJunction(skill, 'level', action.payload.value.level),
+          ),
+        } as Pokemon,
+      };
+
+    case UPDATE_SKILL_BONUS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: updateById(
+            state.data.skills,
+            action.payload.value.skillId,
+            skill => updateSkillJunction(skill, 'bonus', action.payload.value.bonus),
+          ),
+        } as Pokemon,
+      };
+
+    case REMOVE_SKILL:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: removeById(state.data.skills, action.payload.value),
+        } as Pokemon,
+      };
+
+    case TOGGLE_EDIT_MODE:
+      return {
+        ...state,
+        editMode: !state.editMode,
       };
 
     case ADD_MOVE_SUCCESS:
@@ -850,6 +994,145 @@ export function removeCapability(pokemonId: number, capabilityId: number): Pokem
         method: 'DELETE',
         data: {
           capabilityId,
+        },
+      },
+    },
+  };
+}
+
+export function addEdge(pokemonId: number, edgeId: number, ranks: number): PokemonReducerAction {
+  return {
+    type: ADD_EDGE,
+    payload: {
+      request: {
+        url: `/pokemon/${pokemonId}/edge`,
+        method: 'POST',
+        data: {
+          edgeId,
+          ranks,
+        },
+      },
+    },
+  };
+}
+
+export function updateEdgeRanks(pokemonId: number, edgeId: number, ranks: number): PokemonReducerAction {
+  const safeRanks = Number(ranks);
+
+  if (!Number.isNaN(safeRanks)) {
+    return {
+      type: UPDATE_EDGE_RANKS,
+      payload: {
+        value: {
+          edgeId,
+          ranks: safeRanks,
+        },
+        request: {
+          url: `/pokemon/${pokemonId}/edge/${edgeId}/ranks`,
+          method: 'POST',
+          data: {
+            ranks: safeRanks,
+          },
+        },
+      },
+    };
+  }
+}
+
+export function removeEdge(pokemonId: number, edgeId: number): PokemonReducerAction {
+  return {
+    type: REMOVE_EDGE,
+    payload: {
+      value: edgeId,
+      request: {
+        url: `/pokemon/${pokemonId}/edge`,
+        method: 'DELETE',
+        data: {
+          edgeId,
+        },
+      },
+    },
+  };
+}
+
+export function addSkill(pokemonId: number, skillId: number, level: number, bonus: number): PokemonReducerAction {
+  const safeBonus = Number(bonus);
+  const safeLevel = Number(level);
+
+  if (!Number.isNaN(safeBonus) && !Number.isNaN(safeLevel)) {
+    return {
+      type: ADD_SKILL,
+      payload: {
+        request: {
+          url: `/pokemon/${pokemonId}/skill`,
+          method: 'POST',
+          data: {
+            skillId,
+            level: safeLevel,
+            bonus: safeBonus,
+          },
+        },
+      },
+    };
+  }
+}
+
+export function updateSkillLevel(pokemonId: number, skillId: number, level: number): PokemonReducerAction {
+  const safeLevel = Number(level);
+
+  if (!Number.isNaN(safeLevel)) {
+    return {
+      type: UPDATE_SKILL_LEVEL,
+      payload: {
+        value: {
+          skillId,
+          level: safeLevel,
+        },
+        request: {
+          url: `/pokemon/${pokemonId}/skill/${skillId}/level`,
+          method: 'POST',
+          data: {
+            level: safeLevel,
+          },
+        },
+      },
+    };
+  }
+}
+
+export function updateSkillBonus(pokemonId: number, skillId: number, bonus: number): PokemonReducerAction {
+  const safeBonus = Number(bonus);
+
+  if (!Number.isNaN(safeBonus)) {
+    return {
+      type: UPDATE_SKILL_BONUS,
+      payload: {
+        value: {
+          skillId,
+          bonus: safeBonus,
+        },
+        request: {
+          url: `/pokemon/${pokemonId}/skill/${skillId}/bonus`,
+          method: 'POST',
+          data: {
+            bonus: safeBonus,
+          },
+        },
+      },
+    };
+  }
+}
+
+export function removeSkill(pokemonId: number, skillId: number): PokemonReducerAction {
+  return {
+    type: REMOVE_SKILL,
+    payload: {
+      value: skillId,
+      request: {
+        url: `/pokemon/${pokemonId}/skill`,
+        method: 'DELETE',
+        data: {
+          skillId,
         },
       },
     },

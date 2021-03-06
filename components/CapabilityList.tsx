@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useDispatch } from "react-redux";
 import { SortableContainer } from 'react-sortable-hoc';
 import { addCapability } from "../store/pokemon";
-import {  Button, NumericInput, AddItemButton, DropdownHeader } from "./Layout";
+import { Button, NumericInput, AddItemButton, DropdownHeader } from "./Layout";
 import { CapabilityIndicator } from "./CapabilityIndicator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -47,6 +47,7 @@ export const UnsortableCapabilityList: React.FC = () => {
         <AddCapabilityContainer>
           <AddCapabilityButton onClick={toggleCapabilityEditor}>
             <FontAwesomeIcon icon={faPlus} size="sm" />
+            &nbsp;Add Capability
           </AddCapabilityButton>
 
           {showCapabilityEditor && (
@@ -119,4 +120,5 @@ const AddCapabilitySubmitButton = styled(Button)`
 const AddCapabilityButton = styled(AddItemButton)`
   height: 1.75rem;
   border-radius: 0.875rem;
+  font-weight: 700;
 `;
