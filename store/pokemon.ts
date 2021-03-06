@@ -109,6 +109,9 @@ const SHOW_NOTES = 'SHOW_NOTES';
 const CLOSE_DETAILS_PANEL_ACTION = 'CLOSE_DETAILS_PANEL_ACTION';
 const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 const SET_HEALTH = 'SET_HEALTH';
+const SET_TEMP_HEALTH = 'SET_TEMP_HEALTH';
+const SET_SPENT_TUTOR_POINTS = 'SET_SPENT_TUTOR_POINTS';
+const SET_BONUS_TUTOR_POINTS = 'SET_BONUS_TUTOR_POINTS';
 const SET_POKEMON_NATURE = 'SET_POKEMON_NATURE';
 const SET_POKEMON_NATURE_SUCCESS = 'SET_POKEMON_NATURE_SUCCESS';
 const ADD_HELD_ITEM = 'ADD_HELD_ITEM';
@@ -241,6 +244,9 @@ type SetPokemonOwnerActions = RequestActions<typeof SET_POKEMON_OWNER, Trainer>;
 type SetPokemonBaseStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_BASE_STAT, { stat: Stat, value: number }>
 type SetPokemonAddedStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ADDED_STAT, { stat: Stat, value: number }>
 type SetHealthActions = ImmediateUpdateRequestActions<typeof SET_HEALTH, number>;
+type SetTempHealthActions = ImmediateUpdateRequestActions<typeof SET_TEMP_HEALTH, number>;
+type SetSpentTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_SPENT_TUTOR_POINTS, number>;
+type SetBonusTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_BONUS_TUTOR_POINTS, number>;
 type SetMoveOrderActions = ImmediateUpdateRequestActions<typeof SET_MOVE_ORDER, { moveId: number; position: number }>;
 type SetCapabilityOrderActions = ImmediateUpdateRequestActions<typeof SET_CAPABILITY_ORDER, { capabilityId: number; position: number }>;
 type SaveNotesActions = ImmediateUpdateRequestActions<typeof SAVE_NOTES, string>;
@@ -304,6 +310,9 @@ type PokemonReducerAction =
   SetPokemonBaseStatActions |
   SetPokemonAddedStatActions |
   SetHealthActions |
+  SetTempHealthActions |
+  SetSpentTutorPointsActions |
+  SetBonusTutorPointsActions |
   SetMoveOrderActions |
   SetCapabilityOrderActions |
   SaveNotesActions |
@@ -417,6 +426,33 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         data: {
           ...state.data,
           currentHealth: action.payload.value,
+        } as Pokemon,
+      };
+
+    case SET_TEMP_HEALTH:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          tempHealth: action.payload.value,
+        } as Pokemon,
+      };
+
+    case SET_SPENT_TUTOR_POINTS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          spentTutorPoints: action.payload.value,
+        } as Pokemon,
+      };
+
+    case SET_BONUS_TUTOR_POINTS:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          bonusTutorPoints: action.payload.value,
         } as Pokemon,
       };
 
@@ -860,6 +896,62 @@ export function setHealth(pokemonId: number, health: number): PokemonReducerActi
       },
     },
   };
+}
+
+export function setTempHealth(pokemonId: number, health: number): PokemonReducerAction {
+  return {
+    type: SET_TEMP_HEALTH,
+    payload: {
+      value: health,
+      request: {
+        url: `/pokemon/${pokemonId}/tempHealth`,
+        method: 'POST',
+        data: {
+          health,
+        }
+      },
+    },
+  };
+}
+
+export function setBonusTutorPoints(pokemonId: number, value: number): PokemonReducerAction {
+  const safeValue = Number(value);
+
+  if (!Number.isNaN(safeValue)) {
+    return {
+      type: SET_BONUS_TUTOR_POINTS,
+      payload: {
+        value: safeValue,
+        request: {
+          url: `/pokemon/${pokemonId}/bonusTutorPoints`,
+          method: 'POST',
+          data: {
+            value: safeValue,
+          }
+        },
+      },
+    };
+  }
+}
+
+export function setSpentTutorPoints(pokemonId: number, value: number): PokemonReducerAction {
+  const safeValue = Number(value);
+
+  if (!Number.isNaN(safeValue)) {
+    return {
+      type: SET_SPENT_TUTOR_POINTS,
+      payload: {
+        value: safeValue,
+        request: {
+          url: `/pokemon/${pokemonId}/spentTutorPoints`,
+          method: 'POST',
+          data: {
+            value: safeValue,
+          }
+        },
+      },
+    };
+  }
 }
 
 export function toggleEditMode(): PokemonReducerAction {

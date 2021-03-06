@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat } from '../store/pokemon';
+import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth } from '../store/pokemon';
 import { getAddedStatField, getBaseStatField, getCombatStageField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
@@ -95,8 +95,10 @@ export const PokemonStatBar = () => {
   const addedSpeed = useTypedSelector(store => store.pokemon.data.addedSpeed);
 
   const currentHealth = useTypedSelector(store => store.pokemon.data.currentHealth);
+  const tempHealth = useTypedSelector(store => store.pokemon.data.tempHealth);
 
   const [modifyHealthValue, setModifyHealthValue] = useState(1);
+  const [modifyTempHealthValue, setModifyTempHealthValue] = useState(1);
 
   const level = calculateLevel(experience)
   const totalHealth = useTotalHP();
@@ -112,6 +114,10 @@ export const PokemonStatBar = () => {
     dispatch(setHealth(pokemonId, value));
   }, [dispatch, pokemonId]);
 
+  const updateTempHealth = useCallback((value: number) => {
+    dispatch(setTempHealth(pokemonId, value));
+  }, [dispatch, pokemonId]);
+
   return (
     <Container isActiveMobileMode={mobileMode === 'stats'}>
       <Title area="hp">HP</Title>
@@ -121,10 +127,15 @@ export const PokemonStatBar = () => {
       <Title area="spdef">Sp. Defense</Title>
       <Title area="spd">Speed</Title>
       <StatTotal area="hp">
-        <div>
-          <CurrentHealth>{currentHealth}&nbsp;</CurrentHealth>
+        <HealthDisplayContainer>
+          <CurrentHealth>
+            {currentHealth}&nbsp;
+          </CurrentHealth>
+          {tempHealth > 0 && (
+            <TempHealth>+&nbsp;{tempHealth}</TempHealth>
+          )}
           <TotalHealth>/&nbsp;{totalHealth}</TotalHealth>
-        </div>
+        </HealthDisplayContainer>
         <StatCalculation>({baseHP} + {addedHP})</StatCalculation>
       </StatTotal>
       <StatTotal area="atk">
@@ -150,7 +161,7 @@ export const PokemonStatBar = () => {
       <HealthCell>
         {!editMode && (
           <>
-            <AddSubtractHealthButtons>
+          <AddSubtractHealthButtons>
               <CombatStageButton icon={faMinus} onClick={() => updateHealth(currentHealth - modifyHealthValue)}/>
               <HealthModifyInput
                 type="number"
@@ -166,6 +177,16 @@ export const PokemonStatBar = () => {
               <HealthModifyButton  onClick={() => updateHealth(totalHealth)}>
                 Heal to full
               </HealthModifyButton>
+              <TempHealthActionsLabel>Temporary HP</TempHealthActionsLabel>
+              <AddSubtractHealthButtons>
+                <CombatStageButton icon={faMinus} onClick={() => updateTempHealth(Math.max(0, tempHealth - modifyTempHealthValue))}/>
+                <HealthModifyInput
+                  type="number"
+                  onChange={event => setModifyTempHealthValue(Number(event.target.value))}
+                  defaultValue={modifyTempHealthValue}
+                /> 
+                <CombatStageButton icon={faPlus} onClick={() => updateTempHealth(tempHealth + modifyTempHealthValue)}/>
+            </AddSubtractHealthButtons>
             </HealthCellDropdown>
           </>
         )}
@@ -383,12 +404,27 @@ const Container = styled.div<{ isActiveMobileMode: boolean }>`
   }
 `;
 
-const PressOnThreshold = styled.div`
-  font-size: 0.75rem;
-  color: #333;
-  text-align: center;
+const HealthDisplayContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
 `;
 
-const PressOnValue = styled.span`
+const TempHealth = styled.div`
   font-weight: 700;
+  color: #217425;
+  font-size: 0.875rem;
+  align-self: center;
+  line-height: normal;
+  padding-right: 0.125rem;
+`;
+
+const TempHealthActionsLabel = styled.div`
+  font-weight: 700;
+  font-size: 0.825rem;
+  padding: 0.25rem;
+  margin-top: 0.25rem;
+  color: #666;
+  border-top: 1px solid #eaeaea;
+  text-align: center;
 `;

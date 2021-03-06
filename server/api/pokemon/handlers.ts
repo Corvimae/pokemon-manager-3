@@ -193,6 +193,37 @@ export async function setPokemonHealth(req: Request, res: Response): Promise<voi
   res.json(await updatePokemon(req, 'currentHealth', req.body.health));
 }
 
+export async function setPokemonTempHealth(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.health)) {
+    return res.status(400).json({
+      error: 'Invalid value for health.',
+    });
+  }
+
+  res.json(await updatePokemon(req, 'tempHealth', req.body.health));
+}
+
+export async function setPokemonBonusTutorPoints(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.value)) {
+    return res.status(400).json({
+      error: 'Invalid value for value.',
+    });
+  }
+
+  res.json(await updatePokemon(req, 'bonusTutorPoints', req.body.value));
+}
+
+
+export async function setPokemonSpentTutorPoints(req: Request, res: Response): Promise<void> {
+  if (Number.isNaN(req.body.value)) {
+    return res.status(400).json({
+      error: 'Invalid value for value.',
+    });
+  }
+
+  res.json(await updatePokemon(req, 'spentTutorPoints', req.body.value));
+}
+
 export async function setPokemonLoyalty(req: Request, res: Response): Promise<void> {
   // TODO: This should be GM-restricted
   if (Number.isNaN(req.body.loyalty)) {

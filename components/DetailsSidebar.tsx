@@ -121,7 +121,7 @@ export const DetailsSidebar = () => {
             </StatRow>
           </>
         )}
-        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM || activeDetails.details?.type === EDGE) && activeDetails.details?.value && (
+        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM) && activeDetails.details?.value && (
           <>
             <StatRow>
               <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />

@@ -1,8 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes } from '../store/pokemon';
+import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes, setSpentTutorPoints, setBonusTutorPoints } from '../store/pokemon';
 import { TypeIndicator } from './TypeIndicator';
 import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, TypeList } from './Layout';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
@@ -28,6 +28,12 @@ export const PokemonDataTable = () => {
   const specialEvasions = useSpecialEvasions();
   const speedEvasions = useSpeedEvasions();
   const defenses = useCombinedDefensiveEffectivenesses();
+  const level = calculateLevel(pokemon.experience);
+  const totalTutorPoints = 1 + Math.floor(level/5) + pokemon.bonusTutorPoints;
+
+  const spentTutorPoints = useMemo(() => (
+    pokemon.edges.reduce((acc, item) => acc + item.cost * item.PokemonEdge.ranks, pokemon.spentTutorPoints)
+  ), [pokemon.edges, pokemon.spentTutorPoints]);
 
   const handleChangeType1 = useCallback(name => {
     dispatch(setPokemonType(pokemon.id, name, pokemon.type2 as TypeName));
@@ -55,6 +61,14 @@ export const PokemonDataTable = () => {
 
   const handleChangeOwner = useCallback(({ value, label }) => {
     dispatch(setPokemonOwner(pokemon.id, value, label));
+  }, [dispatch, pokemon.id]);
+
+  const handleChangeBonusTutorPoints = useCallback(event => {
+    dispatch(setBonusTutorPoints(pokemon.id, event.target.value));
+  }, [dispatch, pokemon.id]);
+
+  const handleChangeSpentTutorPoints = useCallback(event => {
+    dispatch(setSpentTutorPoints(pokemon.id, event.target.value));
   }, [dispatch, pokemon.id]);
 
   const handleSaveGMNotes = useCallback(notes => {
@@ -105,6 +119,32 @@ export const PokemonDataTable = () => {
           <PointsToLevel>{calculateExperienceToNextLevel(pokemon.experience)}</PointsToLevel>
           <PointsToLevelBar percentage={calculatePercentageToNextLevel(pokemon.experience)} />
         </PointsToLevelContainer>
+      </StatRow>
+      <StatRow>
+        <StatKey>Tutor Points</StatKey>
+        <TutorPointsValueCell>
+          {totalTutorPoints - spentTutorPoints}&nbsp;/&nbsp;{totalTutorPoints}
+          {editMode && (
+            <ManualTutorPoints>
+              <TutorPointHeader>Bonus</TutorPointHeader>
+              <TutorPointHeader>Misc.&nbsp;Used</TutorPointHeader>
+              <div>
+                <TutorPointValueInput
+                  type="number"
+                  onChange={handleChangeBonusTutorPoints}
+                  defaultValue={pokemon.bonusTutorPoints}
+                />
+              </div>
+              <div>
+                <TutorPointValueInput
+                  type="number"
+                  onChange={handleChangeSpentTutorPoints}
+                  defaultValue={pokemon.spentTutorPoints}
+                />
+              </div>
+            </ManualTutorPoints>
+          )}
+        </TutorPointsValueCell>
       </StatRow>
       {pokemon.loyalty !== null && (
         <StatRow>
@@ -264,7 +304,7 @@ const PokemonImage = styled.div`
   justify-content: center;
   align-items: flex-end;
   grid-column: 1 / -1;
-  background-image: url(https://em-uploads.s3.amazonaws.com/profilebg/312687.png);
+  background-image: url("https://em-uploads.s3.amazonaws.com/profilebg/312687.png");
   background-size: cover;
   border: 0.25rem solid rgba(0, 0, 0, 0.75);
 
@@ -286,4 +326,31 @@ const GMNotesEditorContainer = styled(StatValue)`
   @media screen and (max-width: ${Theme.mobileThreshold}) {
     width: auto;
   }
+`;
+
+const TutorPointsValueCell = styled(StatValue)`
+  align-items: center;
+`;
+
+const ManualTutorPoints = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 4rem);
+  margin-left: auto;
+  
+  & > div:nth-of-type(2n) {
+    margin-left: 0.25rem;
+  }
+`;
+
+const TutorPointHeader = styled.div`
+  color: #666;
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-align: center;
+`;
+
+const TutorPointValueInput = styled(RowValueNumericInput)`
+  width: 100%;
+  padding: 0;
+  text-align: center;
 `;
