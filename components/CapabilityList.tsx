@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import styled from 'styled-components';
 import { useDispatch } from "react-redux";
 import { SortableContainer } from 'react-sortable-hoc';
@@ -22,6 +22,10 @@ export const UnsortableCapabilityList: React.FC = () => {
   const [editorCapabilitySelection, setEditorCapabilitySelection] = useState(null);
   const [editorCapabilityValue, setEditorCapabilityValue] = useState(undefined);
 
+  const sortedCapabilities = useMemo(() => (
+    capabilities.sort((a, b) => a.PokemonCapability.sortOrder - b.PokemonCapability.sortOrder)
+  ), [capabilities]);
+
   const toggleCapabilityEditor = useCallback((event: Event) => {
     event.stopPropagation();
     setShowCapabilityEditor(!showCapabilityEditor);
@@ -40,7 +44,7 @@ export const UnsortableCapabilityList: React.FC = () => {
 
   return (
     <Container>
-      {capabilities.map((capability, index) => (
+      {sortedCapabilities.map((capability, index) => (
         <CapabilityIndicator key={capability.id} index={index} capability={capability} disabled={!editMode} />
       ))}
       {editMode && (

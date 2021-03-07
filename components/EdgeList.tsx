@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import styled from 'styled-components';
 import { useDispatch } from "react-redux";
 import { SortableContainer } from 'react-sortable-hoc';
@@ -22,6 +22,10 @@ export const UnsortableEdgeList: React.FC = () => {
   const [editorEdgeSelection, setEditorEdgeSelection] = useState(null);
   const [editorEdgeRanks, setEditorEdgeRanks] = useState(1);
 
+  const sortedEdges = useMemo(() => (
+    edges.sort((a, b) => a.PokemonEdge.sortOrder - b.PokemonEdge.sortOrder)
+  ), [edges]);
+
   const toggleEdgeEditor = useCallback((event: Event) => {
     event.stopPropagation();
     setShowEdgeEditor(!showEdgeEditor);
@@ -40,7 +44,7 @@ export const UnsortableEdgeList: React.FC = () => {
 
   return (
     <Container>
-      {edges.map((edge, index) => (
+      {sortedEdges.map((edge, index) => (
         <EdgeIndicator key={edge.id} index={index} edge={edge} disabled={!editMode} />
       ))}
       {editMode && (

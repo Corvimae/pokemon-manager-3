@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestDetails, setMoveIsTutored } from '../store/pokemon';
+import { addMove, removeMove, setMovePPUp, setMoveType, setCapabilityOrder, setMoveOrder, requestDetails, setMoveIsTutored, setSkillOrder, setEdgeOrder } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { getAttackType } from '../utils/moves';
 import { faGraduationCap, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AddItemButton, Button, DropdownHeader, IconButton } from './Layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { DefinitionLookahead } from './DefinitionLookahead';
 import { DropdownTooltip } from './DropdownTooltip';
 import { useDispatch } from 'react-redux';
@@ -92,6 +92,10 @@ export const PokemonMoveList = () => {
   const [showMoveSelector, setShowMoveSelector] = useState(false);
   const [editorSelection, setEditorSelection] = useState(null);
 
+  const sortedMoves = useMemo(() => (
+    moves.sort((a, b) => a.PokemonMove.sortOrder - b.PokemonMove.sortOrder)
+  ), [moves]);
+
   const toggleMoveEditor = useCallback((event: Event) => {
     event.stopPropagation();
     setShowMoveSelector(!showMoveSelector);
@@ -111,17 +115,17 @@ export const PokemonMoveList = () => {
   }, [dispatch, pokemonId, capabilities]);
 
   const handleSkillDrag = useCallback(({ oldIndex, newIndex }) => {
-    // dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
+    dispatch(setSkillOrder(pokemonId, skills[oldIndex].id, newIndex));
   }, [dispatch, pokemonId, skills]);
 
   const handleEdgeDrag = useCallback(({ oldIndex, newIndex }) => {
-    // dispatch(setCapabilityOrder(pokemonId, capabilities[oldIndex].id, newIndex));
+    dispatch(setEdgeOrder(pokemonId, edges[oldIndex].id, newIndex));
   }, [dispatch, pokemonId, edges]);
 
   return (
     <Container isActiveMobileMode={mobileMode === 'moves'}>
       <MoveList axis="y" onSortEnd={handleMoveDrag} pressDelay={100}>
-        {moves.map((move, index) => <Move key={move.id} move={move} index={index} disabled={!editMode} />)}
+        {sortedMoves.map((move, index) => <Move key={move.id} move={move} index={index} disabled={!editMode} />)}
       </MoveList>
 
       {editMode && (

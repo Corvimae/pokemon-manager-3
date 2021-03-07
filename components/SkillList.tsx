@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import styled from 'styled-components';
 import { useDispatch } from "react-redux";
 import { SortableContainer } from 'react-sortable-hoc';
@@ -23,6 +23,10 @@ export const UnsortableSkillList: React.FC = () => {
   const [editorSkillLevel, setEditorSkillLevel] = useState(undefined);
   const [editorSkillBonus, setEditorSkillBonus] = useState(undefined);
 
+  const sortedSkills = useMemo(() => (
+    skills.sort((a, b) => a.PokemonSkill.sortOrder - b.PokemonSkill.sortOrder)
+  ), [skills]);
+  
   const toggleSkillEditor = useCallback((event: Event) => {
     event.stopPropagation();
     setShowSkillEditor(!showSkillEditor);
@@ -43,7 +47,7 @@ export const UnsortableSkillList: React.FC = () => {
 
   return (
     <Container>
-      {skills.map((skill, index) => (
+      {sortedSkills.map((skill, index) => (
         <SkillIndicator key={skill.id} index={index} skill={skill} disabled={!editMode} />
       ))}
       {editMode && (

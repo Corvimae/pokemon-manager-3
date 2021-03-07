@@ -10,6 +10,7 @@ import { RulebookHeldItem } from "../server/models/rulebookHeldItem";
 import { RulebookMove } from "../server/models/rulebookMove";
 import { RulebookSkill } from "../server/models/rulebookSkill";
 import { Trainer } from "../server/models/trainer";
+import { determineSortAdjustedPositions } from "../server/utils/sortHelper";
 import { getAddedStatField, getBaseStatField, getVitaminStatField } from "../utils/formula";
 import { TypeName } from "../utils/pokemonTypes";
 import { CombatStage, Gender, MobileMode, Stat } from "../utils/types";
@@ -153,6 +154,8 @@ const SET_POKEMON_ADDED_STAT = 'SET_POKEMON_ADDED_STAT';
 const SET_POKEMON_VITAMIN_STAT = 'SET_POKEMON_VITAMIN_STAT';
 const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
 const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
+const SET_SKILL_ORDER = 'SET_SKILL_ORDER';
+const SET_EDGE_ORDER = 'SET_EDGE_ORDER';
 const SAVE_NOTES = 'SAVE_NOTES';
 const SAVE_GM_NOTES = 'SAVE_GM_NOTES';
 
@@ -252,6 +255,8 @@ type SetSpentTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_SPENT
 type SetBonusTutorPointsActions = ImmediateUpdateRequestActions<typeof SET_BONUS_TUTOR_POINTS, number>;
 type SetMoveOrderActions = ImmediateUpdateRequestActions<typeof SET_MOVE_ORDER, { moveId: number; position: number }>;
 type SetCapabilityOrderActions = ImmediateUpdateRequestActions<typeof SET_CAPABILITY_ORDER, { capabilityId: number; position: number }>;
+type SetSkillOrderActions = ImmediateUpdateRequestActions<typeof SET_SKILL_ORDER, { skillId: number; position: number }>;
+type SetEdgeOrdersActions = ImmediateUpdateRequestActions<typeof SET_EDGE_ORDER, { edgeId: number; position: number }>;
 type SaveNotesActions = ImmediateUpdateRequestActions<typeof SAVE_NOTES, string>;
 type SaveGMNotesActions = ImmediateUpdateRequestActions<typeof SAVE_GM_NOTES, string>;
 
@@ -320,6 +325,8 @@ type PokemonReducerAction =
   SetBonusTutorPointsActions |
   SetMoveOrderActions |
   SetCapabilityOrderActions |
+  SetSkillOrderActions | 
+  SetEdgeOrdersActions |
   SaveNotesActions |
   SaveGMNotesActions;
 
@@ -781,37 +788,165 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         } as Pokemon,
       };
 
-    // case SET_MOVE_ORDER: {
-    //   const matchingMove = state.data.moves.find(move => move.id === action.payload.moveId);
-    //   const moveSet = [...state.data.moves];
-      
-    //   moveSet.splice(moveSet.indexOf(matchingMove), 1);
-    //   moveSet.splice(action.payload.position, 0, matchingMove);
+    case SET_MOVE_ORDER: {
+      const matchingMove = state.data.moves.find(cap => cap.id === action.payload.value.moveId);
+      const adjustments = determineSortAdjustedPositions(
+        matchingMove.PokemonMove.sortOrder,
+        action.payload.value.position,
+        state.data.moves,
+        item => item.PokemonMove.sortOrder,
+      );
+            
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          moves: state.data.moves.map(move => {
+            const adjustment = adjustments.find(([item]) => item === move);
 
-    //   return {
-    //     ...state,
-    //     data: {
-    //       ...state.data,
-    //       moves: moveSet
-    //     },
-    //   };
-    // }
+            if (adjustment) {
+              return {
+                ...move,
+                PokemonMove: {
+                  ...move.PokemonMove,
+                  sortOrder: adjustment[1],
+                },
+              };
+            } else if (move.id === action.payload.value.moveId) {
+              return {
+                ...move,
+                PokemonMove: {
+                  ...move.PokemonMove,
+                  sortOrder: action.payload.value.position,
+                },
+              };
+            }
 
-    // case SET_CAPABILITY_ORDER: {
-    //   const matchingCapability = state.data.capabilities.find(cap => cap.id === action.payload.capabilityId);
-    //   const capabilitySet = [...state.data.capabilities];
-      
-    //   capabilitySet.splice(capabilitySet.indexOf(matchingCapability), 1);
-    //   capabilitySet.splice(action.payload.position, 0, matchingCapability);
+            return move;
+          }),
+        } as Pokemon,
+      };
+    }
 
-    //   return {
-    //     ...state,
-    //     data: {
-    //       ...state.data,
-    //       capabilities: capabilitySet
-    //     },
-    //   };
-    // }
+    case SET_CAPABILITY_ORDER: {
+      const matchingCapability = state.data.capabilities.find(cap => cap.id === action.payload.value.capabilityId);
+      const adjustments = determineSortAdjustedPositions(
+        matchingCapability.PokemonCapability.sortOrder,
+        action.payload.value.position,
+        state.data.capabilities,
+        item => item.PokemonCapability.sortOrder,
+      );
+            
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          capabilities: state.data.capabilities.map(capability => {
+            const adjustment = adjustments.find(([item]) => item === capability);
+
+            if (adjustment) {
+              return {
+                ...capability,
+                PokemonCapability: {
+                  ...capability.PokemonCapability,
+                  sortOrder: adjustment[1],
+                },
+              };
+            } else if (capability.id === action.payload.value.capabilityId) {
+              return {
+                ...capability,
+                PokemonCapability: {
+                  ...capability.PokemonCapability,
+                  sortOrder: action.payload.value.position,
+                },
+              };
+            }
+
+            return capability;
+          }),
+        } as Pokemon,
+      };
+    }
+
+    case SET_SKILL_ORDER: {
+      const matchingSkill = state.data.skills.find(cap => cap.id === action.payload.value.skillId);
+      const adjustments = determineSortAdjustedPositions(
+        matchingSkill.PokemonSkill.sortOrder,
+        action.payload.value.position,
+        state.data.skills,
+        item => item.PokemonSkill.sortOrder,
+      );
+            
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: state.data.skills.map(skill => {
+            const adjustment = adjustments.find(([item]) => item === skill);
+
+            if (adjustment) {
+              return {
+                ...skill,
+                PokemonSkill: {
+                  ...skill.PokemonSkill,
+                  sortOrder: adjustment[1],
+                },
+              };
+            } else if (skill.id === action.payload.value.skillId) {
+              return {
+                ...skill,
+                PokemonSkill: {
+                  ...skill.PokemonSkill,
+                  sortOrder: action.payload.value.position,
+                },
+              };
+            }
+
+            return skill;
+          }),
+        } as Pokemon,
+      };
+    }
+
+    case SET_EDGE_ORDER: {
+      const matchingEdge = state.data.edges.find(cap => cap.id === action.payload.value.edgeId);
+      const adjustments = determineSortAdjustedPositions(
+        matchingEdge.PokemonEdge.sortOrder,
+        action.payload.value.position,
+        state.data.edges,
+        item => item.PokemonEdge.sortOrder,
+      );
+            
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          edges: state.data.edges.map(edge => {
+            const adjustment = adjustments.find(([item]) => item === edge);
+
+            if (adjustment) {
+              return {
+                ...edge,
+                PokemonEdge: {
+                  ...edge.PokemonEdge,
+                  sortOrder: adjustment[1],
+                },
+              };
+            } else if (edge.id === action.payload.value.edgeId) {
+              return {
+                ...edge,
+                PokemonEdge: {
+                  ...edge.PokemonEdge,
+                  sortOrder: action.payload.value.position,
+                },
+              };
+            }
+
+            return edge;
+          }),
+        } as Pokemon,
+      };
+    }
 
     case SAVE_NOTES:
       return {
@@ -1562,7 +1697,11 @@ export function setMoveOrder(pokemonId: number, moveId: number, position: number
         position,
       },
       request: {
-        url: `/v2/pokemon/${pokemonId}/moves/${moveId}/order/${position + 1}`,
+        url: `/pokemon/${pokemonId}/move/${moveId}/order`,
+        method: 'POST',
+        data: {
+          position,
+        },
       },
     },
   };
@@ -1577,7 +1716,49 @@ export function setCapabilityOrder(pokemonId: number, capabilityId: number, posi
         position,
       },
       request: {
-        url: `/v2/pokemon/${pokemonId}/capabilities/${capabilityId}/order/${position + 1}`,
+        url: `/pokemon/${pokemonId}/capability/${capabilityId}/order`,
+        method: 'POST',
+        data: {
+          position,
+        },
+      },
+    },
+  };
+}
+
+export function setSkillOrder(pokemonId: number, skillId: number, position: number): PokemonReducerAction {
+  return {
+    type: SET_SKILL_ORDER,
+    payload: {
+      value: {
+        skillId,
+        position,
+      },
+      request: {
+        url: `/pokemon/${pokemonId}/skill/${skillId}/order`,
+        method: 'POST',
+        data: {
+          position,
+        },
+      },
+    },
+  };
+}
+
+export function setEdgeOrder(pokemonId: number, edgeId: number, position: number): PokemonReducerAction {
+  return {
+    type: SET_EDGE_ORDER,
+    payload: {
+      value: {
+        edgeId,
+        position,
+      },
+      request: {
+        url: `/pokemon/${pokemonId}/edge/${edgeId}/order`,
+        method: 'POST',
+        data: {
+          position,
+        },
       },
     },
   };

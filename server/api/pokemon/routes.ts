@@ -1,7 +1,11 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, addPokemonMove, removePokemonMove, setPokemonMoveType, setPokemonMovePPUp, addPokemonCapability, removePokemonCapability, setPokemonCapabilityValue, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, addPokemonSkill, removePokemonSkill, setPokemonSkillLevel, setPokemonSkillBonus, addPokemonEdge, removePokemonEdge, setPokemonEdgeRanks, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries, setPokemonMoveIsTutored } from './handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries } from './handlers/handlers';
+import { edgeRouter } from './handlers/edges';
+import { capabilityRouter } from './handlers/capabilities';
+import { skillRouter } from './handlers/skills';
+import { moveRouter } from './handlers/moves';
 
 export const router = express.Router();
 
@@ -60,28 +64,7 @@ router.route('/:id/heldItem')
   .post(addPokemonHeldItem)
   .delete(removePokemonHeldItem);
 
-router.post('/:id/move/:moveId/type', setPokemonMoveType)
-router.post('/:id/move/:moveId/ppup', setPokemonMovePPUp);
-router.post('/:id/move/:moveId/tutored', setPokemonMoveIsTutored);
-router.route('/:id/move')
-  .post(addPokemonMove)
-  .delete(removePokemonMove);
-
-router.route('/:id/capability')
-  .post(addPokemonCapability)
-  .delete(removePokemonCapability);
-
-router.post('/:id/capability/:capabilityId/value', setPokemonCapabilityValue)
-
-router.route('/:id/skill')
-  .post(addPokemonSkill)
-  .delete(removePokemonSkill);
-
-router.post('/:id/skill/:skillId/level', setPokemonSkillLevel)
-router.post('/:id/skill/:skillId/bonus', setPokemonSkillBonus)
-
-router.route('/:id/edge')
-  .post(addPokemonEdge)
-  .delete(removePokemonEdge);
-
-router.post('/:id/edge/:edgeId/ranks', setPokemonEdgeRanks)
+router.use('/:id/move', moveRouter);
+router.use('/:id/capability', capabilityRouter);
+router.use('/:id/skill', skillRouter);
+router.use('/:id/edge', edgeRouter);
