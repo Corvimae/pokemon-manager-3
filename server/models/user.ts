@@ -1,5 +1,5 @@
 import { Column, CreatedAt, Model, Table, UpdatedAt } from 'sequelize-typescript';
-
+import { AuthorizedUser } from './authorizedUser';
 @Table
 export class User extends Model {
   @Column
@@ -16,4 +16,12 @@ export class User extends Model {
 
   @UpdatedAt
   updatedAt: Date;
+
+  public async isAuthorized(): Promise<boolean> {
+    return (await AuthorizedUser.findOne({ 
+      where: {
+        profileId: this.profileId,
+      },
+    })) !== null;
+  }
 }

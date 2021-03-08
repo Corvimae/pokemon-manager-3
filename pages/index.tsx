@@ -124,12 +124,6 @@ const TrainerPage = ({ displayName }) => {
           <NewPokemonCell onClick={submitNewPokemon}>Create new Pokémon</NewPokemonCell>
         </PokemonList>
       )}
-      <BottomBar>
-        Logged in as {displayName}.
-        <Link href="/logout">
-          <a>Log out</a>
-        </Link>
-      </BottomBar>
     </Container>
  );
 };
@@ -144,10 +138,17 @@ export async function getServerSideProps(ctx) {
     };
   }
 
+  if (!ctx.req.user?.isAuthorized) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/unauthorized',
+      },
+    };
+  }
+
   return {
-    props: {
-      displayName: ctx.req.user?.[0]?.displayName,
-    },
+    props: {},
   };
 }
 
@@ -280,22 +281,6 @@ const TrainerSelector = styled.div<{ active: boolean }>`
   }
 `;
 
-const BottomBar = styled.div`
-  position: absolute;
-  display: flex;
-  bottom: 0;
-  width: 100vw;
-  height: 2rem;
-  align-items: center;
-  background-color: #333;
-  color: #fff;
-  padding: 0.25rem 1rem;
-
-  & a {
-    color: #fff;
-    padding: 0 0.5rem;
-  }
-`;
 const PokemonList = styled.div`
   position: absolute;
   left: calc(50% + 5rem);

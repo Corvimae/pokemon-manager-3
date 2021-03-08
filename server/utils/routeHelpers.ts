@@ -1,5 +1,12 @@
 import { Request } from 'express';
 import { Pokemon } from '../models/pokemon';
+import { User } from '../models/user';
+
+export async function isUserAuthorized(user: User | null): Promise<boolean> {
+  if (!user) return false;
+
+  return user && await user.isAuthorized();
+}
 
 export function isValidType(type: string): boolean {
   return typeof type === 'string' && [

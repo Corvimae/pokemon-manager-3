@@ -28,7 +28,7 @@ export async function createNewPokemon(req: Request<{ trainerId: number }>, res:
     });
   }
 
-  if (trainer.userId !== req.user[0].id) {
+  if (trainer.userId !== req.user.id) {
     return res.status(401).json({
       error: 'Trainer does not belong to user.',
     });
@@ -39,7 +39,7 @@ export async function createNewPokemon(req: Request<{ trainerId: number }>, res:
     trainerId: trainer.id,
     natureId: (await RulebookNature.findOne({
       where: {
-        name: 'Cuddly',
+        name: 'Composed',
       },
     })).id,
     speciesId: (await RulebookSpecies.findOne({ 
@@ -72,7 +72,7 @@ export async function getPokemonData(req: Request, res: Response): Promise<void>
   
   if (pokemon) {
     res.json({
-      isUserOwner: pokemon.trainer.userId === req.user[0].id, 
+      isUserOwner: pokemon.trainer.userId === req.user.id, 
       pokemon,
       allies: (await pokemon.trainer.$get('pokemon', { include: [RulebookSpecies] }))
         .filter(item => item.active && item.id !== pokemon.id),

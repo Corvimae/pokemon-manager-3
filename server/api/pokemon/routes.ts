@@ -30,7 +30,7 @@ router.use('/:id/*', async (req, res, next) => {
     });
   }
 
-  if (pokemon.trainer.userId !== req.user[0].id) {
+  if (pokemon.trainer.userId !== req.user.id) {
     return res.status(401).json({
       error: 'Pokemon does not belong to user.',
     });

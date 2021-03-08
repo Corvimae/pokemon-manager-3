@@ -9,7 +9,7 @@ import { Strategy as twitchStrategy } from 'passport-twitch-new';
 import connectSessionSequelize from 'connect-session-sequelize';
 import { apiRouter } from './api/routes';
 import { User } from './models/user';
-import { Server } from 'https';
+import { isUserAuthorized } from './utils/routeHelpers';
 
 dotenv.config();
 
@@ -47,16 +47,18 @@ passport.use(
     scope: 'user_read',
   }, async (_accessToken, _refreshToken, profile, done) => {
     try {
-      const user = await User.findOrCreate({
+      const [user] = await User.findOrCreate({
         where: { profileId: profile.id },
         defaults: {
           displayName: profile.display_name,
           email: profile.email,
         }
       });
-      
 
-      done(null, user);
+      done(null, {
+        ...(user.get({ plain: true })),
+        isAuthorized: await user.isAuthorized(),
+      });
     } catch (e) {
       done(e);
     }
@@ -113,11 +115,13 @@ app.prepare().then(async () => {
     });
 
     server.get('/login', (req, res) => handle(req, res));
+    server.get('/unauthorized', (req, res) => handle(req, res));
 
     server.get('/logout', (req, res) => {
       req.logout();
       res.redirect('/login');
     });
+
     
     server.use('/api/v1', apiRouter);
 
