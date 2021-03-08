@@ -72,7 +72,7 @@ export async function getPokemonData(req: Request, res: Response): Promise<void>
   
   if (pokemon) {
     res.json({
-      isUserOwner: pokemon.trainer.userId === req.user.id, 
+      isUserOwner: pokemon.trainer.userId === req.user?.id, 
       pokemon,
       allies: (await pokemon.trainer.$get('pokemon', { include: [RulebookSpecies] }))
         .filter(item => item.active && item.id !== pokemon.id),
