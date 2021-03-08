@@ -20,6 +20,12 @@ const LoginPage = () => (
 
 );
 
+export async function getServerSideProps(_ctx) {
+  return {
+    props: {},
+  };
+}
+
 export default LoginPage;
 
 const Container = styled.div`
