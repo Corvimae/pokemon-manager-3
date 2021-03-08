@@ -10,18 +10,22 @@ export const apiRouter = express.Router();
 apiRouter.use(express.json());
 
 apiRouter.use('*', (req, res, next) => {
-  if (!req.isAuthenticated() || !req.user) {
-    res.status(401).send('No active user.');
+  if (['POST', 'PUT', 'DELETE'].indexOf(req.method) !== -1) {
+    if (!req.isAuthenticated() || !req.user) {
+      res.status(401).json({
+        error: 'No active user.',
+      });
 
-    return;
-  }
+      return;
+    }
 
-  if (['POST', 'PUT', 'DELETE'].indexOf(req.method) !== -1 && !req.user.isAuthorized) {
-    res.status(401).json({
-      error: 'You do not have access to Pokemon Manager 3; if you beleive this to be a mistake, please DM Corvimae#7777 on Discord.',
-    });
+    if (!req.user.isAuthorized) {
+      res.status(401).json({
+        error: 'You do not have access to Pokemon Manager 3; if you beleive this to be a mistake, please DM Corvimae#7777 on Discord.',
+      });
 
-    return;
+      return;
+    }
   }
 
   next();
