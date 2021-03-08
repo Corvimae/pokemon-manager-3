@@ -103,7 +103,7 @@ const TrainerPage = ({ displayName }) => {
         <PokemonList>
           {trainers.find(trainer => trainer.id === selectedTrainer)?.pokemon.map(pokemon => (
             <PokemonCell key={`${selectedTrainer}_${pokemon.id}`} onClick={() => navigateToPokemon(pokemon)}>
-              <PokemonCellIcon dexNumber={pokemon.species.dexNumber} />
+              <PokemonCellIcon species={pokemon.species} />
               <PokemonDescriptionContainer>
                 <PokemonNameRow>
                   {pokemon.name}

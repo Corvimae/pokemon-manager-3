@@ -5,6 +5,7 @@ import { Theme } from '../utils/theme';
 import Tippy from '@tippy.js/react';
 import { calculateHPPercentage } from '../utils/formula';
 import { Pokemon } from '../server/models/pokemon';
+import { RulebookSpecies } from '../server/models/rulebookSpecies';
 
 interface IconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   icon: IconDefinition;
@@ -234,14 +235,14 @@ export const TypeList = styled(StatValue)`
   }
 `;
 
-export const PokemonIcon = styled.div<{ dexNumber: number }>`
+export const PokemonIcon = styled.div<{ species: RulebookSpecies }>`
   width: 40px;
   min-width: 40px;
   height: 30px;
   min-height: 30px;
-  background: url("https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png?v4") no-repeat scroll;
-  background-position-x: -${props => Math.floor(props.dexNumber % 12) * 40}px;
-  background-position-y: -${props => Math.floor(props.dexNumber / 12) * 30}px;
+  background: ${props => props.species?.sprite ?? `url("https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png?v4") no-repeat scroll`};
+  background-position-x: ${props => props.species?.sprite ?? `-${Math.floor((props.species?.dexNumber ?? 0) % 12) * 40}px`};
+  background-position-y: ${props => props.species?.sprite ?? `-${Math.floor((props.species?.dexNumber ?? 0) / 12) * 30}px`};
   transform: scale(1.5);
 `;
 

@@ -14,6 +14,25 @@ import { Theme } from '../utils/theme';
 import { TypeName, useCombinedDefensiveEffectivenesses } from '../utils/pokemonTypes';
 import { useTypedSelector } from '../store/rootReducer';
 import { HeldItemList } from './HeldItemList';
+import { RulebookSpecies } from '../server/models/rulebookSpecies';
+import { Gender } from '../utils/types';
+
+const ANIMATED_SPRITE_BASE_URL = "https://play.pokemonshowdown.com/sprites/ani/";
+
+function getSpeciesAnimatedSpriteURL(species: RulebookSpecies, gender: Gender): string {
+  let spriteName = species.name.toLowerCase().replace(/-/g, '');
+
+  if (species.animatedSprite) {
+    return species.animatedSprite;
+  } else if (species.isMega) {
+    spriteName = spriteName.replace('mega ', '') + '-mega';
+  } else if (species.isGenderDimorphic && gender === 'female') {
+    spriteName += '-f';
+  }
+
+  return `${ANIMATED_SPRITE_BASE_URL}${spriteName}.gif`;
+
+} 
 
 export const PokemonDataTable = () => {
   const dispatch = useDispatch();
@@ -229,7 +248,7 @@ export const PokemonDataTable = () => {
       <StatRowDivider />
       {!showGMEditor && (
         <PokemonImage>
-          <img src={`https://play.pokemonshowdown.com/sprites/ani/${pokemon.species.name.toLowerCase().replace(/-/g, '')}.gif`} />
+          <img src={getSpeciesAnimatedSpriteURL(pokemon.species, pokemon.gender)} />
         </PokemonImage>
       )}
       {showGMEditor && (
@@ -307,7 +326,7 @@ const PokemonImage = styled.div`
   background-image: url("https://em-uploads.s3.amazonaws.com/profilebg/312687.png");
   background-size: cover;
   border: 0.25rem solid rgba(0, 0, 0, 0.75);
-
+  overflow: hidden;
   & > img {
     margin-bottom: 1.5rem;
   }

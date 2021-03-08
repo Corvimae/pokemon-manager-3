@@ -54,7 +54,7 @@ export const PokemonSelector: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
 
         {allies.map(ally => (
           <AllySelector key={ally.id} onClick={event => navigateToAlly(event, ally)}>
-            <AllyImage dexNumber={ally.species?.dexNumber ?? 0} />
+            <AllyImage species={ally.species} />
             <AllyDetails>
               <AllyName>{ally.name}</AllyName>
               <HealthBar pokemon={ally} backgroundColor="#aaa"/>
