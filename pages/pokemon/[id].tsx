@@ -9,7 +9,6 @@ import { Theme } from '../../utils/theme';
 import { PokemonNameBar } from '../../components/PokemonNameBar';
 import { PokemonMoveList } from '../../components/PokemonMoveList';
 import { DetailsSidebar } from '../../components/DetailsSidebar';
-import { useOnMount } from '../../utils/hooks';
 import { PokemonSelector } from '../../components/PokemonSelector';
 import { LoadingIcon } from '../../components/LoadingIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -74,6 +73,15 @@ export async function getServerSideProps(ctx) {
       redirect: {
         permanent: false,
         destination: '/login',
+      },
+    };
+  }
+
+  if (!ctx.req.user?.isAuthorized) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/unauthorized',
       },
     };
   }
