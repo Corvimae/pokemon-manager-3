@@ -1,11 +1,12 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries } from './handlers/handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries, setPokemonGMNotes, setPokemonTrainer } from './handlers/handlers';
 import { edgeRouter } from './handlers/edges';
 import { capabilityRouter } from './handlers/capabilities';
 import { skillRouter } from './handlers/skills';
 import { moveRouter } from './handlers/moves';
+import { handleAsyncRoute } from '../../utils/routeHelpers';
 
 export const router = express.Router();
 
@@ -13,56 +14,66 @@ router.use(express.json());
 
 // Unauthenticated routes
 
-router.post('/', createNewPokemon)
+router.post('/', handleAsyncRoute(createNewPokemon))
 
-router.get('/:id', getPokemonData);
+router.get('/:id', handleAsyncRoute(getPokemonData));
 
 // Authenticated routes
 
 router.use('/:id/*', async (req, res, next) => {
-  const pokemon = await Pokemon.findByPk(req.params.id, {
-    include: [Trainer],
-  });
-
-  if (!pokemon) {
-   return res.status(400).json({
-      error: 'No Pokemon with that ID exists.',
+  try {
+    const pokemon = await Pokemon.findByPk(req.params.id, {
+      include: [Trainer],
     });
-  }
 
-  if (pokemon.trainer.userId !== req.user.id) {
-    return res.status(401).json({
-      error: 'Pokemon does not belong to user.',
+    if (!pokemon) {
+    return res.status(400).json({
+        error: 'No Pokemon with that ID exists.',
+      });
+    }
+
+    if (pokemon.trainer.userId !== req.user.id) {
+      return res.status(401).json({
+        error: 'Pokemon does not belong to user.',
+      });
+    }
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: 'An unexpected error occurred.',
     });
   }
 
   next();
 });
 
-router.post('/:id/name', setPokemonName);
-router.post('/:id/gender', setPokemonGender);
-router.post('/:id/species', setPokemonSpecies);
-router.post('/:id/types', setPokemonTypes);
-router.post('/:id/experience', setPokemonExperience);
-router.post('/:id/loyalty', setPokemonLoyalty);
-router.post('/:id/health', setPokemonHealth);
-router.post('/:id/tempHealth', setPokemonTempHealth);
-router.post('/:id/injuries', setPokemonInjuries);
-router.post('/:id/bonusTutorPoints', setPokemonBonusTutorPoints);
-router.post('/:id/spentTutorPoints', setPokemonSpentTutorPoints);
-router.post('/:id/active', setPokemonActive);
-router.post('/:id/nature', setPokemonNature);
-router.post('/:id/notes', setPokemonNotes);
-router.post('/:id/stat', setPokemonStat);
-router.post('/:id/combatStage', setPokemonCombatStage);
+router.post('/:id/name', handleAsyncRoute(setPokemonName));
+router.post('/:id/trainer', handleAsyncRoute(setPokemonTrainer));
+router.post('/:id/gender', handleAsyncRoute(setPokemonGender));
+router.post('/:id/species', handleAsyncRoute(setPokemonSpecies));
+router.post('/:id/types', handleAsyncRoute(setPokemonTypes));
+router.post('/:id/experience', handleAsyncRoute(setPokemonExperience));
+router.post('/:id/loyalty', handleAsyncRoute(setPokemonLoyalty));
+router.post('/:id/health', handleAsyncRoute(setPokemonHealth));
+router.post('/:id/tempHealth', handleAsyncRoute(setPokemonTempHealth));
+router.post('/:id/injuries', handleAsyncRoute(setPokemonInjuries));
+router.post('/:id/bonusTutorPoints', handleAsyncRoute(setPokemonBonusTutorPoints));
+router.post('/:id/spentTutorPoints', handleAsyncRoute(setPokemonSpentTutorPoints));
+router.post('/:id/active', handleAsyncRoute(setPokemonActive));
+router.post('/:id/nature', handleAsyncRoute(setPokemonNature));
+router.post('/:id/notes', handleAsyncRoute(setPokemonNotes));
+router.post('/:id/gmNotes', handleAsyncRoute(setPokemonGMNotes));
+router.post('/:id/stat', handleAsyncRoute(setPokemonStat));
+router.post('/:id/combatStage', handleAsyncRoute(setPokemonCombatStage));
 
 router.route('/:id/ability')
-  .post(addPokemonAbility)
-  .delete(removePokemonAbility);
+  .post(handleAsyncRoute(addPokemonAbility))
+  .delete(handleAsyncRoute(removePokemonAbility));
 
 router.route('/:id/heldItem')
-  .post(addPokemonHeldItem)
-  .delete(removePokemonHeldItem);
+  .post(handleAsyncRoute(addPokemonHeldItem))
+  .delete(handleAsyncRoute(removePokemonHeldItem));
 
 router.use('/:id/move', moveRouter);
 router.use('/:id/capability', capabilityRouter);

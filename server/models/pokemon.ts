@@ -14,6 +14,7 @@ import { RulebookNature } from './rulebookNature';
 import { RulebookSkill } from './rulebookSkill';
 import { RulebookSpecies } from './rulebookSpecies';
 import { Trainer } from './trainer';
+import { User } from './user';
 
 export type PokemonGender = 'male' | 'female' | 'neutral';
 
@@ -133,7 +134,6 @@ export class Pokemon extends Model {
   @Default(0)
   @Column
   addedSpeed: number;
-  
 
   @Default(0)
   @Column
@@ -219,4 +219,10 @@ export class Pokemon extends Model {
 
   @UpdatedAt
   updatedAt: Date;
+
+  public async canViewLoyalty(user: User | null): Promise<Boolean> {
+    if (!user) return false;
+
+    return this.trainer.campaignId !== null && (await user.hasPermission('gm', this.trainer.campaignId) || await user.hasPermission('viewLoyalty', this.trainer.campaignId));
+  }
 }

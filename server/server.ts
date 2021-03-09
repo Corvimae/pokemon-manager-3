@@ -9,7 +9,6 @@ import { Strategy as twitchStrategy } from 'passport-twitch-new';
 import connectSessionSequelize from 'connect-session-sequelize';
 import { apiRouter } from './api/routes';
 import { User } from './models/user';
-import { isUserAuthorized } from './utils/routeHelpers';
 
 dotenv.config();
 

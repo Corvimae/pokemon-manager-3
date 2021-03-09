@@ -104,7 +104,6 @@ const PageContents = styled.div`
 `;
 
 const BottomBar = styled.div`
-  position: absolute;
   display: flex;
   bottom: 0;
   width: 100vw;

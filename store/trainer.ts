@@ -1,5 +1,19 @@
-import { Pokemon } from "../server/models/pokemon";
-import { Trainer } from "../server/models/trainer";
+import { Pokemon } from '../server/models/pokemon';
+import { Trainer } from '../server/models/trainer';
+import { ImmediateUpdateRequestActions, RequestActions } from './types';
+
+function updateTrainerById(state: State, trainerId: number, update: (trainer: Trainer) => Trainer): State {
+  return {
+    ...state,
+    trainers: state.trainers.reduce((acc, trainer) => {
+      if (trainer.id === trainerId) {
+        return [...acc, update(trainer)];
+      }
+
+      return [...acc, trainer];
+    }, []),
+  }
+}
 
 const CREATE_NEW_TRAINER = 'CREATE_NEW_TRAINER';
 const CREATE_NEW_TRAINER_SUCCESS = 'CREATE_NEW_TRAINER_SUCCESS';
@@ -8,38 +22,12 @@ const FETCH_TRAINERS_SUCCESS = 'FETCH_TRAINERS_SUCCESS';
 const SET_SELECTED_TRAINER = 'SET_SELECTED_TRAINER';
 const CREATE_NEW_POKEMON = 'CREATE_NEW_POKEMON';
 const CREATE_NEW_POKEMON_SUCCESS = 'CREATE_NEW_POKEMON_SUCCESS';
+const SET_TRAINER_CAMPAIGN = 'SET_TRAINER_CAMPAIGN';
 
-interface AxiosRequest {
-  request: {
-    url: string;
-    method?: string;
-    data?: Record<string, unknown>;
-  };
-}
-
-interface AxiosResponse<T> {
-  data: T;
-}
-
-type CreateNewTrainerAction = {
-  type: typeof CREATE_NEW_TRAINER;
-  payload: AxiosRequest;
-};
-
-type CreateNewTrainerSuccessAction = {
-  type: typeof CREATE_NEW_TRAINER_SUCCESS;
-  payload: AxiosResponse<Trainer>;
-}
-
-type FetchTrainersAction = {
-  type: typeof FETCH_TRAINERS;
-  payload: AxiosRequest;
-}
-
-type FetchTrainersSuccessAction = {
-  type: typeof FETCH_TRAINERS_SUCCESS;
-  payload: AxiosResponse<Trainer[]>;
-}
+type CreateNewTrainerActions = RequestActions<typeof CREATE_NEW_TRAINER, Trainer>;
+type FetchTrainersActions = RequestActions<typeof FETCH_TRAINERS, Trainer[]>;
+type CreateNewPokemonActions = RequestActions<typeof CREATE_NEW_POKEMON, Pokemon>;
+type SetTrainerCampaignActions = ImmediateUpdateRequestActions<typeof SET_TRAINER_CAMPAIGN, Trainer, { trainerId: number, campaignId: number; campaignName: string }>
 
 type SetSelectedTrainerAction = {
   type: typeof SET_SELECTED_TRAINER;
@@ -48,23 +36,13 @@ type SetSelectedTrainerAction = {
   };
 }
 
-type CreateNewPokemonAction = {
-  type: typeof CREATE_NEW_POKEMON;
-  payload: AxiosRequest;
-}
-type CreateNewPokemonSuccessAction = {
-  type: typeof CREATE_NEW_POKEMON_SUCCESS;
-  payload: AxiosResponse<Pokemon>;
-}
 
 type TrainerReducerAction =
-  CreateNewTrainerAction | 
-  CreateNewTrainerSuccessAction |
-  FetchTrainersAction |
-  FetchTrainersSuccessAction | 
-  SetSelectedTrainerAction |
-  CreateNewPokemonAction | 
-  CreateNewPokemonSuccessAction;
+  CreateNewTrainerActions |
+  FetchTrainersActions |
+  CreateNewPokemonActions |
+  SetTrainerCampaignActions |
+  SetSelectedTrainerAction;
 
 interface State {
   isLoadingTrainers: boolean;
@@ -106,20 +84,21 @@ export function reducer(state: State = initialState, action: TrainerReducerActio
       };
 
     case CREATE_NEW_POKEMON_SUCCESS:
-      return {
-        ...state,
-        trainers: state.trainers.reduce((acc, trainer) => {
-          if (trainer.id === state.selectedTrainer) {
-            return [...acc, {
-              ...trainer,
-              pokemon: [...trainer.pokemon, action.payload.data],
-            }];
-          }
+      return updateTrainerById(state, state.selectedTrainer, trainer => ({
+        ...trainer,
+        pokemon: [...trainer.pokemon, action.payload.data],
+      } as Trainer));
 
-          return [...acc, trainer];
-        }, []),
-      };
-
+    case SET_TRAINER_CAMPAIGN:
+      return updateTrainerById(state, action.payload.value.trainerId, trainer => ({
+        ...trainer,
+        campaignId: action.payload.value.campaignId,
+        campaign: {
+          id: action.payload.value.campaignId,
+          name: action.payload.value.campaignName,
+        }
+      } as Trainer));
+      
     default:
       return state;
   }
@@ -170,6 +149,26 @@ export function createNewPokemon(trainerId: number): TrainerReducerAction {
         method: 'POST',
         data: {
           trainerId,
+        },
+      },
+    },
+  };
+}
+
+export function setTrainerCampaign(trainerId: number, campaignId: number, campaignName: string): TrainerReducerAction {
+  return {
+    type: SET_TRAINER_CAMPAIGN,
+    payload: {
+      value: {
+        trainerId,
+        campaignId,
+        campaignName,
+      },
+      request: {
+        url: `/trainer/${trainerId}/campaign`,
+        method: 'POST',
+        data: {
+          campaignId,
         },
       },
     },

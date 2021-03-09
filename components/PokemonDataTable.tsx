@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonOwner, saveGMNotes, setSpentTutorPoints, setBonusTutorPoints } from '../store/pokemon';
+import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonTrainer, saveGMNotes, setSpentTutorPoints, setBonusTutorPoints } from '../store/pokemon';
 import { TypeIndicator } from './TypeIndicator';
 import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, TypeList } from './Layout';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
@@ -78,8 +78,8 @@ export const PokemonDataTable = () => {
     dispatch(setPokemonLoyalty(pokemon.id, event.target.value));
   }, [dispatch, pokemon.id]);
 
-  const handleChangeOwner = useCallback(({ value, label }) => {
-    dispatch(setPokemonOwner(pokemon.id, value, label));
+  const handleChangeTrainer = useCallback(({ value }) => {
+    dispatch(setPokemonTrainer(pokemon.id, value));
   }, [dispatch, pokemon.id]);
 
   const handleChangeBonusTutorPoints = useCallback(event => {
@@ -101,9 +101,10 @@ export const PokemonDataTable = () => {
         <SelectablePokemonValue
           id={pokemon.trainer.id}
           value={pokemon.trainer.name}
-          path={`trainers`}
-          onChange={handleChangeOwner}
+          path={`reference/campaigns/${pokemon.trainer.campaignId}/trainers`}
+          onChange={handleChangeTrainer}
           requireGMToEdit
+          editingDisabled={pokemon.trainer.campaignId === null}
         />
       </StatRow>
       <StatRow>

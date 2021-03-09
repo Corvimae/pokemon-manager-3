@@ -14,6 +14,7 @@ import { determineSortAdjustedPositions } from "../server/utils/sortHelper";
 import { getAddedStatField, getBaseStatField, getVitaminStatField } from "../utils/formula";
 import { TypeName } from "../utils/pokemonTypes";
 import { CombatStage, Gender, MobileMode, Stat } from "../utils/types";
+import { ImmediateUpdateRequestActions, RequestActions } from "./types";
 
 function removeById<T extends { id?: number }>(list: T[], id: number): T[] {
   return list.filter(element => element.id !== id);
@@ -147,8 +148,8 @@ const SET_POKEMON_SPECIES_SUCCESS = 'SET_POKEMON_SPECIES_SUCCESS';
 const SET_POKEMON_EXPERIENCE = 'SET_POKEMON_EXPERIENCE';
 const SET_POKEMON_GENDER = 'SET_POKEMON_GENDER';
 const SET_POKEMON_LOYALTY = 'SET_POKEMON_LOYALTY';
-const SET_POKEMON_OWNER = 'SET_POKEMON_OWNER';
-const SET_POKEMON_OWNER_SUCCESS = 'SET_POKEMON_OWNER_SUCCESS';
+const SET_POKEMON_TRAINER = 'SET_POKEMON_TRAINER';
+const SET_POKEMON_TRAINER_SUCCESS = 'SET_POKEMON_TRAINER_SUCCESS';
 const SET_POKEMON_BASE_STAT = 'SET_POKEMON_BASE_STAT';
 const SET_POKEMON_ADDED_STAT = 'SET_POKEMON_ADDED_STAT';
 const SET_POKEMON_VITAMIN_STAT = 'SET_POKEMON_VITAMIN_STAT';
@@ -192,29 +193,8 @@ interface ActiveEdge {
 type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem | ActiveSkill | ActiveEdge;
 type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem | RulebookSkill | RulebookEdge;
 export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY | typeof HELD_ITEM | typeof SKILL | typeof EDGE;
-interface AxiosRequest {
-  request: {
-    url: string;
-    method?: string;
-    data?: Record<string, unknown>;
-  };
-}
 
-interface AxiosResponse<T> {
-  data: T;
-}
-
-type RequestActions<K extends string, T, U = {}> = {
-  type: K;
-  payload: AxiosRequest & U;
-} | {
-  type: `${K}_SUCCESS`,
-  payload: AxiosResponse<T>
-};
-
-type ImmediateUpdateRequestActions<K extends string, T, U = T> = RequestActions<K, T, { value: U }>;
-
-type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon; isUserOwner: boolean; allies: Pokemon[] }>;
+type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon; isUserOwner: boolean; isUserGM: boolean; allies: Pokemon[] }>;
 type SetCombatStageActions = ImmediateUpdateRequestActions<typeof SET_COMBAT_STAGE, { stat: CombatStage; value: number}>;
 type RequestDetailsActions = ImmediateUpdateRequestActions<typeof REQUEST_DETAILS, ActiveDetailValue, ActiveDetailType>;
 type SetPokemonNatureActions = RequestActions<typeof SET_POKEMON_NATURE, Pokemon>;
@@ -244,7 +224,7 @@ type SetPokemonSpeciesActions = RequestActions<typeof SET_POKEMON_SPECIES, Pokem
 type SetPokemonExperienceActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_EXPERIENCE, number>
 type SetPokmeonGenderActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_GENDER, Gender>
 type SetPokemonLoyaltyActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_LOYALTY, number>
-type SetPokemonOwnerActions = RequestActions<typeof SET_POKEMON_OWNER, Trainer>;
+type SetPokemonTrainerActions = RequestActions<typeof SET_POKEMON_TRAINER, Pokemon>;
 type SetPokemonBaseStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_BASE_STAT, { stat: Stat, value: number }>
 type SetPokemonAddedStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ADDED_STAT, { stat: Stat, value: number }>
 type SetPokemonVitaminStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_VITAMIN_STAT, { stat: Stat, value: number }>
@@ -314,7 +294,7 @@ type PokemonReducerAction =
   SetPokemonExperienceActions |
   SetPokmeonGenderActions |
   SetPokemonLoyaltyActions |
-  SetPokemonOwnerActions |
+  SetPokemonTrainerActions |
   SetPokemonBaseStatActions |
   SetPokemonAddedStatActions |
   SetPokemonVitaminStatActions |
@@ -371,6 +351,7 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         ...state,
         data: action.payload.data.pokemon,
         isUserOwner: action.payload.data.isUserOwner,
+        isUserGM: action.payload.data.isUserGM,
         allies: action.payload.data.allies,
       };
 
@@ -751,13 +732,13 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         } as Pokemon,
       };
 
-    case SET_POKEMON_OWNER_SUCCESS:
+    case SET_POKEMON_TRAINER_SUCCESS:
       return {
         ...state,
         data: {
           ...state.data,
-          trainer: action.payload.data,
-          trainerId: action.payload.data.id,
+          trainer: action.payload.data.trainer,
+          trainerId: action.payload.data.trainerId,
         } as Pokemon,
       };
 
@@ -1608,18 +1589,26 @@ export function setPokemonLoyalty(pokemonId: number, value: number): PokemonRedu
     payload: {
       value,
       request: {
-        url: `/v2/pokemon/${pokemonId}/loyalty/${value || 0}`,
+        url: `pokemon/${pokemonId}/loyalty`,
+        method: 'POST',
+        data: {
+          loyalty: value,
+        },
       },
     },
   };
 }
 
-export function setPokemonOwner(pokemonId: number, ownerId: number, ownerName: string): PokemonReducerAction {
+export function setPokemonTrainer(pokemonId: number, trainerId: number): PokemonReducerAction {
   return {
-    type: SET_POKEMON_OWNER,
+    type: SET_POKEMON_TRAINER,
     payload: {
       request: {
-        url: `/v2/pokemon/${pokemonId}/owner/${ownerId}`,
+        url: `/pokemon/${pokemonId}/trainer`,
+        method: 'POST',
+        data: {
+          trainerId,
+        }
       },
     },
   };
@@ -1786,10 +1775,10 @@ export function saveGMNotes(pokemonId: number, notes: string): PokemonReducerAct
     payload: {
       value: notes,
       request: {
-        method: 'post',
-        url: `/v2/pokemon/${pokemonId}/gmNotes`,
+        url: `/pokemon/${pokemonId}/gmNotes`,
+        method: 'POST',
         data: {
-          notes,
+          gmNotes: notes,
         },
       },
     },

@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { DropdownTooltip } from '../components/DropdownTooltip';
@@ -9,18 +8,20 @@ import { Button, DropdownHeader, HealthBar, PokemonIcon, TextInput } from '../co
 import { LoadingIcon } from '../components/LoadingIcon';
 import { getGenderColor, getGenderIcon } from '../components/PokemonNameBar';
 import { useTypedSelector } from '../store/rootReducer';
-import { createNewPokemon, createNewTrainer, fetchTrainers, setSelectedTrainer } from '../store/trainer';
-import { calculateHPPercentage, calculateTotalHP } from '../utils/formula';
+import { createNewPokemon, createNewTrainer, fetchTrainers, setSelectedTrainer, setTrainerCampaign } from '../store/trainer';
+import { calculateTotalHP } from '../utils/formula';
 import { useOnMount } from '../utils/hooks';
 import { calculateLevel } from '../utils/level';
 import { Theme } from '../utils/theme';
 import { Pokemon } from '../server/models/pokemon';
+import { DefinitionLookahead } from '../components/DefinitionLookahead';
 
 const TrainerPage = ({ displayName }) => {
   const router = useRouter();
   const isLoadingTrainers = useTypedSelector(state => state.trainer.isLoadingTrainers);
   const trainers = useTypedSelector(state => state.trainer.trainers);
-  const selectedTrainer = useTypedSelector(state => state.trainer.selectedTrainer);
+  const selectedTrainerId = useTypedSelector(state => state.trainer.selectedTrainer);
+  const selectedTrainer = selectedTrainerId ? trainers.find(trainer => trainer.id === selectedTrainerId) : null;
   
   const dispatch = useDispatch();
 
@@ -45,8 +46,12 @@ const TrainerPage = ({ displayName }) => {
   }, [dispatch, newTrainerName]);
 
   const submitNewPokemon = useCallback(() => {
-    dispatch(createNewPokemon(selectedTrainer));
-  }, [dispatch, selectedTrainer]);
+    dispatch(createNewPokemon(selectedTrainerId));
+  }, [dispatch, selectedTrainerId]);
+
+  const handleSetSelectedCampaign = useCallback(({ value, label }) => {
+    dispatch(setTrainerCampaign(selectedTrainerId, value, label));
+  }, [dispatch, selectedTrainerId]);
 
   const navigateToPokemon = useCallback((pokemon: Pokemon) => {
     router.push(`/pokemon/${pokemon.id}`);
@@ -86,7 +91,7 @@ const TrainerPage = ({ displayName }) => {
           {trainers.map(trainer => (
             <TrainerSelector
               key={trainer.id}
-              active={trainer.id === selectedTrainer}
+              active={trainer.id === selectedTrainerId}
               onClick={() => handleSetSelectedTrainer(trainer.id)}
               tabIndex={0}
             >
@@ -101,8 +106,23 @@ const TrainerPage = ({ displayName }) => {
       </div>
       {selectedTrainer && (
         <PokemonList>
-          {trainers.find(trainer => trainer.id === selectedTrainer)?.pokemon.map(pokemon => (
-            <PokemonCell key={`${selectedTrainer}_${pokemon.id}`} onClick={() => navigateToPokemon(pokemon)}>
+          <CampaignSelector>
+            Campaign
+
+            <CampaignSelectorWrapper>
+              <DefinitionLookahead
+                path='reference/campaigns'
+                onChange={handleSetSelectedCampaign}
+                value={selectedTrainer?.campaign ? {
+                  value: selectedTrainer?.campaign.id,
+                  label: selectedTrainer?.campaign.name,
+                } : null}
+                placeholder="Enter the name of a campaign..."
+              />
+            </CampaignSelectorWrapper>
+          </CampaignSelector>
+          {selectedTrainer?.pokemon.map(pokemon => (
+            <PokemonCell key={`${selectedTrainerId}_${pokemon.id}`} onClick={() => navigateToPokemon(pokemon)}>
               <PokemonCellIcon species={pokemon.species} />
               <PokemonDescriptionContainer>
                 <PokemonNameRow>
@@ -163,7 +183,7 @@ const Container = styled.div`
 `;
 
 const LeftPanelBackground = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: -6rem;
   width: calc(50% + 6rem);
@@ -238,7 +258,7 @@ const AddNewTrainerButton = styled(Button)`
 
 const TrainerList = styled.ul`
   padding: 0 1rem;
-  margin: 0.5rem 0 0;
+  margin: 0.5rem 0;
   overflow-y: auto;
 `;
 
@@ -285,8 +305,7 @@ const PokemonList = styled.div`
   position: absolute;
   left: calc(50% + 5rem);
   top: 0;
-  height: calc(100% - 2rem);
-  padding: 1rem calc(50% - 26rem) 1rem 1rem;
+  padding: 5rem calc(50% - 26rem) 1rem 1rem;
   overflow-y: auto;
   overflow-x: visible;
 `;
@@ -358,7 +377,6 @@ const NewPokemonCell = styled(PokemonCell)`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
   border: 1px dashed #aaa;
 `;
 
@@ -372,4 +390,30 @@ const PokemonStatRow = styled.div`
 
 const PokemonHealthBar = styled(HealthBar)`
   width: calc(100% - 4rem);
+`;
+
+const CampaignSelector = styled.div`
+  position: absolute;
+  display: flex;
+  top: 1rem;
+  width: calc(50vw - 6rem);
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700; 
+  padding: 0.25rem 1rem;
+  background-color: #333;
+  margin-bottom: 1rem;
+`;
+
+const CampaignSelectorWrapper = styled.div`
+  min-width: 0;
+  flex-grow: 1;
+  align-self: stretch;
+  padding-left: 1rem;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #000;
 `;

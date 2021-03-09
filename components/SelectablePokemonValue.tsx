@@ -11,10 +11,11 @@ interface SelectablePokemonValueProps {
   onChange: (selection: { label: string, value: number}) => void;
   onClick?: () => void;
   requireGMToEdit?: boolean;
+  editingDisabled?: boolean;
   className?: string;
 }
 
-export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, requireGMToEdit, className }) => {
+export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ id, value, path, onChange, onClick, requireGMToEdit, editingDisabled, className }) => {
   const hasEditPermission = useTypedSelector(state => state.pokemon.isUserGM) || !requireGMToEdit;
   const editMode = useTypedSelector(state => state.pokemon.editMode) && hasEditPermission;
 
@@ -24,7 +25,7 @@ export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ 
 
   return (
     <Container className={className} onClick={handleOnClick}>
-      {editMode && (
+      {editMode && !editingDisabled && (
         <DefinitionLookahead
           path={path}
           onChange={onChange}
@@ -32,7 +33,7 @@ export const SelectablePokemonValue: React.FC<SelectablePokemonValueProps> = ({ 
           defaultLabel={value}
         />
       )}
-      {!editMode && value}
+      {(!editMode || editingDisabled) && value}
     </Container>
   );
 };
