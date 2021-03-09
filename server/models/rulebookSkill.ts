@@ -6,7 +6,7 @@ export class RulebookSkill extends Model {
   name: string;
 
   @Column(DataType.TEXT)
-  description: string;
+  effect: string;
 
   @CreatedAt
   createdAt: Date;

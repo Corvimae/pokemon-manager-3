@@ -1,15 +1,41 @@
 import styled from 'styled-components';
-import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes, SKILL, EDGE } from '../store/pokemon';
+import Handlebars from 'handlebars';
+import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes, SKILL, EDGE, ActiveDetail } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
 import { getAttackType } from '../utils/moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { RichTextEditor } from './RichTextEditor';
 import { getOffensiveEffectivenesses, TypeName } from '../utils/pokemonTypes';
 import { TypeIndicator } from './TypeIndicator';
 import { useTypedSelector } from '../store/rootReducer';
+import { Pokemon } from '../server/models/pokemon';
+
+
+Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+  return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
+
+function getRelevantJunctionData(activeDetail: ActiveDetail, pokemon: Pokemon): object {
+  switch (activeDetail.type) {
+    case 'MOVE':
+      return pokemon.moves.find(move => move.id === activeDetail.value.id)?.PokemonMove ?? {};
+
+    case 'CAPABILITY':
+      return pokemon.capabilities.find(capability => capability.id === activeDetail.value.id)?.PokemonCapability ?? {};
+
+    case 'SKILL':
+      return pokemon.skills.find(skill => skill.id === activeDetail.value.id)?.PokemonSkill ?? {};
+
+    case 'EDGE':
+      return pokemon.edges.find(edge => edge.id === activeDetail.value.id)?.PokemonEdge ?? {};
+
+    default:
+      return {};
+  }
+}
 
 export const DetailsSidebar = () => {
   const activeDetails = useTypedSelector(state => state.pokemon.activeDetails);
@@ -23,6 +49,14 @@ export const DetailsSidebar = () => {
   const handleSaveNotes = useCallback(notes => {
     dispatch(saveNotes(pokemon.id, notes));
   }, [dispatch, pokemon.id]);
+
+  const effectText = useMemo(() => {
+    if (!activeDetails.details?.value) return '-';
+
+    const template = Handlebars.compile(activeDetails.details.value.effect);
+
+    return template(getRelevantJunctionData(activeDetails.details, pokemon));
+  }, [activeDetails, pokemon]);
 
   const typeEffectiveness = activeDetails.details?.type === MOVE && getOffensiveEffectivenesses(activeDetails.details?.value?.type as TypeName);
 
@@ -58,14 +92,7 @@ export const DetailsSidebar = () => {
                 <StatValue>{activeDetails.details.value.damageBase}</StatValue>
               </StatRow>
             )}
-            {activeDetails.details.value.effect !== '-' && (
-              <>
-                <StatRowDivider />
-                <StatRow>
-                  <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
-                </StatRow>
-              </>
-            )}
+            {activeDetails.details.value.effect !== '-' && <StatRowDivider />}
             {activeDetails.details.value.damageType !== 'status' && (
               <>
                 <StatRowDivider />
@@ -104,9 +131,6 @@ export const DetailsSidebar = () => {
               <StatValue>{activeDetails.details.value.frequency}</StatValue>
             </StatRow>
             <StatRowDivider />
-            <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
-            </StatRow>
           </>
         )}
         {activeDetails.details?.type === EDGE && activeDetails.details?.value && (
@@ -118,23 +142,12 @@ export const DetailsSidebar = () => {
               </StatValue>
             </StatRow>
             <StatRowDivider />
-            <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
-            </StatRow>
           </>
         )}
-        {(activeDetails.details?.type === CAPABILITY || activeDetails.details?.type === HELD_ITEM) && activeDetails.details?.value && (
+        {(activeDetails.details?.value?.effect ?? '-') !== '-' && (
           <>
             <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.effect}} />
-            </StatRow>
-          </>
-        )}
-
-        {activeDetails.details?.type === SKILL && activeDetails.details?.value && (
-          <>
-            <StatRow>
-              <Description dangerouslySetInnerHTML={{ __html: activeDetails.details.value.description}} />
+              <Description dangerouslySetInnerHTML={{ __html: effectText}} />
             </StatRow>
           </>
         )}
@@ -201,6 +214,8 @@ const Container = styled.div`
   & ${StatList} {
     width: 28rem;
     grid-template-columns: max-content 1fr;
+    max-height: calc(100vh - 6.5rem);
+    overflow: auto;
   }
   
 

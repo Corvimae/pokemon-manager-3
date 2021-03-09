@@ -9,7 +9,6 @@ import { RulebookEdge } from "../server/models/rulebookEdge";
 import { RulebookHeldItem } from "../server/models/rulebookHeldItem";
 import { RulebookMove } from "../server/models/rulebookMove";
 import { RulebookSkill } from "../server/models/rulebookSkill";
-import { Trainer } from "../server/models/trainer";
 import { determineSortAdjustedPositions } from "../server/utils/sortHelper";
 import { getAddedStatField, getBaseStatField, getVitaminStatField } from "../utils/formula";
 import { TypeName } from "../utils/pokemonTypes";
@@ -190,8 +189,8 @@ interface ActiveEdge {
   value: RulebookEdge | undefined;
 }
 
-type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem | ActiveSkill | ActiveEdge;
-type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem | RulebookSkill | RulebookEdge;
+export type ActiveDetail = ActiveMove | ActiveAbility | ActiveCapability | ActiveHeldItem | ActiveSkill | ActiveEdge;
+export type ActiveDetailValue = RulebookMove | RulebookAbility | RulebookCapability | RulebookHeldItem | RulebookSkill | RulebookEdge;
 export type ActiveDetailType = typeof MOVE | typeof ABILITY | typeof CAPABILITY | typeof HELD_ITEM | typeof SKILL | typeof EDGE;
 
 type LoadDataActions = RequestActions<typeof LOAD_DATA, { pokemon: Pokemon; isUserOwner: boolean; isUserGM: boolean; allies: Pokemon[] }>;

@@ -1,0 +1,79 @@
+Power represents a pokemon''s physical strength.  It determines how much weight a pokemon can bear.
+<ul>
+  <li>
+    <b>Heavy Lifting</b>:
+    {{#ifEquals value 1}}2–5 lb.{{/ifEquals}}
+    {{#ifEquals value 2}}20–30 lb.{{/ifEquals}}
+    {{#ifEquals value 3}}35–50 lb.{{/ifEquals}}
+    {{#ifEquals value 4}}45–70 lb.{{/ifEquals}}
+    {{#ifEquals value 5}}60–90 lb.{{/ifEquals}}
+    {{#ifEquals value 6}}75–115 lb.{{/ifEquals}}
+    {{#ifEquals value 7}}100–140 lb.{{/ifEquals}}
+    {{#ifEquals value 8}}120–190 lb.{{/ifEquals}}
+    {{#ifEquals value 9}}150–240 lb.{{/ifEquals}}
+    {{#ifEquals value 10}}200–300 lb.{{/ifEquals}}
+    {{#ifEquals value 11}}250–375 lb.{{/ifEquals}}
+    {{#ifEquals value 12}}350–450 lb.{{/ifEquals}}
+    {{#ifEquals value 13}}450–525 lb.{{/ifEquals}}
+    {{#ifEquals value 14}}500–600 lb.{{/ifEquals}}
+    {{#ifEquals value 15}}550–675 lb.{{/ifEquals}}
+    {{#ifEquals value 16}}600–750 lb.{{/ifEquals}}
+
+    <i style="display: block; margin-left: 1rem; font-size: 0.825rem">
+      A Pokémon or Trainer bearing weight within their Heavy Lifting range takes a -2 CS penalty to Speed, and 
+      a -2 penalty to Evasion and Accuracy, but may otherwise move and take actions. Actions may be restricted; 
+      if you’re carrying a Growlithe in both arms, you can’t very well use attacks that depend on your hands.
+    </i>
+  </li>
+  <li>
+    <b>Staggering Weight Limit</b>:
+    {{#ifEquals value 1}}10 lb.{{/ifEquals}}
+    {{#ifEquals value 2}}60 lb.{{/ifEquals}}
+    {{#ifEquals value 3}}100 lb.{{/ifEquals}}
+    {{#ifEquals value 4}}140 lb.{{/ifEquals}}
+    {{#ifEquals value 5}}180 lb.{{/ifEquals}}
+    {{#ifEquals value 6}}230 lb.{{/ifEquals}}
+    {{#ifEquals value 7}}300 lb.{{/ifEquals}}
+    {{#ifEquals value 8}}380 lb.{{/ifEquals}}
+    {{#ifEquals value 9}}480 lb.{{/ifEquals}}
+    {{#ifEquals value 10}}600 lb.{{/ifEquals}}
+    {{#ifEquals value 11}}750 lb.{{/ifEquals}}
+    {{#ifEquals value 12}}900 lb.{{/ifEquals}}
+    {{#ifEquals value 13}}1050 lb.{{/ifEquals}}
+    {{#ifEquals value 14}}1200 lb.{{/ifEquals}}
+    {{#ifEquals value 15}}1350 lb.{{/ifEquals}}
+    {{#ifEquals value 16}}1500 lb.{{/ifEquals}}
+
+    <i style="display: block; margin-left: 1rem; font-size: 0.825rem">
+      While lifting weight higher than their “Heavy Lifting” range and up to their Staggering Weight limit, 
+      Pokémon or Trainers are able to move only 1 Meter per Shift Action, and cannot take Standard Actions. 
+      While lifting Staggering Weight, a target also suffers a -4 CS penalty to Speed, and -4 to Evasion and 
+      Accuracy. Each round of carrying Staggering Weight requires an Athletics Check with a DC of 4.
+    </i>
+  </li>
+  <li>
+    <b>Drag Weight Limit</b>:
+    {{#ifEquals value 1}}20 lb.{{/ifEquals}}
+    {{#ifEquals value 2}}120 lb.{{/ifEquals}}
+    {{#ifEquals value 3}}200 lb.{{/ifEquals}}
+    {{#ifEquals value 4}}280 lb.{{/ifEquals}}
+    {{#ifEquals value 5}}360 lb.{{/ifEquals}}
+    {{#ifEquals value 6}}460 lb.{{/ifEquals}}
+    {{#ifEquals value 7}}600 lb.{{/ifEquals}}
+    {{#ifEquals value 8}}760 lb.{{/ifEquals}}
+    {{#ifEquals value 9}}960 lb.{{/ifEquals}}
+    {{#ifEquals value 10}}1200 lb.{{/ifEquals}}
+    {{#ifEquals value 11}}1500 lb.{{/ifEquals}}
+    {{#ifEquals value 12}}1800 lb.{{/ifEquals}}
+    {{#ifEquals value 13}}2100 lb.{{/ifEquals}}
+    {{#ifEquals value 14}}2400 lb.{{/ifEquals}}
+    {{#ifEquals value 15}}2700 lb.{{/ifEquals}}
+    {{#ifEquals value 16}}3000 lb.{{/ifEquals}}
+    <i style="display: block; margin-left: 1rem; font-size: 0.825rem">
+      Pokémon and Trainers can push or pull objects that are heavier than their Staggering Weight Limit 
+      but lighter than their Drag Weight Limit at a rate of 1 meter per round. Beneficial conditions may 
+      greatly increase the drag weight limit; wheels on the dragged object, for example, can multiply the 
+      drag weight limit considerably.
+    </i>
+  </li>
+</ul>
