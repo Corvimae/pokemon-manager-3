@@ -443,7 +443,7 @@ export async function setPokemonStat(req: Request, res: Response): Promise<void>
     });
   }
 
-  if(['base', 'added', 'vitamin'].indexOf(req.body.type) === -1) {
+  if(['base', 'added', 'vitamin', 'bonus'].indexOf(req.body.type) === -1) {
     return res.status(400).json({
       error: `${stat} is not a valid type.`,
     });

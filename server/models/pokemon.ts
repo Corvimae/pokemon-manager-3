@@ -181,6 +181,30 @@ export class Pokemon extends Model {
 
   @Default(0)
   @Column
+  bonusHP: number;
+
+  @Default(0)
+  @Column
+  bonusAttack: number;
+
+  @Default(0)
+  @Column
+  bonusDefense: number;
+
+  @Default(0)
+  @Column
+  bonusSpAttack: number;
+
+  @Default(0)
+  @Column
+  bonusSpDefense: number;
+
+  @Default(0)
+  @Column
+  bonusSpeed: number;
+
+  @Default(0)
+  @Column
   bonusTutorPoints: number;
 
   @Default(0)
@@ -223,6 +247,9 @@ export class Pokemon extends Model {
   public async canViewLoyalty(user: User | null): Promise<Boolean> {
     if (!user) return false;
 
+    if (!this.trainer) this.trainer = await this.$get('trainer');
+
+    console.log(this.trainer);
     return this.trainer.campaignId !== null && (await user.hasPermission('gm', this.trainer.campaignId) || await user.hasPermission('viewLoyalty', this.trainer.campaignId));
   }
 }

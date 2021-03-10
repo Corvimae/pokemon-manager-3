@@ -1,0 +1,21 @@
+id,name,cost,effect,createdAt,updatedAt
+1,Skill Improvement,1,"Rank up one Skill that is currently at or below its default level for the species. This Edge may be taken multiple times, each time selecting a different Skill. Note - If Evolution or another permanent effect would cause the Skill Rank to go beyond 6, this Poké Edge is refunded.",3/9/2021 16:27:19,3/9/2021 16:27:19
+2,Attack Conflict,1,"Select Attack or Special Attack. From now on, that Stat does not need to remain higher than Stats it surpasses in Base Relations, and similarly all other Stats surpassed by it do not need to remain lower.",3/9/2021 16:27:19,3/9/2021 16:27:19
+3,Mixed Sweeper,2,The pokemon gains the twisted power ability.,3/9/2021 16:27:19,3/9/2021 16:27:19
+4,Underdog’s Strength,1,The user has each of their Base Stats increased by 1. The user may no longer undergo Evolution.,3/9/2021 16:27:19,3/9/2021 16:27:19
+5,Realized Potential,2,"Subtract the user’s Species Base Stat Total from 45. The user gains Bonus Stat Points equal to the remainder. These Stat Points must follow Base Stat Relations as normal. If the user evolves to a species with a Base Stat Total 45 or higher, Realized Potential is removed and the Tutor Points refunded. Note - This is going off of the SPECIES Base Stats. Don’t add in Stats from Vitamins, Features, Natures, or anything else. Okay? Okay.",3/9/2021 16:27:19,3/9/2021 16:27:19
+6,Ability Mastery,3,"The Pokémon gains an additional Ability, picked from any Ability it could naturally qualify for.",3/9/2021 16:27:19,3/9/2021 16:27:19
+7,Advanced Connection,1,Choose an Ability with the Connection Keyword that the target has; the Connected Move no longer takes up a Move Slot for the user.,3/9/2021 16:27:19,3/9/2021 16:27:19
+8,Accuracy Training,1,"Pick a Move with an AC of 3 or higher; the AC of the target Move is permanently lowered by 1. This Poké Edge may be taken up to three times, each time selecting a different Move.",3/9/2021 16:27:19,3/9/2021 16:27:19
+9,Underdog’s Lessons,1,"Choose a Level-Up Move from one of the user’s Final Evolutions that it can learn at or below its current Level. The user learns that Move as if it were a Level- Up Move and can now learn Moves from TMs, HMs, and Tutoring from the lists of that Final Evolution. Underdog’s Lessons may be taken up to three times but must use the same Final Evolution each time in the case of Pokémon with multiple Final Evolutions.",3/9/2021 16:27:19,3/9/2021 16:27:19
+10,Capability Training,1,"Increase Power or a Jump Capability by 1. Capability Training may be taken multiple times, each time increasing a different Capability.",3/9/2021 16:27:19,3/9/2021 16:27:19
+11,Advanced Mobility,1,"Increase one Movement Capability by 2. This Edge may be taken multiple times, but may not be applied more than once to the same Movement Capability.",3/9/2021 16:27:19,3/9/2021 16:27:19
+12,Basic Ranged Attacks,1,"Choose one of the Capabilities listed in the prerequisites for this Poké Edge. Struggle Attacks modified by that Capability may now be made at a range of up to 6 meters. This Poké Edge may be taken multiple times, selecting a different Capability each time.",3/9/2021 16:27:19,3/9/2021 16:27:19
+13,Aura Pulse,2,The Pokémon gains the Aura Pulse Capability.,3/9/2021 16:27:19,3/9/2021 16:27:19
+14,Enticing Bait,1,"When activating the Alluring Capability, the user adds the higher of its Athletics or Focus Ranks to its d20 roll.",3/9/2021 16:27:19,3/9/2021 16:27:19
+15,Extended Invisibility,1,The user may remain Invisible for up to 8 minutes.,3/9/2021 16:27:19,3/9/2021 16:27:19
+16,Far Reading,1,The user treats their Focus Rank as 2 higher for the purposes of determining the range of Telepath.,3/9/2021 16:27:19,3/9/2021 16:27:19
+17,Precise Threadings,1,The user may use their Threaded Capability at a range of 6 meters and with an AC of 3 rather than 6.,3/9/2021 16:27:19,3/9/2021 16:27:19
+18,Seismometer,1,The user’s Tremorsense range is increased by a number of meters equal to their Perception Rank.,3/9/2021 16:27:19,3/9/2021 16:27:19
+19,TK Mastery,1,The user treats their Focus Rank as 2 higher for the purposes of the Telekinetic Capability.,3/9/2021 16:27:19,3/9/2021 16:27:19
+20,Trail Sniffer,1,The user gets a bonus to all Perception Rolls to use the Tracker Capability equal to their Focus Rank.,3/9/2021 16:27:19,3/9/2021 16:27:19

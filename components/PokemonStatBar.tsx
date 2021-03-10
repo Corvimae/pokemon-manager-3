@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth, setInjuries, setPokemonVitaminStat } from '../store/pokemon';
-import { getAddedStatField, getBaseStatField, getCombatStageField, getVitaminStatField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
+import { setCombatStage, setHealth, setPokemonBaseStat, setPokemonAddedStat, setTempHealth, setInjuries, setPokemonVitaminStat, setPokemonBonusStat } from '../store/pokemon';
+import { getAddedStatField, getBaseStatField, getBonusStatField, getCombatStageField, getVitaminStatField, useCalculatedAttackStat, useCalculatedDefenseStat, useCalculatedSpecialAttackStat, useCalculatedSpecialDefenseStat, useCalculatedSpeedStat, useTotalHP } from '../utils/formula';
 import { useDispatch } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { faMinus, faPlus, faTintSlash } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calculateLevel } from '../utils/level';
 import { useTypedSelector } from '../store/rootReducer';
 import { CombatStage, Stat } from '../utils/types';
+
+function formatStatCalculation(base: number, added: number, ...misc: number[]) {
+  return `(${[base, added, ...misc.filter(value => value !== 0)].join(' + ')})`;
+}
 
 const VITAMIN_NAMES: Record<Stat, string> = {
   hp: 'HP Up',
@@ -29,6 +33,7 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
   const baseStat = useTypedSelector(state => state.pokemon.data[getBaseStatField(stat)]);
   const addedStat = useTypedSelector(state => state.pokemon.data[getAddedStatField(stat)]);
   const vitaminStat = useTypedSelector(state => state.pokemon.data[getVitaminStatField(stat)]);
+  const bonusStat = useTypedSelector(state => state.pokemon.data[getBonusStatField(stat)]);
 
   const handleChangeBaseStat = useCallback(event => {
     dispatch(setPokemonBaseStat(pokemonId, stat, event.target.value));
@@ -42,6 +47,10 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
     dispatch(setPokemonVitaminStat(pokemonId, stat, event.target.value));
   }, [dispatch, stat, pokemonId]);
 
+  const handleChangeBonusStat = useCallback(event => {
+    dispatch(setPokemonBonusStat(pokemonId, stat, event.target.value));
+  }, [dispatch, stat, pokemonId]);
+
   return (
     <StatEditContainer>
       <DropdownHeader>Base</DropdownHeader>
@@ -52,10 +61,14 @@ const StatEditor: React.FC<StatEditorProps> = ({ stat }) => {
         <FontAwesomeIcon icon={faPlus} size="xs" />
       </StatEditPlus>
       <NumericInput type="number" onChange={handleChangeAddedStat} defaultValue={addedStat} />
-      <StatVitaminRow>
-        <VitaminName>{VITAMIN_NAMES[stat]}</VitaminName>
+      <StatBonusRow>
+        <BonusName>{VITAMIN_NAMES[stat]}</BonusName>
         <NumericInput type="number" onChange={handleChangeVitaminStat} defaultValue={vitaminStat} />
-      </StatVitaminRow>
+      </StatBonusRow>
+      <StatBonusRow>
+        <BonusName>Bonus</BonusName>
+        <NumericInput type="number" onChange={handleChangeBonusStat} defaultValue={bonusStat} />
+      </StatBonusRow>
     </StatEditContainer>
   );
 };
@@ -117,6 +130,13 @@ export const PokemonStatBar = () => {
   const vitaminSpAttack = useTypedSelector(store => store.pokemon.data.vitaminSpAttack);
   const vitaminSpDefense = useTypedSelector(store => store.pokemon.data.vitaminSpDefense);
   const vitaminSpeed = useTypedSelector(store => store.pokemon.data.vitaminSpeed);
+  
+  const bonusHP = useTypedSelector(store => store.pokemon.data.bonusHP);
+  const bonusAttack = useTypedSelector(store => store.pokemon.data.bonusAttack);
+  const bonusDefense = useTypedSelector(store => store.pokemon.data.bonusDefense);
+  const bonusSpAttack = useTypedSelector(store => store.pokemon.data.bonusSpAttack);
+  const bonusSpDefense = useTypedSelector(store => store.pokemon.data.bonusSpDefense);
+  const bonusSpeed = useTypedSelector(store => store.pokemon.data.bonusSpeed);
 
   const currentHealth = useTypedSelector(store => store.pokemon.data.currentHealth);
   const tempHealth = useTypedSelector(store => store.pokemon.data.tempHealth);
@@ -168,27 +188,27 @@ export const PokemonStatBar = () => {
             <InjuryIcon icon={faTintSlash} color="#990000" size="xs"/>
           )}
         </HealthDisplayContainer>
-        <StatCalculation>({baseHP} + {addedHP}{vitaminHP > 0 && ` + ${vitaminHP}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseHP, addedHP, vitaminHP, bonusHP)}</StatCalculation>
       </StatTotal>
       <StatTotal area="atk">
         <TotalValue>{attack}</TotalValue>
-        <StatCalculation>({baseAttack} + {addedAttack}{vitaminAttack > 0 && ` + ${vitaminAttack}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseAttack, addedAttack, vitaminAttack, bonusAttack)}</StatCalculation>
       </StatTotal>
       <StatTotal area="def">
         <TotalValue>{defense}</TotalValue>
-        <StatCalculation>({baseDefense} + {addedDefense}{vitaminDefense > 0 && ` + ${vitaminDefense}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseDefense, addedDefense, vitaminDefense, bonusDefense)}</StatCalculation>
       </StatTotal>
       <StatTotal area="spatk">
         <TotalValue>{specialAttack}</TotalValue>
-        <StatCalculation>({baseSpAttack} + {addedSpAttack}{vitaminSpAttack > 0 && ` + ${vitaminSpDefense}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseSpAttack, addedSpAttack, vitaminSpAttack, bonusSpAttack)}</StatCalculation>
       </StatTotal>
       <StatTotal area="spdef">
         <TotalValue>{specialDefense}</TotalValue>
-        <StatCalculation>({baseSpDefense} + {addedSpDefense}{vitaminSpDefense > 0 && ` + ${vitaminSpDefense}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseSpDefense, addedSpDefense, vitaminSpDefense, bonusSpDefense)}</StatCalculation>
       </StatTotal>
       <StatTotal area="spd">
         <TotalValue>{speed}</TotalValue>
-        <StatCalculation>({baseSpeed} + {addedSpeed}{vitaminSpeed > 0 && ` + ${vitaminSpeed}`})</StatCalculation>
+        <StatCalculation>{formatStatCalculation(baseSpeed, addedSpeed, vitaminSpeed, bonusSpeed)}</StatCalculation>
       </StatTotal>
       <HealthCell>
         {!editMode && (
@@ -375,12 +395,12 @@ const StatEditPlus = styled.div`
 `;
 
 
-const StatVitaminRow = styled.div`
+const StatBonusRow = styled.div`
   display: flex;
   flex-direction: row;
   grid-column: span 3;
   margin-top: 0.125rem;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 
   & > input {
@@ -388,7 +408,7 @@ const StatVitaminRow = styled.div`
   }
 `;
 
-const VitaminName = styled.div`
+const BonusName = styled.div`
   color: #666;
   font-weight: 700;
   font-size: 0.75rem;

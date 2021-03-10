@@ -10,7 +10,7 @@ import { RulebookHeldItem } from "../server/models/rulebookHeldItem";
 import { RulebookMove } from "../server/models/rulebookMove";
 import { RulebookSkill } from "../server/models/rulebookSkill";
 import { determineSortAdjustedPositions } from "../server/utils/sortHelper";
-import { getAddedStatField, getBaseStatField, getVitaminStatField } from "../utils/formula";
+import { getAddedStatField, getBaseStatField, getBonusStatField, getVitaminStatField } from "../utils/formula";
 import { TypeName } from "../utils/pokemonTypes";
 import { CombatStage, Gender, MobileMode, Stat } from "../utils/types";
 import { ImmediateUpdateRequestActions, RequestActions } from "./types";
@@ -152,6 +152,7 @@ const SET_POKEMON_TRAINER_SUCCESS = 'SET_POKEMON_TRAINER_SUCCESS';
 const SET_POKEMON_BASE_STAT = 'SET_POKEMON_BASE_STAT';
 const SET_POKEMON_ADDED_STAT = 'SET_POKEMON_ADDED_STAT';
 const SET_POKEMON_VITAMIN_STAT = 'SET_POKEMON_VITAMIN_STAT';
+const SET_POKEMON_BONUS_STAT = 'SET_POKEMON_BONUS_STAT';
 const SET_MOVE_ORDER = 'SET_MOVE_ORDER';
 const SET_CAPABILITY_ORDER = 'SET_CAPABILITY_ORDER';
 const SET_SKILL_ORDER = 'SET_SKILL_ORDER';
@@ -227,6 +228,7 @@ type SetPokemonTrainerActions = RequestActions<typeof SET_POKEMON_TRAINER, Pokem
 type SetPokemonBaseStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_BASE_STAT, { stat: Stat, value: number }>
 type SetPokemonAddedStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_ADDED_STAT, { stat: Stat, value: number }>
 type SetPokemonVitaminStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_VITAMIN_STAT, { stat: Stat, value: number }>
+type SetPokemonBonusStatActions = ImmediateUpdateRequestActions<typeof SET_POKEMON_BONUS_STAT, { stat: Stat, value: number }>
 type SetHealthActions = ImmediateUpdateRequestActions<typeof SET_HEALTH, number>;
 type SetTempHealthActions = ImmediateUpdateRequestActions<typeof SET_TEMP_HEALTH, number>;
 type SetInjuriesAction = ImmediateUpdateRequestActions<typeof SET_INJURIES, number>;
@@ -297,6 +299,7 @@ type PokemonReducerAction =
   SetPokemonBaseStatActions |
   SetPokemonAddedStatActions |
   SetPokemonVitaminStatActions |
+  SetPokemonBonusStatActions |
   SetHealthActions |
   SetTempHealthActions |
   SetInjuriesAction |
@@ -765,6 +768,15 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         data: {
           ...state.data,
           [getVitaminStatField(action.payload.value.stat)]: action.payload.value.value,
+        } as Pokemon,
+      };
+
+    case SET_POKEMON_BONUS_STAT:
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          [getBonusStatField(action.payload.value.stat)]: action.payload.value.value,
         } as Pokemon,
       };
 
@@ -1668,6 +1680,27 @@ export function setPokemonVitaminStat(pokemonId: number, stat: Stat, value: numb
         method: 'POST',
         data: {
           type: 'vitamin',
+          stat,
+          value: value || 0,
+        },
+      },
+    },
+  };
+}
+
+export function setPokemonBonusStat(pokemonId: number, stat: Stat, value: number): PokemonReducerAction {
+  return {
+    type: SET_POKEMON_BONUS_STAT,
+    payload: {
+      value: {
+        stat,
+        value: Number(value),
+      },
+      request: {
+        url: `/pokemon/${pokemonId}/stat`,
+        method: 'POST',
+        data: {
+          type: 'bonus',
           stat,
           value: value || 0,
         },
