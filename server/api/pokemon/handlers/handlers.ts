@@ -109,7 +109,7 @@ export async function createNewPokemon(req: Request<{ trainerId: number }>, res:
 
 export async function getPokemonData(req: Request, res: Response): Promise<void> {
   const user = await getUserObject(req);
-  const pokemon = await getFullPokemonData(req.query.id, user);
+  const pokemon = await getFullPokemonData(req.params.id, user);
 
   if (pokemon) {    
     res.json({
