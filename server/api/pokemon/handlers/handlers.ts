@@ -10,7 +10,32 @@ import { RulebookNature } from '../../../models/rulebookNature';
 import { RulebookSkill } from '../../../models/rulebookSkill';
 import { RulebookSpecies } from '../../../models/rulebookSpecies';
 import { Trainer } from '../../../models/trainer';
+import { User } from '../../../models/user';
 import { getUserObject, fetchPokemon, isValidType, updatePokemon } from '../../../utils/routeHelpers';
+
+async function getFullPokemonData(id: number, user: User): Promise<Pokemon | null> {
+  const pokemon = await Pokemon.findByPk(id, {
+    include: [
+      RulebookSpecies,
+      RulebookNature,
+      RulebookAbility,
+      RulebookCapability,
+      RulebookEdge,
+      RulebookHeldItem,
+      RulebookMove,
+      RulebookSkill,
+      Trainer,
+    ],
+  });
+  
+  if (pokemon) {
+    pokemon.loyalty = await pokemon.canViewLoyalty(user) ? pokemon.loyalty : null;
+
+    return pokemon;
+  }
+
+  return null;
+}
 
 async function restrictToGM(req: Request, res: Response): Promise<boolean> {
   const user = await getUserObject(req);
@@ -83,24 +108,10 @@ export async function createNewPokemon(req: Request<{ trainerId: number }>, res:
 }
 
 export async function getPokemonData(req: Request, res: Response): Promise<void> {
-  const pokemon = await fetchPokemon(req, {
-    include: [
-      RulebookSpecies,
-      RulebookNature,
-      RulebookAbility,
-      RulebookCapability,
-      RulebookEdge,
-      RulebookHeldItem,
-      RulebookMove,
-      RulebookSkill,
-      Trainer,
-    ],
-  });
-  
-  if (pokemon) {
-    const user = await getUserObject(req);
-    pokemon.loyalty = await pokemon.canViewLoyalty(user) ? pokemon.loyalty : null;
-    
+  const user = await getUserObject(req);
+  const pokemon = await getFullPokemonData(req.query.id, user);
+
+  if (pokemon) {    
     res.json({
       isUserOwner: pokemon.trainer.userId === req.user?.id, 
       isUserGM: pokemon.trainer.campaignId !== null && user?.isGM(pokemon.trainer.campaignId),
@@ -108,7 +119,18 @@ export async function getPokemonData(req: Request, res: Response): Promise<void>
       allies: (await pokemon.trainer.$get('pokemon', { include: [RulebookSpecies] }))
         .filter(item => item.active && item.id !== pokemon.id),
     });
+  } else {
+    res.status(401).json({
+      error: 'Pokemon not found.',
+    });
   }
+}
+
+export async function getBulkPokemonData(req: Request, res: Response): Promise<void> {
+  const ids = (req.query.query ?? '').split(/,/g).map(item => Number(item)).filter(item => !Number.isNaN(item));
+  const user = await getUserObject(req);
+
+  return res.json((await Promise.all(ids.map(id => getFullPokemonData(id, user)))).filter(item => item !== null));
 }
 
 export async function setPokemonName(req: Request, res: Response): Promise<void> {

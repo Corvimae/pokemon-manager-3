@@ -1,7 +1,7 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
-import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries, setPokemonGMNotes, setPokemonTrainer } from './handlers/handlers';
+import { getPokemonData, createNewPokemon, setPokemonName, setPokemonGender, setPokemonSpecies, setPokemonTypes, setPokemonNature, setPokemonLoyalty, setPokemonExperience, addPokemonAbility, removePokemonAbility, addPokemonHeldItem, removePokemonHeldItem, setPokemonActive, setPokemonStat, setPokemonCombatStage, setPokemonHealth, setPokemonNotes, setPokemonTempHealth, setPokemonBonusTutorPoints, setPokemonSpentTutorPoints, setPokemonInjuries, setPokemonGMNotes, setPokemonTrainer, getBulkPokemonData } from './handlers/handlers';
 import { edgeRouter } from './handlers/edges';
 import { capabilityRouter } from './handlers/capabilities';
 import { skillRouter } from './handlers/skills';
@@ -14,7 +14,9 @@ router.use(express.json());
 
 // Unauthenticated routes
 
-router.post('/', handleAsyncRoute(createNewPokemon))
+router.route('/')
+  .get(handleAsyncRoute(getBulkPokemonData))
+  .post(handleAsyncRoute(createNewPokemon))
 
 router.get('/:id', handleAsyncRoute(getPokemonData));
 
