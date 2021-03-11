@@ -70,5 +70,5 @@ export function handleAsyncRoute(
 }
 
 export function getUserObject(req: Request): Promise<User> {
-  return User.findByPk(req.user.id, { include: [UserPermission] });
+  return req.user ? User.findByPk(req.user.id, { include: [UserPermission] }) : null;
 }

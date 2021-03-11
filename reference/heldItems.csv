@@ -1,0 +1,207 @@
+id,name,effect,createdAt,updatedAt
+1,Adorable Fashion,The holder may activate this item once a Scene as a Free Action to gain +2 Evasion for one full round.,3/10/2021 17:06:41,3/10/2021 17:06:41
+2,Elegant Fashion,The holder may activate this item once a Scene as a Free Action when losing Combat Stages from a foe’s effect to instead not lose those Combat Stages.,3/10/2021 17:06:41,3/10/2021 17:06:41
+3,Rad Fashion,The holder may activate this item once a Scene as a Free Action to gain a +4 bonus to a single Save Check.,3/10/2021 17:06:41,3/10/2021 17:06:41
+4,Rough Fashion,The holder may activate this item once a Scene as a Free Action to cause a foe within 5 meters to take a -2 penalty to all rolls for one full round.,3/10/2021 17:06:41,3/10/2021 17:06:41
+5,Slick Fashion,The holder may activate this item once a Scene as a Free Action when provoking an Attack of Opportunity to instead not provoke one.,3/10/2021 17:06:41,3/10/2021 17:06:41
+6,Relic Crown,The holder gains a +2 Bonus to all Save Checks.,3/10/2021 17:06:41,3/10/2021 17:06:41
+7,Primal Frame,The holder’s damaging attacks have their Critical Hit Range extended by +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+8,Prehistoric Razors,"When a foe hits the holder with a damaging Melee Attack, the holder may cause them to lose a Tick of Hit Points as a Reaction.",3/10/2021 17:06:41,3/10/2021 17:06:41
+9,Primal Cloak,The holder’s damaging attacks have their Effect Range extended by +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+10,Prehistoric Aegis,The holder gains 5 Damage Reduction against Ranged Attacks.,3/10/2021 17:06:41,3/10/2021 17:06:41
+11,Relic Sash,The holder gains +2 Evasion against Status Moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+12,Mega Stone,Allows a specific species to mega evolve in combination with a mega ring.,3/10/2021 17:06:41,3/10/2021 17:06:41
+13,Tiny Mushroom,"The user loses 5 HP, then gains 1 combat stage in a random stat.",3/10/2021 17:06:41,3/10/2021 17:06:41
+14,Big Mushroom,"The user becomes poisoned. If they do, they gain 1 combat stage in 2 different random stats.",3/10/2021 17:06:41,3/10/2021 17:06:41
+15,Balm Mushroom,"The user is cured of Burn, Paralysis, or Poison. If they are, they lose 1 combat stage in a random stat.",3/10/2021 17:06:41,3/10/2021 17:06:41
+16,Big Root,HP Stealing moves restore double HP.,3/10/2021 17:06:41,3/10/2021 17:06:41
+17,Bright powder,Add 2 to speed evasion.,3/10/2021 17:06:41,3/10/2021 17:06:41
+18,Choice Band,"The users default state of the ATK stat is +2 combat stages.  The user is suppressed and cannot be cured until the end of combat, even if the item is removed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+19,Choice Scarf,"The users default state of the SPD stat is +2 combat stages.  The user is suppressed and cannot be cured until the end of combat, even if the item is removed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+20,Choice Specs,"The users default state of the SATK stat is +2 combat stages.  The user is suppressed and cannot be cured until the end of combat, even if the item is removed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+21,Choice Helm,"The users default state of the DEF stat is +2 combat stages.  The user is suppressed and cannot be cured until the end of combat, even if the item is removed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+22,Choice Cloak,"The users default state of the SDEF stat is +2 combat stages.  The user is suppressed and cannot be cured until the end of combat, even if the item is removed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+23,Contest Accessory,The user rolls +2d6 during the indroduction stage of a contest.,3/10/2021 17:06:41,3/10/2021 17:06:41
+24,Beauty Fashion,"Once per contest, may reroll and 1s made when using a Beauty move.",3/10/2021 17:06:41,3/10/2021 17:06:41
+25,Cool Fashion,"Once per contest, may reroll and 1s made when using a Cool move.",3/10/2021 17:06:41,3/10/2021 17:06:41
+26,Smart Fashion,"Once per contest, may reroll and 1s made when using a Smart move.",3/10/2021 17:06:41,3/10/2021 17:06:41
+27,Tough Fashion,"Once per contest, may reroll and 1s made when using a Tough move.",3/10/2021 17:06:41,3/10/2021 17:06:41
+28,Everstone,Evolution is prevented for the holder.,3/10/2021 17:06:41,3/10/2021 17:06:41
+29,"Eviolite(ATK, DEF)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to ATK and DEF, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+30,"Eviolite(ATK, SATK)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to ATK and SATK, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+31,"Eviolite(ATK, SDEF)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to ATK and SDEF, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+32,"Eviolite(ATK, SPD)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to ATK and SPD, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+33,"Eviolite(Def, SATK)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to DEF and SATK, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+34,"Eviolite(Def, SDEF)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to DEF and SDEF, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+35,"Eviolite(Def, SPD)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to DEF and SPD, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+36,"Eviolite(SATK, SDEF)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to SATK and SDEF, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+37,"Eviolite(SATK, SPD)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to SATK and SPD, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+38,"Eviolite(SDef, SPD)","Only affects not-fully-evolved pokemon of a single family.  Adds +5 to SDEF and SPD, after combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+39,Expert Belt,"When the holder deals Super Effective Damage, they deal an additional 5 damage (this damage is not multiplied).",3/10/2021 17:06:41,3/10/2021 17:06:41
+40,Flame Orb,Induces burn on the holder.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+41,Focus Band,"Whenever the user faints, roll 1d20.  Once per scene on a 16+, the holder does not faint, and instead is left with 1 hit point.",3/10/2021 17:06:41,3/10/2021 17:06:41
+42,Focus Sash,"Once per scene, if damage from a move would take the holder from max HP to 0 or less, Focus Sash's holder has 1 hit point remaining.",3/10/2021 17:06:41,3/10/2021 17:06:41
+43,Full Incense,The holder gains the stall ability.,3/10/2021 17:06:41,3/10/2021 17:06:41
+44,Go-Goggles,The user does not take damage from sandstorm.,3/10/2021 17:06:41,3/10/2021 17:06:41
+45,Iron Ball,"The holder's SPD is halved, and any immunity to ground type is lost.",3/10/2021 17:06:41,3/10/2021 17:06:41
+46,King's Rock,"Attacks cause Flinch on a roll of 19+.  This does not stack with any abilities, moves, or effects that extend flinch rate.",3/10/2021 17:06:41,3/10/2021 17:06:41
+47,Lagging Net,The user's ATK is set to -4 combat stages.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+48,Lagging Stone,The user's DEF is set to -4 combat stages.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+49,Lagging Ball,The user's SATK is set to -4 combat stages.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+50,Lagging Crystal,The user's SDEF is set to -4 combat stages.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+51,Lagging Tail,The user's SPD is set to -4 combat stages.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+52,Lax incense,Add 1 to all stat evasions.,3/10/2021 17:06:41,3/10/2021 17:06:41
+53,Life Orb,"Whenever the holder deals direct damage, increase that damage by 5.  Then, the user loses HP equal to 1/16th of their maximum HP.",3/10/2021 17:06:41,3/10/2021 17:06:41
+54,Luck Incense,Grants +1 to all accuracy rolls.  A roll of 1 is always a miss.,3/10/2021 17:06:41,3/10/2021 17:06:41
+55,Quick Claw,Add +10 to the user's initiative.,3/10/2021 17:06:41,3/10/2021 17:06:41
+56,Razor Claw,The holder's damaging attacks have their critical range increased by 1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+57,Razor Fang,The holder's damaging attacks cause an injury roll on a roll of 19+.,3/10/2021 17:06:41,3/10/2021 17:06:41
+58,Safety Goggles,The holder is immune to moves with the powder keyword.,3/10/2021 17:06:41,3/10/2021 17:06:41
+59,Shell Bell,"Whenever the user damages a foe, they gain a tick of temporary hit points.",3/10/2021 17:06:41,3/10/2021 17:06:41
+60,Shock Collar,"Comes with a remote activator, which when pressed, causes the Pokémon or Trainer wearing the shock collar to lose Hit Points equal to 1/6th of their Max Hit Points. This may be used to activate the “Press” Feature. Collars that work on Ground Type Pokémon are available for an additional $500.",3/10/2021 17:06:41,3/10/2021 17:06:41
+61,Attack Booster,The default stages for the user's ATK stat is +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+62,Defense Booster,The default stages for the user's DEF stat is +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+63,Special Attack Booster,The default stages for the user's SATK stat is +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+64,Special Defense Booster,The default stages for the user's SDEF stat is +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+65,Speed Booster,The default stages for the user's SPD stat is +1.,3/10/2021 17:06:41,3/10/2021 17:06:41
+66,Evasion Booster,The user adds 1 to their evasions.,3/10/2021 17:06:41,3/10/2021 17:06:41
+67,Accuracy Booster,Grants +1 to all accuracy rolls. A roll of 1 is always a miss.,3/10/2021 17:06:41,3/10/2021 17:06:41
+68,Toxic Orb,Induces poison on holder.  Standard action to drop.,3/10/2021 17:06:41,3/10/2021 17:06:41
+69,Black Belt,Grants a +5 damage bonus to all direct damage fighting moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+70,Armwraps,Grants 15 damage reduction against fighting type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+71,Black Glasses,Grants a +5 damage bonus to all direct damage dark moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+72,Nightlight,Grants 15 damage reduction against dark type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+73,Charcoal,Grants a +5 damage bonus to all direct damage fire moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+74,Firefighter Hat,Grants 15 damage reduction against fire type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+75,Dragon Fang,Grants a +5 damage bonus to all direct damage dragon moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+76,Drake Symbol,Grants 15 damage reduction against dragon type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+77,Hard Stone,Grants a +5 damage bonus to all direct damage rock moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+78,Hard Hat,Grants 15 damage reduction against rock type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+79,Magnet,Grants a +5 damage bonus to all direct damage electric moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+80,Rubber Gloves,Grants 15 damage reduction against electric type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+81,Metal Coat,Grants a +5 damage bonus to all direct damage steel moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+82,Body Armor,Grants 15 damage reduction against steel type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+83,Miracle Seed,Grants a +5 damage bonus to all direct damage grass moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+84,Dead Branch,Grants 15 damage reduction against grass type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+85,Mystic Water,Grants a +5 damage bonus to all direct damage water moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+86,Poncho,Grants 15 damage reduction against water type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+87,Pink Bow,Grants a +5 damage bonus to all direct damage fairy moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+88,Clover,Grants 15 damage reduction against fairy type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+89,Never-Melt Ice,Grants a +5 damage bonus to all direct damage ice moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+90,Fuzzy Mittens,Grants 15 damage reduction against ice type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+91,Poison Barb,Grants a +5 damage bonus to all direct damage poison moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+92,Carnival Mask,Grants 15 damage reduction against poison type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+93,Sharp Beak,Grants a +5 damage bonus to all direct damage flying moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+94,Propeller Beanie,Grants 15 damage reduction against flying type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+95,Silk Scarf,Grants a +5 damage bonus to all direct damage flying moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+96,Fancy Ribbon,Grants 15 damage reduction against normal type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+97,Black Belt,Grants a +5 damage bonus to all direct damage bug moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+98,Bugspray,Grants 15 damage reduction against bug type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+99,Spell Tag,Grants a +5 damage bonus to all direct damage ghost moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+100,Silver Locket,Grants 15 damage reduction against ghost type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+101,Twisted Spoon,Grants a +5 damage bonus to all direct damage Psychic moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+102,Warding Cube,Grants 15 damage reduction against psychic type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+103,Soft Sand,Grants a +5 damage bonus to all direct damage ground moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+104,Stylish Bandana,Grants 15 damage reduction against ground type moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+105,Winter Cloak,The user does not take damage from Hail.,3/10/2021 17:06:41,3/10/2021 17:06:41
+106,Dark Gem,Consume this item as a free action to give a +3 damage base bonus to one dark type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+107,Fighting Gem,Consume this item as a free action to give a +3 damage base bonus to one fighting type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+108,Fire Gem,Consume this item as a free action to give a +3 damage base bonus to one fire type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+109,Dragon Gem,Consume this item as a free action to give a +3 damage base bonus to one Dragon type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+110,Rock Gem,Consume this item as a free action to give a +3 damage base bonus to one Rock type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+111,Electric Gem,Consume this item as a free action to give a +3 damage base bonus to one Electric type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+112,Steel Gem,Consume this item as a free action to give a +3 damage base bonus to one Steel type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+113,Grass Gem,Consume this item as a free action to give a +3 damage base bonus to one Grass type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+114,Water Gem,Consume this item as a free action to give a +3 damage base bonus to one Water type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+115,Fairy Gem,Consume this item as a free action to give a +3 damage base bonus to one Fairy type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+116,Ice Gem,Consume this item as a free action to give a +3 damage base bonus to one Ice type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+117,Poison Gem,Consume this item as a free action to give a +3 damage base bonus to one Poison type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+118,Flying Gem,Consume this item as a free action to give a +3 damage base bonus to one Flying type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+119,Bug Gem,Consume this item as a free action to give a +3 damage base bonus to one Bug type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+120,Ghost Gem,Consume this item as a free action to give a +3 damage base bonus to one Ghost type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+121,Psychic Gem,Consume this item as a free action to give a +3 damage base bonus to one Psychic type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+122,Ground Gem,Consume this item as a free action to give a +3 damage base bonus to one Ground type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+123,Normal Gem,Consume this item as a free action to give a +3 damage base bonus to one Normal type attack.,3/10/2021 17:06:41,3/10/2021 17:06:41
+124,Dark Plate,Grants a +5 damage bonus to all direct damage Dark moves and 15 damage reduction against all Dark moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+125,Fighting Plate,Grants a +5 damage bonus to all direct damage Fighting moves and 15 damage reduction against all Fighting moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+126,Fire Plate,Grants a +5 damage bonus to all direct damage Fire moves and 15 damage reduction against all Fire moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+127,Dragon Plate,Grants a +5 damage bonus to all direct damage Dragon moves and 15 damage reduction against all Dragon moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+128,Rock Plate,Grants a +5 damage bonus to all direct damage Rock moves and 15 damage reduction against all Rock moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+129,Electric Plate,Grants a +5 damage bonus to all direct damage Electric moves and 15 damage reduction against all Electric moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+130,Steel Plate,Grants a +5 damage bonus to all direct damage Steel moves and 15 damage reduction against all Steel moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+131,Grass Plate,Grants a +5 damage bonus to all direct damage Grass moves and 15 damage reduction against all Grass moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+132,Water Plate,Grants a +5 damage bonus to all direct damage Water moves and 15 damage reduction against all Water moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+133,Fairy Plate,Grants a +5 damage bonus to all direct damage Fairy moves and 15 damage reduction against all Fairy moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+134,Ice Plate,Grants a +5 damage bonus to all direct damage Ice moves and 15 damage reduction against all Ice moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+135,Poison Plate,Grants a +5 damage bonus to all direct damage Poison moves and 15 damage reduction against all Poison moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+136,Flying Plate,Grants a +5 damage bonus to all direct damage Flying moves and 15 damage reduction against all Flying moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+137,Bug Plate,Grants a +5 damage bonus to all direct damage Bug moves and 15 damage reduction against all Bug moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+138,Ghost Plate,Grants a +5 damage bonus to all direct damage Ghost moves and 15 damage reduction against all Ghost moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+139,Psychic Plate,Grants a +5 damage bonus to all direct damage Psychic moves and 15 damage reduction against all Psychic moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+140,Ground Plate,Grants a +5 damage bonus to all direct damage Ground moves and 15 damage reduction against all Ground moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+141,Normal Plate,Grants a +5 damage bonus to all direct damage Normal moves and 15 damage reduction against all Normal moves.,3/10/2021 17:06:41,3/10/2021 17:06:41
+142,Metal Powder,"When held by an untransformed ditto, increase both DEF and SDEF by 2 combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+143,Rare Leek,"When held by a Farfetch'd or a Sirfetch'd, increase the holder's critical range by 2.  Rare Leeks are wielded.",3/10/2021 17:06:41,3/10/2021 17:06:41
+144,Thick Club,"When held by a Cubone or Marowak, this rare, dense bone grants the pure power ability.  Thick Clubs are wielded.",3/10/2021 17:06:41,3/10/2021 17:06:41
+145,Pink Pearl,"Grants a +5 damage bonus to all direct damage Psychic moves.  If held by a spoink, also makes the user's default SATK combat stage 1 higher.",3/10/2021 17:06:41,3/10/2021 17:06:41
+146,Protective Pads,"If the holder would be affected by an effect caused by the user hitting the target with specifically a melee attack, instead, the user is immune to that effect.",3/10/2021 17:06:41,3/10/2021 17:06:41
+147,Heavy Duty Boots,"While moving using the overland capability, the user is immune to the effects of hazard moves and terrain.",3/10/2021 17:06:41,3/10/2021 17:06:41
+148,Umbrella,The holder of this item ignores the effects of sunny or rainy weather.,3/10/2021 17:06:41,3/10/2021 17:06:41
+149,Room Service,"While in an area that is Rewinding, the user's initiative is reduced by 10.",3/10/2021 17:06:41,3/10/2021 17:06:41
+150,Candy Bar,Grants a food buff that may be traded in at any time to recover 5 hit points.,3/10/2021 17:06:41,3/10/2021 17:06:41
+151,Honey,Grants a food buff that may be traded in at any time to recover 5 hit points.,3/10/2021 17:06:41,3/10/2021 17:06:41
+152,Leftovers,"Grants a food buff that may be traded in at any time.  When traded in, the user recovers 1/16th of their maximum hit points at the beginning of each turn for the rest of the encounter.",3/10/2021 17:06:41,3/10/2021 17:06:41
+153,Black Sludge,Only a poison type pokemon may consume black sludge.  When the food buff is traded in the user recover's 1/8 of their maximum hit points at the beginning of each turn for the rest of the encounter.,3/10/2021 17:06:41,3/10/2021 17:06:41
+154,Cheri Berry,"Grants a digestion buff that can be traded in when under 50% HP or when paralyzed.  When consumed, the buff cures paralysis.",3/10/2021 17:06:41,3/10/2021 17:06:41
+155,Chesto Berry,"Grants a digestion buff that can be traded in when under 50% HP or when asleep.  When consumed, the buff cures sleep.",3/10/2021 17:06:41,3/10/2021 17:06:41
+156,Pecha Berry,"Grants a digestion buff that can be traded in when under 50% HP or when poisoned.  When consumed, the buff cures poison.",3/10/2021 17:06:41,3/10/2021 17:06:41
+157,Rawst Berry,"Grants a digestion buff that can be traded in when under 50% HP or when burned.  When consumed, the buff cures burn.",3/10/2021 17:06:41,3/10/2021 17:06:41
+158,Aspear Berry,"Grants a digestion buff that can be traded in when under 50% HP or when frozen.  When consumed, the buff cures freeze.",3/10/2021 17:06:41,3/10/2021 17:06:41
+159,Oran Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 5 hit points.",3/10/2021 17:06:41,3/10/2021 17:06:41
+160,Persim Berry,"Grants a digestion buff that can be traded in when under 50% HP or confused.  When consumed, the buff heals confusion.",3/10/2021 17:06:41,3/10/2021 17:06:41
+161,Sitrus Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 15 hit points.",3/10/2021 17:06:41,3/10/2021 17:06:41
+162,Figy Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 1/8th of the user's maximum HP.  If the user likes spicy food, instead heal 1/6,  If they dislike it, the also become confused.",3/10/2021 17:06:41,3/10/2021 17:06:41
+163,Wiki Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 1/8th of the user's maximum HP.  If the user likes dry food, instead heal 1/6,  If they dislike it, the also become confused.",3/10/2021 17:06:41,3/10/2021 17:06:41
+164,Mago Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 1/8th of the user's maximum HP.  If the user likes sweet food, instead heal 1/6,  If they dislike it, the also become confused.",3/10/2021 17:06:41,3/10/2021 17:06:41
+165,Aguav Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 1/8th of the user's maximum HP.  If the user likes bitter food, instead heal 1/6,  If they dislike it, the also become confused.",3/10/2021 17:06:41,3/10/2021 17:06:41
+166,Iapapa Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff heals 1/8th of the user's maximum HP.  If the user likes sour food, instead heal 1/6,  If they dislike it, the also become confused.",3/10/2021 17:06:41,3/10/2021 17:06:41
+167,Liechi Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases ATK 1 combat stage.",3/10/2021 17:06:41,3/10/2021 17:06:41
+168,Ganlon Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases DEF 1 combat stage.",3/10/2021 17:06:41,3/10/2021 17:06:41
+169,Salac Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases SPD 1 combat stage.",3/10/2021 17:06:41,3/10/2021 17:06:41
+170,Petaya Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases SATK 1 combat stage.",3/10/2021 17:06:41,3/10/2021 17:06:41
+171,Apricot Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases SDEF 1 combat stage.",3/10/2021 17:06:41,3/10/2021 17:06:41
+172,Lansat Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff increases critical range by 1 for the rest of the encounter.",3/10/2021 17:06:41,3/10/2021 17:06:41
+173,Starf Berry,"Grants a digestion buff that can be traded in when under 25% HP.  When consumed, the buff increase a random stat 2 combat stages.",3/10/2021 17:06:41,3/10/2021 17:06:41
+174,Enigma Berry,Grants a digestion buff that can be traded in when the user just took damage from a super effective attack.  The user gains temporary HP equal to 1/6th of their maximum HP,3/10/2021 17:06:41,3/10/2021 17:06:41
+175,Micle Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, increases accuracy by +1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+176,Jaboca Berry,"Grants a digestion buff that can be traded in when the user takes damage from a physical move.  When consumed, the foe damaging the user loses 1/8th of their maximum HP.",3/10/2021 17:06:41,3/10/2021 17:06:41
+177,Rowap Berry,"Grants a digestion buff that can be traded in when the user takes damage from a special move.  When consumed, the foe damaging the user loses 1/8th of their maximum HP.",3/10/2021 17:06:41,3/10/2021 17:06:41
+178,Cornn Berry,"Grants a digestion buff that can be traded in when under 50% HP or disabled.  When consumed, the buff heals the disabled condition.",3/10/2021 17:06:41,3/10/2021 17:06:41
+179,Magost Berry,"Grants a digestion buff that can be traded in when under 50% HP or enraged.  When consumed, the buff heals the enraged condition.",3/10/2021 17:06:41,3/10/2021 17:06:41
+180,Rabuta Berry,"Grants a digestion buff that can be traded in when under 50% HP or supressed.  When consumed, the buff heals supressed.",3/10/2021 17:06:41,3/10/2021 17:06:41
+181,Nomel Berry,"Grants a digestion buff that can be traded in when under 50% HP or infatuated.  When consumed, the buff heals infatuated.",3/10/2021 17:06:41,3/10/2021 17:06:41
+182,Leppa Berry,"Grants a digestion buff that can be traded in when under 50% HP.  When consumed, the buff restores a scene frequency move.",3/10/2021 17:06:41,3/10/2021 17:06:41
+183,Pomeg Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base HP stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+184,Kelpsy Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base ATK stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+185,Qualot Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base DEF stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+186,Hondew Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base SATK stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+187,Grepa Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base SDEF stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+188,Tamato Berry,"Grants a digestion buff that can be traded in at any time.  The user, if their trainer wants them to, lowers their base SPD stat by 1.",3/10/2021 17:06:41,3/10/2021 17:06:41
+189,Colbur Berry,"Grants a digestion buff that can be traded in when the user is hit by a Dark type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+190,Chople Berry,"Grants a digestion buff that can be traded in when the user is hit by a Fighting type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+191,Occa Berry,"Grants a digestion buff that can be traded in when the user is hit by a Fire type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+192,Haban Berry,"Grants a digestion buff that can be traded in when the user is hit by a Dragon type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+193,Charti Berry,"Grants a digestion buff that can be traded in when the user is hit by a Rock type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+194,Wacan Berry,"Grants a digestion buff that can be traded in when the user is hit by a Electric type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+195,Babiri Berry,"Grants a digestion buff that can be traded in when the user is hit by a Steel type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+196,Rindo Berry,"Grants a digestion buff that can be traded in when the user is hit by a Grass type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+197,Passho Berry,"Grants a digestion buff that can be traded in when the user is hit by a Water type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+198,Roseli Berry,"Grants a digestion buff that can be traded in when the user is hit by a Fairy type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+199,Yache Berry,"Grants a digestion buff that can be traded in when the user is hit by a Ice type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+200,Kebia Berry,"Grants a digestion buff that can be traded in when the user is hit by a Poison type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+201,Coba Berry,"Grants a digestion buff that can be traded in when the user is hit by a Flying type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+202,Tanga Berry,"Grants a digestion buff that can be traded in when the user is hit by a Bug type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+203,Kasib Berry,"Grants a digestion buff that can be traded in when the user is hit by a Ghost type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+204,Payapa Berry,"Grants a digestion buff that can be traded in when the user is hit by a Psychic type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+205,Shuca Berry,"Grants a digestion buff that can be traded in when the user is hit by a Ground type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
+206,Chilan Berry,"Grants a digestion buff that can be traded in when the user is hit by a Normal type move, but before taking damage. The user resists the attack one step compared to what they normally would.",3/10/2021 17:06:41,3/10/2021 17:06:41
