@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import next from 'next';
@@ -72,6 +73,7 @@ app.prepare().then(async () => {
 
     const server = express();
     
+    server.use(cors());
     server.use(bodyParser.json());
     server.use(bodyParser.urlencoded({ extended: true }));
 
