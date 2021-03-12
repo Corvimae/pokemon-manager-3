@@ -249,7 +249,6 @@ export class Pokemon extends Model {
 
     if (!this.trainer) this.trainer = await this.$get('trainer');
 
-    console.log(this.trainer);
     return this.trainer.campaignId !== null && (await user.hasPermission('gm', this.trainer.campaignId) || await user.hasPermission('viewLoyalty', this.trainer.campaignId));
   }
 }
