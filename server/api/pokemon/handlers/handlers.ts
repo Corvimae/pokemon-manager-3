@@ -126,6 +126,34 @@ export async function getPokemonData(req: Request, res: Response): Promise<void>
   }
 }
 
+export async function deletePokemon(req: Request, res: Response): Promise<void> {
+  const user = await getUserObject(req);
+  const pokemon = await getFullPokemonData(req.params.id, user);
+
+  if (!pokemon) {   
+    res.status(401).json({
+      error: 'Pokemon not found.',
+    });
+
+    return;
+  } 
+
+  if (pokemon.trainer.userId !== user.id) {
+    res.status(403).json({
+      error: 'Pemission denied.',
+    });
+
+    return;
+  }
+
+  await pokemon.destroy();
+
+  res.json({
+    id: pokemon.id,
+    success: true,
+  });
+}
+
 export async function getBulkPokemonData(req: Request, res: Response): Promise<void> {
   const ids = (req.query.query ?? '').split(/,/g).map(item => Number(item)).filter(item => !Number.isNaN(item));
   const user = await getUserObject(req);

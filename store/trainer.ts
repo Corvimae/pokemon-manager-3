@@ -23,11 +23,13 @@ const SET_SELECTED_TRAINER = 'SET_SELECTED_TRAINER';
 const CREATE_NEW_POKEMON = 'CREATE_NEW_POKEMON';
 const CREATE_NEW_POKEMON_SUCCESS = 'CREATE_NEW_POKEMON_SUCCESS';
 const SET_TRAINER_CAMPAIGN = 'SET_TRAINER_CAMPAIGN';
+const DELETE_TRAINER = 'DELETE_TRAINER';
 
 type CreateNewTrainerActions = RequestActions<typeof CREATE_NEW_TRAINER, Trainer>;
 type FetchTrainersActions = RequestActions<typeof FETCH_TRAINERS, Trainer[]>;
 type CreateNewPokemonActions = RequestActions<typeof CREATE_NEW_POKEMON, Pokemon>;
 type SetTrainerCampaignActions = ImmediateUpdateRequestActions<typeof SET_TRAINER_CAMPAIGN, Trainer, { trainerId: number, campaignId: number; campaignName: string }>
+type DeleteTrainerActions = ImmediateUpdateRequestActions<typeof DELETE_TRAINER, {}, { trainerId: number }>
 
 type SetSelectedTrainerAction = {
   type: typeof SET_SELECTED_TRAINER;
@@ -36,13 +38,13 @@ type SetSelectedTrainerAction = {
   };
 }
 
-
 type TrainerReducerAction =
   CreateNewTrainerActions |
   FetchTrainersActions |
   CreateNewPokemonActions |
   SetTrainerCampaignActions |
-  SetSelectedTrainerAction;
+  SetSelectedTrainerAction |
+  DeleteTrainerActions;
 
 interface State {
   isLoadingTrainers: boolean;
@@ -98,6 +100,13 @@ export function reducer(state: State = initialState, action: TrainerReducerActio
           name: action.payload.value.campaignName,
         }
       } as Trainer));
+
+    case DELETE_TRAINER:
+      return {
+        ...state,
+        trainers: state.trainers.filter(trainer => trainer.id !== action.payload.value.trainerId),
+        selectedTrainer: undefined,
+      };
       
     default:
       return state;
@@ -170,6 +179,21 @@ export function setTrainerCampaign(trainerId: number, campaignId: number, campai
         data: {
           campaignId,
         },
+      },
+    },
+  };
+}
+
+export function deleteTrainer(trainerId: number): TrainerReducerAction {
+  return {
+    type: DELETE_TRAINER,
+    payload: {
+      value: {
+        trainerId,
+      },
+      request: {
+        url: `/trainer/${trainerId}`,
+        method: 'DELETE',
       },
     },
   };

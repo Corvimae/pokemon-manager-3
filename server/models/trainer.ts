@@ -3,7 +3,7 @@ import { Campaign } from './campaign';
 import { Pokemon } from './pokemon';
 import { User } from './user';
 
-@Table
+@Table({ paranoid: true })
 export class Trainer extends Model {
   @Column
   name: string;

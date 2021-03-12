@@ -1,7 +1,7 @@
 import { Column, CreatedAt, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
 import { User } from './user';
 
-@Table
+@Table({ paranoid: true })
 export class Campaign extends Model {
   @ForeignKey(() => User)
   @Column

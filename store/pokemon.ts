@@ -159,6 +159,7 @@ const SET_SKILL_ORDER = 'SET_SKILL_ORDER';
 const SET_EDGE_ORDER = 'SET_EDGE_ORDER';
 const SAVE_NOTES = 'SAVE_NOTES';
 const SAVE_GM_NOTES = 'SAVE_GM_NOTES';
+const DELETE_POKEMON = 'DELETE_POKEMON';
 
 interface ActiveMove {
   type: typeof MOVE;
@@ -240,6 +241,7 @@ type SetSkillOrderActions = ImmediateUpdateRequestActions<typeof SET_SKILL_ORDER
 type SetEdgeOrdersActions = ImmediateUpdateRequestActions<typeof SET_EDGE_ORDER, { edgeId: number; position: number }>;
 type SaveNotesActions = ImmediateUpdateRequestActions<typeof SAVE_NOTES, string>;
 type SaveGMNotesActions = ImmediateUpdateRequestActions<typeof SAVE_GM_NOTES, string>;
+type DeletePokemonActions = RequestActions<typeof DELETE_POKEMON, string>;
 
 type SetMobileModeAction = {
   type: typeof SET_MOBILE_MODE;
@@ -310,7 +312,8 @@ type PokemonReducerAction =
   SetSkillOrderActions | 
   SetEdgeOrdersActions |
   SaveNotesActions |
-  SaveGMNotesActions;
+  SaveGMNotesActions |
+  DeletePokemonActions;
 
 interface State {
   mobileMode: MobileMode;
@@ -1812,6 +1815,19 @@ export function saveGMNotes(pokemonId: number, notes: string): PokemonReducerAct
         data: {
           gmNotes: notes,
         },
+      },
+    },
+  };
+}
+
+
+export function deletePokemon(pokemonId: number): PokemonReducerAction {
+  return {
+    type: DELETE_POKEMON,
+    payload: {
+      request: {
+        url: `/pokemon/${pokemonId}`,
+        method: 'DELETE',
       },
     },
   };

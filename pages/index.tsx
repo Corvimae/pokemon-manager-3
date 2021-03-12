@@ -8,7 +8,7 @@ import { Button, DropdownHeader, HealthBar, PokemonIcon, TextInput } from '../co
 import { LoadingIcon } from '../components/LoadingIcon';
 import { getGenderColor, getGenderIcon } from '../components/PokemonNameBar';
 import { useTypedSelector } from '../store/rootReducer';
-import { createNewPokemon, createNewTrainer, fetchTrainers, setSelectedTrainer, setTrainerCampaign } from '../store/trainer';
+import { createNewPokemon, createNewTrainer, deleteTrainer, fetchTrainers, setSelectedTrainer, setTrainerCampaign } from '../store/trainer';
 import { calculateTotalHP } from '../utils/formula';
 import { useOnMount } from '../utils/hooks';
 import { calculateLevel } from '../utils/level';
@@ -16,7 +16,7 @@ import { Theme } from '../utils/theme';
 import { Pokemon } from '../server/models/pokemon';
 import { DefinitionLookahead } from '../components/DefinitionLookahead';
 
-const TrainerPage = ({ displayName }) => {
+const TrainerPage = () => {
   const router = useRouter();
   const isLoadingTrainers = useTypedSelector(state => state.trainer.isLoadingTrainers);
   const trainers = useTypedSelector(state => state.trainer.trainers);
@@ -51,6 +51,10 @@ const TrainerPage = ({ displayName }) => {
 
   const handleSetSelectedCampaign = useCallback(({ value, label }) => {
     dispatch(setTrainerCampaign(selectedTrainerId, value, label));
+  }, [dispatch, selectedTrainerId]);
+
+  const handleDeleteTrainer = useCallback(() => {
+    dispatch(deleteTrainer(selectedTrainerId));
   }, [dispatch, selectedTrainerId]);
 
   const navigateToPokemon = useCallback((pokemon: Pokemon) => {
@@ -142,6 +146,7 @@ const TrainerPage = ({ displayName }) => {
             </PokemonCell>
           ))}
           <NewPokemonCell onClick={submitNewPokemon}>Create new Pokémon</NewPokemonCell>
+          <DeleteTrainerCell onClick={handleDeleteTrainer}>Delete Trainer</DeleteTrainerCell>
         </PokemonList>
       )}
     </Container>
@@ -378,6 +383,20 @@ const NewPokemonCell = styled(PokemonCell)`
   justify-content: center;
   align-items: center;
   border: 1px dashed #aaa;
+`;
+
+const DeleteTrainerCell = styled(PokemonCell)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #dd7777;
+  border: 1px solid #610606;
+  color: #610606;
+  margin-top: 1rem;
+  
+  &:hover {
+    background-color: #eeb2b2;
+  }
 `;
 
 const PokemonStatRow = styled.div`

@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 import { calculateExperienceToNextLevel, calculatePercentageToNextLevel, calculateLevel } from '../utils/level';
-import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonTrainer, saveGMNotes, setSpentTutorPoints, setBonusTutorPoints } from '../store/pokemon';
+import { setPokemonNature, setPokemonType, setPokemonSpecies, setPokemonExperience, setPokemonLoyalty, setPokemonTrainer, saveGMNotes, setSpentTutorPoints, setBonusTutorPoints, deletePokemon } from '../store/pokemon';
 import { TypeIndicator } from './TypeIndicator';
 import { StatValue, StatKey, StatRow, StatList, StatRowDivider, TextInput, TypeList } from './Layout';
 import { useSpecialEvasions, useSpeedEvasions, usePhysicalEvasions } from '../utils/formula';
@@ -16,6 +17,7 @@ import { useTypedSelector } from '../store/rootReducer';
 import { HeldItemList } from './HeldItemList';
 import { RulebookSpecies } from '../server/models/rulebookSpecies';
 import { Gender } from '../utils/types';
+import { router } from '../server/api/trainer/routes';
 
 const ANIMATED_SPRITE_BASE_URL = "https://play.pokemonshowdown.com/sprites/ani/";
 
@@ -35,6 +37,7 @@ function getSpeciesAnimatedSpriteURL(species: RulebookSpecies, gender: Gender): 
 } 
 
 export const PokemonDataTable = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const mobileMode = useTypedSelector(store => store.pokemon.mobileMode);
   const editMode = useTypedSelector(store => store.pokemon.editMode);
@@ -92,6 +95,12 @@ export const PokemonDataTable = () => {
 
   const handleSaveGMNotes = useCallback(notes => {
     dispatch(saveGMNotes(pokemon.id, notes));
+  }, [dispatch, pokemon.id]);
+
+  const handleDeletePokemon = useCallback(() => {
+    dispatch(deletePokemon(pokemon.id));
+
+    router.push('/');
   }, [dispatch, pokemon.id]);
 
   return (
@@ -262,6 +271,11 @@ export const PokemonDataTable = () => {
           </StatRow>
         </>
       )}
+      {editMode && (
+        <DeleteButton onClick={handleDeletePokemon}>
+          Delete this Pokémon
+        </DeleteButton>
+      )}
     </StatTable>
   );
 };
@@ -373,4 +387,24 @@ const TutorPointValueInput = styled(RowValueNumericInput)`
   width: 100%;
   padding: 0;
   text-align: center;
+`;
+
+const DeleteButton = styled.button`
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: center;
+  align-items: center;
+  background-color: #dd7777;
+  border: 1px solid #610606;
+  font-size: 1rem;
+  font-family: inherit;
+  padding: none;
+  margin: 0.5rem 0.5rem;
+  color: #610606;
+  font-weight: 700;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #eeb2b2;
+  }
 `;

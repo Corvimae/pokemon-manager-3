@@ -23,7 +23,7 @@ export type JunctionedMove = RulebookMove & { PokemonMove: PokemonMove };
 export type JunctionedSkill = RulebookSkill & { PokemonSkill: PokemonSkill };
 export type JunctionedEdge = RulebookEdge & { PokemonEdge: PokemonEdge };
 
-@Table({ tableName: 'Pokemon' })
+@Table({ tableName: 'Pokemon', paranoid: true })
 export class Pokemon extends Model {
   @Column
   name: string;
