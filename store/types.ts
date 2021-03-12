@@ -1,3 +1,5 @@
+import { AxiosError } from "axios";
+
 export interface AxiosRequest {
   request: {
     url: string;
@@ -14,8 +16,11 @@ export type RequestActions<K extends string, T, U = {}> = {
   type: K;
   payload: AxiosRequest & U;
 } | {
-  type: `${K}_SUCCESS`,
-  payload: AxiosResponse<T>
+  type: `${K}_SUCCESS`;
+  payload: AxiosResponse<T>;
+} | {
+  type: `${K}_FAIL`;
+  error: AxiosError;
 };
 
 export type ImmediateUpdateRequestActions<K extends string, T, U = T> = RequestActions<K, T, { value: U }>;

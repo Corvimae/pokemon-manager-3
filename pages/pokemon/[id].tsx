@@ -11,6 +11,7 @@ import { PokemonMoveList } from '../../components/PokemonMoveList';
 import { DetailsSidebar } from '../../components/DetailsSidebar';
 import { PokemonSelector } from '../../components/PokemonSelector';
 import { LoadingIcon } from '../../components/LoadingIcon';
+import { LoadingError } from '../../components/LoadingError';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDiceD20, faFistRaised, faScroll, faSync } from '@fortawesome/free-solid-svg-icons';
 import { MobileMode } from '../../utils/types';
@@ -19,6 +20,7 @@ import { useTypedSelector } from '../../store/rootReducer';
 const PokemonViewer = () => {
   const router = useRouter();
   const pokemon = useTypedSelector(store => store.pokemon.data);
+  const loadError = useTypedSelector(store => store.pokemon.loadError);
 
   const dispatch = useDispatch();
 
@@ -29,6 +31,10 @@ const PokemonViewer = () => {
   const handleSetMobileMode = useCallback((mode: MobileMode) => {
     dispatch(setMobileMode(mode));
   }, [dispatch]);
+
+  if (loadError) {
+    return <LoadingError>{loadError}</LoadingError>
+  }
 
   return pokemon ? (
     <Container>

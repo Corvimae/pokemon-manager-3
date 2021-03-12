@@ -101,6 +101,7 @@ const DETAIL_REQUEST_PATHS = {
 const SET_MOBILE_MODE = 'SET_MOBILE_MODE';
 const LOAD_DATA = 'LOAD_DATA';
 const LOAD_DATA_SUCCESS = 'LOAD_DATA_SUCCESS';
+const LOAD_DATA_FAIL = 'LOAD_DATA_FAIL';
 const SET_COMBAT_STAGE = 'SET_COMBAT_STAGE';
 const REQUEST_DETAILS = 'REQUEST_DETAILS';
 const REQUEST_DETAILS_SUCCESS = 'REQUEST_DETAILS_SUCCESS';
@@ -327,6 +328,7 @@ interface State {
   isUserOwner: boolean;
   isUserGM: boolean;
   editMode: boolean;
+  loadError: string | undefined;
 }
 
 const initialState: State = {
@@ -341,6 +343,7 @@ const initialState: State = {
   isUserOwner: false,
   isUserGM: false,
   editMode: false,
+  loadError: undefined,
 };
 
 export function reducer(state: State = initialState, action: PokemonReducerAction): State {
@@ -351,6 +354,13 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         mobileMode: action.payload.mode,
       };
 
+    case LOAD_DATA:
+      return {
+        ...state,
+        data: undefined,
+        loadError: undefined,
+      };
+
     case LOAD_DATA_SUCCESS:
       return {
         ...state,
@@ -358,6 +368,11 @@ export function reducer(state: State = initialState, action: PokemonReducerActio
         isUserOwner: action.payload.data.isUserOwner,
         isUserGM: action.payload.data.isUserGM,
         allies: action.payload.data.allies,
+      };
+    case LOAD_DATA_FAIL:
+      return {
+        ...state,
+        loadError: action.error.response.data.error,
       };
 
     case SET_COMBAT_STAGE:
