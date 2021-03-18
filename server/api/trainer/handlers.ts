@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Trainer } from '../../models/trainer';
 import { Pokemon } from '../../models/pokemon';
 import { RulebookSpecies } from '../../models/rulebookSpecies';
-import { getUserObject, updateTrainer } from '../../utils/routeHelpers';
+import { updateTrainer } from '../../utils/routeHelpers';
 import { Campaign } from '../../models/campaign';
 
 export async function getTrainerData(req: Request, res: Response): Promise<void> {
@@ -45,4 +45,8 @@ export async function deleteTrainer(req: Request, res: Response): Promise<void> 
 
 export async function setTrainerCampaign(req: Request, res: Response): Promise<void> {
   res.json(await updateTrainer(req, 'campaignId', req.body.campaignId));
+}
+
+export async function setTrainerName(req: Request, res: Response): Promise<void> {
+  res.json(await updateTrainer(req, 'name', req.body.name));
 }

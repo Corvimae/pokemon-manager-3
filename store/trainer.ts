@@ -23,12 +23,14 @@ const SET_SELECTED_TRAINER = 'SET_SELECTED_TRAINER';
 const CREATE_NEW_POKEMON = 'CREATE_NEW_POKEMON';
 const CREATE_NEW_POKEMON_SUCCESS = 'CREATE_NEW_POKEMON_SUCCESS';
 const SET_TRAINER_CAMPAIGN = 'SET_TRAINER_CAMPAIGN';
+const SET_TRAINER_NAME = 'SET_TRAINER_NAME';
 const DELETE_TRAINER = 'DELETE_TRAINER';
 
 type CreateNewTrainerActions = RequestActions<typeof CREATE_NEW_TRAINER, Trainer>;
 type FetchTrainersActions = RequestActions<typeof FETCH_TRAINERS, Trainer[]>;
 type CreateNewPokemonActions = RequestActions<typeof CREATE_NEW_POKEMON, Pokemon>;
 type SetTrainerCampaignActions = ImmediateUpdateRequestActions<typeof SET_TRAINER_CAMPAIGN, Trainer, { trainerId: number, campaignId: number; campaignName: string }>
+type SetTrainerNameActions = ImmediateUpdateRequestActions<typeof SET_TRAINER_NAME, Trainer, { trainerId: number, name: string }>
 type DeleteTrainerActions = ImmediateUpdateRequestActions<typeof DELETE_TRAINER, {}, { trainerId: number }>
 
 type SetSelectedTrainerAction = {
@@ -44,6 +46,7 @@ type TrainerReducerAction =
   CreateNewPokemonActions |
   SetTrainerCampaignActions |
   SetSelectedTrainerAction |
+  SetTrainerNameActions |
   DeleteTrainerActions;
 
 interface State {
@@ -99,6 +102,12 @@ export function reducer(state: State = initialState, action: TrainerReducerActio
           id: action.payload.value.campaignId,
           name: action.payload.value.campaignName,
         }
+      } as Trainer));
+
+    case SET_TRAINER_NAME:
+      return updateTrainerById(state, action.payload.value.trainerId, trainer => ({
+        ...trainer,
+        name: action.payload.value.name,
       } as Trainer));
 
     case DELETE_TRAINER:
@@ -178,6 +187,25 @@ export function setTrainerCampaign(trainerId: number, campaignId: number, campai
         method: 'POST',
         data: {
           campaignId,
+        },
+      },
+    },
+  };
+}
+
+export function setTrainerName(trainerId: number, name: string): TrainerReducerAction {
+  return {
+    type: SET_TRAINER_NAME,
+    payload: {
+      value: {
+        trainerId,
+        name,
+      },
+      request: {
+        url: `/trainer/${trainerId}/name`,
+        method: 'POST',
+        data: {
+          name,
         },
       },
     },

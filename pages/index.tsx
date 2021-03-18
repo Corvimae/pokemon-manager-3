@@ -8,13 +8,14 @@ import { Button, DropdownHeader, HealthBar, PokemonIcon, TextInput } from '../co
 import { LoadingIcon } from '../components/LoadingIcon';
 import { getGenderColor, getGenderIcon } from '../components/PokemonNameBar';
 import { useTypedSelector } from '../store/rootReducer';
-import { createNewPokemon, createNewTrainer, deleteTrainer, fetchTrainers, setSelectedTrainer, setTrainerCampaign } from '../store/trainer';
+import { createNewPokemon, createNewTrainer, deleteTrainer, fetchTrainers, setTrainerCampaign } from '../store/trainer';
 import { calculateTotalHP } from '../utils/formula';
 import { useOnMount } from '../utils/hooks';
 import { calculateLevel } from '../utils/level';
 import { Theme } from '../utils/theme';
 import { Pokemon } from '../server/models/pokemon';
 import { DefinitionLookahead } from '../components/DefinitionLookahead';
+import { TrainerSelector } from '../components/TrainerSelector';
 
 const TrainerPage = () => {
   const router = useRouter();
@@ -35,10 +36,6 @@ const TrainerPage = () => {
   }, [showNewTrainerEditor]);
 
   const handleSetNewTrainerName = useCallback(event => setNewTrainerName(event.target.value), []);
-
-  const handleSetSelectedTrainer = useCallback((trainerId: number) => {
-    dispatch(setSelectedTrainer(trainerId));
-  }, [dispatch]);
 
   const submitNewTrainer = useCallback(() => {
     dispatch(createNewTrainer(newTrainerName));
@@ -93,18 +90,7 @@ const TrainerPage = () => {
 
         <TrainerList>
           {trainers.map(trainer => (
-            <TrainerSelector
-              key={trainer.id}
-              active={trainer.id === selectedTrainerId}
-              onClick={() => handleSetSelectedTrainer(trainer.id)}
-              tabIndex={0}
-            >
-              {trainer.name}
-
-              <TrainerPokemonCount>
-                {(trainer.pokemon ?? []).length} Pokemon
-              </TrainerPokemonCount>
-            </TrainerSelector>
+            <TrainerSelector key={trainer.id} trainer={trainer}/>
           ))}
         </TrainerList>
       </div>
@@ -265,45 +251,6 @@ const TrainerList = styled.ul`
   padding: 0 1rem;
   margin: 0.5rem 0;
   overflow-y: auto;
-`;
-
-const TrainerPokemonCount = styled.div`
-  position: absolute;
-  display: flex;
-  color: inherit;
-  top: 0;
-  right: 0;
-  height: 2rem;
-  padding: 0.25rem 2rem;
-`;
-
-const TrainerSelector = styled.div<{ active: boolean }>`
-  position: relative;
-  height: 2rem;
-  padding: 0.25rem 2rem;
-  background: ${props => props.active ? '#333' : 'rgba(255, 255, 255, 0.5)' };
-  color: ${props => props.active ? '#fff' : '#333'};
-  border-radius: 2rem;
-  overflow: hidden;
-  cursor: pointer;
-
-  & ${TrainerPokemonCount} {
-    background-color: ${props => props.active && Theme.backgroundStripe};
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -2rem;
-      border-left: 1rem solid transparent;
-      border-right: 1rem solid ${props => props.active ? Theme.backgroundStripe : 'transparent'};
-      border-top: 2rem solid transparent;
-    }
-  }
-
-  & + & {
-    margin-top: 0.5rem;
-  }
 `;
 
 const PokemonList = styled.div`

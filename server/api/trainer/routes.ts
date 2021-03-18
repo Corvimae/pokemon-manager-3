@@ -1,7 +1,7 @@
 import express from 'express';
 import { Trainer } from '../../models/trainer';
 import { handleAsyncRoute } from '../../utils/routeHelpers';
-import { createNewTrainer, deleteTrainer, getTrainerData, setTrainerCampaign } from './handlers';
+import { createNewTrainer, deleteTrainer, getTrainerData, setTrainerCampaign, setTrainerName } from './handlers';
 
 export const router = express.Router();
 
@@ -42,3 +42,4 @@ router.delete('/:id', handleAsyncRoute(deleteTrainer));
 
 
 router.post('/:id/campaign', handleAsyncRoute(setTrainerCampaign));
+router.post('/:id/name', handleAsyncRoute(setTrainerName));
