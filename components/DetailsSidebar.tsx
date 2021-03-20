@@ -3,7 +3,7 @@ import Handlebars from 'handlebars';
 import { MOVE, closeDetailsPanel, ABILITY, CAPABILITY, HELD_ITEM, saveNotes, SKILL, EDGE, ActiveDetail } from '../store/pokemon';
 import { Theme } from '../utils/theme';
 import { StatList, StatRow, StatKey, StatValue, StatRowDivider, IconButton, TypeList } from './Layout';
-import { getAttackType } from '../utils/moves';
+import { getAttackType, getDiceRoll } from '../utils/moves';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
@@ -89,7 +89,9 @@ export const DetailsSidebar = () => {
             {activeDetails.details.value.damageBase !== null && (
               <StatRow>
                 <StatKey>Damage</StatKey>
-                <StatValue>{activeDetails.details.value.damageBase}</StatValue>
+                <StatValue>
+                  {activeDetails.details.value.damageBase} ({getDiceRoll(activeDetails.details.value.damageBase)})
+                </StatValue>
               </StatRow>
             )}
             {activeDetails.details.value.effect !== '-' && <StatRowDivider />}
