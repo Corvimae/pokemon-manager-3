@@ -73,7 +73,7 @@ export function useCalculatedSpecialAttackStat() {
 
 export function useCalculatedSpecialDefenseStat() {
   const base = useTypedSelector(state => state.pokemon.data.baseSpDefense);
-  const added = useTypedSelector(state => state.pokemon.data.baseSpDefense);
+  const added = useTypedSelector(state => state.pokemon.data.addedSpDefense);
   const vitamin = useTypedSelector(state => state.pokemon.data.vitaminSpDefense);
   const bonus = useTypedSelector(state => state.pokemon.data.bonusSpDefense);
   const combatStages = useTypedSelector(state => state.pokemon.data.spDefenseCombatStages);
