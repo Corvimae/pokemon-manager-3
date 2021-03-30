@@ -35,7 +35,7 @@ export async function createNewTrainer(req: Request, res: Response): Promise<voi
 
 
 export async function deleteTrainer(req: Request, res: Response): Promise<void> {
-  const trainer = await Trainer.findByPk(req.param.trainerId);
+  const trainer = await Trainer.findByPk(req.params.id);
 
   await trainer.destroy();
 
