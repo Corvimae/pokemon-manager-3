@@ -15,6 +15,10 @@ export class RulebookAbility extends Model {
   @Column
   trigger: string;
 
+  @AllowNull
+  @Column
+  target: string;
+
   @Column(DataType.TEXT)
   effect: string;
 

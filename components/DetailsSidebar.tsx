@@ -128,11 +128,24 @@ export const DetailsSidebar = () => {
         )}
         {activeDetails.details?.type === ABILITY && activeDetails.details?.value && (
           <>
-            <StatRow>
-              <StatKey>Frequency</StatKey>
-              <StatValue>{activeDetails.details.value.frequency}</StatValue>
-            </StatRow>
-            <StatRowDivider />
+            {activeDetails.details.value.frequency && (
+              <StatRow>
+                <StatKey>Frequency</StatKey>
+                <StatValue>{activeDetails.details.value.frequency}</StatValue>
+              </StatRow>
+            )}
+            {activeDetails.details.value.trigger && (
+              <StatRow>
+                <StatKey>Trigger</StatKey>
+                <StatValue>{activeDetails.details.value.trigger}</StatValue>
+              </StatRow>
+            )}
+            {activeDetails.details.value.target && (
+              <StatRow>
+                <StatKey>Target</StatKey>
+                <StatValue>{activeDetails.details.value.target}</StatValue>
+              </StatRow>
+            )}
           </>
         )}
         {activeDetails.details?.type === EDGE && activeDetails.details?.value && (
