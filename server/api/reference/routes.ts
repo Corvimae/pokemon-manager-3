@@ -4,6 +4,7 @@ import { Campaign } from '../../models/campaign';
 import { RulebookAbility } from '../../models/rulebookAbility';
 import { RulebookCapability } from '../../models/rulebookCapability';
 import { RulebookEdge } from '../../models/rulebookEdge';
+import { RulebookGlossaryItem } from '../../models/rulebookGlossaryItem';
 import { RulebookHeldItem } from '../../models/rulebookHeldItem';
 import { RulebookMove } from '../../models/rulebookMove';
 import { RulebookNature } from '../../models/rulebookNature';
@@ -61,6 +62,7 @@ router.get('/capabilities/:id', fetchById(RulebookCapability));
 router.get('/skills', fetchWithQuerying(RulebookSkill));
 router.get('/skills/:id', fetchById(RulebookSkill));
 router.get('/edges', fetchWithQuerying(RulebookEdge));
+router.get('/glossary', fetchWithQuerying(RulebookGlossaryItem));
 router.get('/edges/:id', fetchById(RulebookEdge));
 router.get('/campaigns', fetchWithQuerying(Campaign));
 router.get('/campaigns/:id/trainers', handleAsyncRoute(async (req, res) => {
